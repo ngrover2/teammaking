@@ -1,0 +1,61 @@
+{
+  "name": "teammakingapp",
+  "version": "1.0.0",
+  "description": "Application that helps make great teams",
+  "main": "app.js",
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ],
+    "plugins": [
+      [
+        "@babel/plugin-transform-runtime",
+        {
+          "regenerator": true
+        }
+      ]
+    ]
+  },
+  "scripts": {
+    "create": "webpack",
+    "start": "webpack-dev-server --open",
+    "test": "jest"
+  },
+  "author": "Project Group Team for the SSDI Fall2018 class at UNCC, NC for their MS (Computer Science) degree",
+  "license": "ISC",
+  "dependencies": {
+    "browserify": "^16.5.0",
+    "csv-parse": "^4.6.5",
+    "express": "^4.17.1",
+    "express-generator": "^4.16.1",
+    "mysql": "^2.17.1",
+    "object-hash": "^1.3.1",
+    "react": "^16.10.1",
+    "react-dom": "^16.10.1",
+    "react-router-dom": "^5.1.2",
+    "semantic-ui-react": "^0.88.1"
+  },
+  "proxy": "http://localhost:3000",
+  "devDependencies": {
+    "@babel/core": "^7.6.4",
+    "@babel/plugin-transform-runtime": "^7.6.2",
+    "@babel/preset-env": "^7.6.3",
+    "@babel/preset-react": "^7.6.3",
+    "babel-loader": "^8.0.6",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-react-app": "^9.0.2",
+    "cors": "^2.8.5",
+    "css-loader": "^3.2.0",
+    "d3-drag": "^1.2.4",
+    "d3-selection": "^1.4.0",
+    "html-webpack-plugin": "^3.2.0",
+    "jest": "^24.9.0",
+    "nodemon": "^1.19.4",
+    "robust-point-in-polygon": "^1.0.3",
+    "style-loader": "^1.0.0",
+    "webpack": "^4.41.0",
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.8.2"
+  }
+}

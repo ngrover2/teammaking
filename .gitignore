@@ -1,0 +1,6 @@
+node_modules/
+css/
+data/
+scripts/
+package-lock.json
+.DS_STORE
