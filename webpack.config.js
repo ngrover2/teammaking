@@ -8,11 +8,6 @@ module.exports = {
         filename: 'index_bundle.js',
         publicPath: "/",
     },
-    // target:"node",
-    // to resolve can't resolve fs module, add the following line
-    // node: {
-    //     fs: "empty"
-    // },
     module : {
         rules : [
             {test : /\.(js)$/, use:{
