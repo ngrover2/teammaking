@@ -41,16 +41,20 @@ class DisplayCourseComponent extends React.Component {
           var data = fileReader.result
           if (data) dataArray = data.match(/[^\r\n]+/g);
           if (dataArray instanceof Array) {
+            let headerSplitLength = 0;
+            let valueObjectSplitLength = 0;
             // get the first row of csv as header using Array.splice() which would remove the first row from data.
             let headerString = dataArray.splice(0,1);
             let headerFields = headerString[0].split(",");
+            headerSplitLength = headerFields.length
 
             // construct value objects from rest of the data
             let valueObjects = []
-            dataArray.forEach((value)=>{
+            dataArray.forEach((value,idx)=>{
               let valueObj = {}
               value.split(",").forEach((splitVal,splitIdx)=>{
                 valueObj[headerFields[splitIdx]] = splitVal
+                if (!idx) valueObjectSplitLength = valueObjectSplitLength + 1
               })
               valueObjects.push(valueObj);
             });
@@ -58,15 +62,21 @@ class DisplayCourseComponent extends React.Component {
             // console.log("header", headerFields);
             // console.log("values", valueObjects)
 
-            if (headerFields.length == 4){
+            if (headerSplitLength == valueObjectSplitLength){
               this.setState({
                 fileHeaderFieldsArray:headerFields,
                 fileValueObjects:valueObjects
               }, () => this.setState({redirectTo:"viewUploadedRoster"}) );
             }else{
-              this.setState({errorMessage: `Num of columns in the selected file is not 4`, errorMessageModalOpen:true},() => this.errorMessageRef.current.ref.current.click());
+              // this.setState({errorMessage: `HeaderLength:${headerSplitLength} while data length: ${valueObjectSplitLength}`, errorMessageModalOpen:true},() => this.errorMessageRef.current.ref.current.click());
+              this.setState({
+                fileHeaderFieldsArray:[],
+                fileValueObjects:[]
+              }, () => this.setState({redirectTo:"viewUploadedRoster"}) );
+              this.setState({errorMessage: `The file does not appear to be a valid csv file`, errorMessageModalOpen:true},() => this.errorMessageRef.current.ref.current.click());
             }
           }else{
+            console.log(error)
             this.setState({errorMessage: "The selected file does not have data in the right format", errorMessageModalOpen:true},() => this.errorMessageRef.current.ref.current.click());
           };
         }catch(error){
