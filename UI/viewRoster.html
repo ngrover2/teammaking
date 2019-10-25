@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>View Roster</title>
+    <link rel="stylesheet" href="style.css"></head>
+</head>
+
+<body>
+    <div id="menu">
+        <span class="menuItem">Courses</span>
+        <span class="divider"></span>
+        <span class="menuItem">Other menu items go here</span>
+    </div>
+    <br>
+    <div id="body">
+        <div id="courseInfo">
+            <h1>Course Title</h1>
+            <p>Course Description goes here</p>
+            <button>Upload Roster as CSV</button>
+            <button>Manually add students</button>
+        </div>
+        <div id="viewRoster">
+            <table id="roster">
+                <tr>
+                    <th>Name</th>
+                    <th>Id number</th>
+                    <th>Email</th>
+                    <th></th>
+                </tr>
+                <!-- Inport Roster data from database -->
+                <tr>
+                    <td>Bob Johnson</td>
+                    <td>123456789</td>
+                    <td>bob.johnson@email.com</td>
+                    <td>
+                        <button class="edit">edit</button>
+                        <button class="delete">delete</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+
+
+</body>
+
+</html>
