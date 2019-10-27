@@ -1,8 +1,10 @@
 import React from 'react';
 import { parse } from 'csv-parse/lib/sync';
+import { default as CreateNewCourseComponent} from "./CreateNewCourseComponent"
+
 var path = require('path');
 
-import { Button, Card, Image } from 'semantic-ui-react'
+import { Button, Card, Image, Grid } from 'semantic-ui-react'
 import { default as PickRosterFileComponent } from "./PickRosterFileComponent";
 import { default as DisplayRosterDetailsComponent  } from "./DisplayRosterDetailsComponent"
 import { default as ErrorMessageComponent } from "./ErrorMessageComponent";
@@ -52,7 +54,7 @@ class DisplayCourseComponent extends React.Component {
             let valueObjects = []
             dataArray.forEach((value,idx)=>{
               let valueObj = {}
-              value.split(",").forEach((splitVal,splitIdx)=>{
+              value.split(",").forEach((splitVal,splitIdx)=> {
                 valueObj[headerFields[splitIdx]] = splitVal
                 if (!idx) valueObjectSplitLength = valueObjectSplitLength + 1
               })
@@ -69,10 +71,10 @@ class DisplayCourseComponent extends React.Component {
               }, () => this.setState({redirectTo:"viewUploadedRoster"}) );
             }else{
               // this.setState({errorMessage: `HeaderLength:${headerSplitLength} while data length: ${valueObjectSplitLength}`, errorMessageModalOpen:true},() => this.errorMessageRef.current.ref.current.click());
-              this.setState({
-                fileHeaderFieldsArray:[],
-                fileValueObjects:[]
-              }, () => this.setState({redirectTo:"viewUploadedRoster"}) );
+              // this.setState({
+              //   fileHeaderFieldsArray:[],
+              //   fileValueObjects:[]
+              // }, () => this.setState({redirectTo:"viewUploadedRoster"}) );
               this.setState({errorMessage: `The file does not appear to be a valid csv file`, errorMessageModalOpen:true},() => this.errorMessageRef.current.ref.current.click());
             }
           }else{
@@ -102,50 +104,63 @@ class DisplayCourseComponent extends React.Component {
 
   render() {
     this.filePickerRef = React.createRef();
-      return (this.state.redirectTo === "courseDetails" && (
-        <Card style={{marginLeft:"10rem", marginTop:"10rem"}}>
-              <Card.Content>
-                <Image
-                  floated='right'
-                  size='mini'
-                  src='https://via.placeholder.com/128.png'
-                />
-                <Card.Header>{this.props.name}</Card.Header>
-                <Card.Meta>{this.props.classCode}</Card.Meta>
-                <Card.Description>
-                  {this.props.courseDescription}
-                </Card.Description>
-              </Card.Content>
-              <Card.Content extra>
-                <div className='ui two buttons'>
-                  <Button basic color='green' onClick={() => this.setState({redirectTo:"viewDownloadedRoster"})}>
-                    View Roster
-                  </Button>
-                  <Button basic color='red' onClick={() => {
-                      if (document.getElementById("hiddenFilePickerButtonId") != "undefined"){
-                        var fp = document.getElementById("hiddenFilePickerButtonId");
-                        fp.click();
-                      }else{
-                        console.log("fp is undefined");
-                      }
-                    }
-                  }>
-                    Import Roster
-                  </Button>
-                  <PickRosterFileComponent passSelectedFile={this.getRosterFile} />
-                </div>
-              </Card.Content>
-              <ErrorMessageComponent ref={this.errorMessageRef} open={this.state.errorMessageModalOpen} errorMessage={this.state.errorMessage} closeModal={() => this.setState({errorMessageModalOpen:false})}/>
-        </Card>
-      )
-      ||
-      (this.state.redirectTo === "viewDownloadedRoster" && (
-        <Redirect push={true} to="/course/roster/9"/>
-      ))
-      ||
-      (this.state.redirectTo === "viewUploadedRoster" && (
-        <Redirect push={true} to={{ pathname:"/course/chooseroster/view", state : {header:this.state.fileHeaderFieldsArray, data:this.state.fileValueObjects}  }} />
-      ))
+      return (
+        <Grid>
+          {this.state.redirectTo === "courseDetails" && (
+            <div>
+            <Grid.Row>
+              <Card style={{marginLeft:"10rem", marginTop:"10rem"}}>
+                    <Card.Content>
+                      <Image
+                        floated='right'
+                        size='mini'
+                        src='https://via.placeholder.com/128.png'
+                      />
+                      <Card.Header>{this.props.name}</Card.Header>
+                      <Card.Meta>{this.props.classCode}</Card.Meta>
+                      <Card.Description>
+                        {this.props.courseDescription}
+                      </Card.Description>
+                    </Card.Content>
+                    <Card.Content extra>
+                      <div className='ui two buttons'>
+                        <Button basic color='green' onClick={() => this.setState({redirectTo:"viewDownloadedRoster"})}>
+                          View Roster
+                        </Button>
+                        <Button basic color='red' onClick={() => {
+                            if (document.getElementById("hiddenFilePickerButtonId") != "undefined"){
+                              var fp = document.getElementById("hiddenFilePickerButtonId");
+                              fp.click();
+                            }else{
+                              console.log("fp is undefined");
+                            }
+                          }
+                        }>
+                          Import Roster
+                        </Button>
+                        <PickRosterFileComponent passSelectedFile={this.getRosterFile} />
+                      </div>
+                    </Card.Content>
+                    <ErrorMessageComponent ref={this.errorMessageRef} open={this.state.errorMessageModalOpen} errorMessage={this.state.errorMessage} closeModal={() => this.setState({errorMessageModalOpen:false})}/>
+              </Card>
+            </Grid.Row>
+            <Grid.Row>
+                <CreateNewCourseComponent />
+            </Grid.Row>
+            </div>)
+            ||
+          (this.state.redirectTo === "viewDownloadedRoster" && (
+            <Grid.Row>
+              <Redirect push={true} to="/course/roster/9"/>
+            </Grid.Row>
+          ))
+            ||
+          (this.state.redirectTo === "viewUploadedRoster" && (
+            <Grid.Row>
+              <Redirect push={true} to={{ pathname:"/course/chooseroster/view", state : {header:this.state.fileHeaderFieldsArray, data:this.state.fileValueObjects}  }} />
+            </Grid.Row>
+          ))}
+      </Grid>
       );
     }
   }
