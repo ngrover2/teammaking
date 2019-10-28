@@ -11,8 +11,7 @@ import {default as DisplayCourseComponent} from "./DisplayCourseComponent";
 import {default as RosterDetails} from "./DisplayRosterDetailsComponent";
 import {default as DisplayPickedFile} from "./DisplayPickedFile";
 import { Table, Header, Cell } from 'semantic-ui-react';
-
-
+import {default as SurveyFormQuestionComponent} from "./SurveyFormQuestionComponent";
 
 
 
@@ -43,16 +42,21 @@ export default function MainAppComponent() {
             <Link to="/course"/>
             <Link to="/"/>
             <Switch>
-                <Route exact={true} path="/course">
-                    <DisplayCourseComponent {...courseDetails}/>
-                </Route>
                 <Route exact={true} path={`/course/roster/9`}>
                     <RosterDetails>{headers}</RosterDetails>
                 </Route>
                 <Route 
                     exact={true} 
+                    path={"/course/survey/add"}>
+                        <SurveyFormQuestionComponent />
+                </Route>
+                <Route 
+                    exact={true} 
                     path={"/course/chooseroster/view"}>
                         <DisplayPickedFile />
+                </Route>
+                <Route exact={true}  path="/course">
+                    <DisplayCourseComponent {...courseDetails}/>
                 </Route>
                 <Route path="/">
                     <DisplayCourseComponent {...courseDetails}/>
@@ -61,15 +65,3 @@ export default function MainAppComponent() {
         </Router>
     );
 }
-
-
-// <Route 
-//                     exact={true} 
-//                     path={"/course/chooseroster/view"} 
-//                     children={({ match })=>{
-//                             console.log("match is: ", match);
-//                             return (match.path == "/course/chooseroster/view") ? <DisplayPickedFile /> : <RosterDetails></RosterDetails>
-//                         }
-//                     }
-//                 >
-//                 </Route>
