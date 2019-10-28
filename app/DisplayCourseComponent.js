@@ -255,16 +255,6 @@ class DisplayCourseComponent extends React.Component {
 		}else{
 			return <Button fluid>No Value Set for this.state.redirectTo</Button>
 		}
-		console.log("WE ARE SOME HOW HERE")
-		return (
-			<Grid>
-				{this.state.courseCards || <Segment>{"No Courses Found"}</Segment>}
-				<Grid.Row>
-						<CreateNewCourseComponent />
-				</Grid.Row>
-				<ErrorMessageComponent ref={this.errorMessageRef} open={this.state.errorMessageModalOpen} errorMessage={this.state.errorMessage} closeModal={() => this.setState({errorMessageModalOpen:false})}/>
-			</Grid>
-		)
 	}
 }
 
