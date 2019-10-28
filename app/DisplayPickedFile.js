@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import React from 'react';
-import { Table, Header, HeaderCell, Row, Grid, Button, Input, Label, Tab } from 'semantic-ui-react';
+import { Table, Header, HeaderCell, Row, Grid, Button, Input, Label, Tab, Checkbox } from 'semantic-ui-react';
 import { Redirect , useLocation } from 'react-router-dom';
 import { default as MessageComponent } from './ErrorMessageComponent';
 
@@ -9,6 +9,7 @@ const getEmptyHeaderRow = () => (<Table.Cell>No Header present in roster file</T
 
 const DisplayPickedFile = (props) => {
     var { state } = useLocation();
+    console.log(state);
     const [ receivedHeader, setReceivedHeader ] = useState(state.header || []);
     const [ receivedStudents, setReceivedStudents ] = useState(state.data || []);
     
@@ -38,8 +39,7 @@ const DisplayPickedFile = (props) => {
     const messageButtonRef = React.createRef();
 
     useEffect(()=> {
-        // let formattedHeader = getHeaders();
-        console.log("useEffect setHeader called")
+        // console.log("useEffect setHeader called") //DEBUG
         let formattedHeader = true;
         if (formattedHeader){
             setHeader(<HeaderRowComponent id="headerRow" ref={lockHeader}/>);
@@ -59,15 +59,74 @@ const DisplayPickedFile = (props) => {
         if (uploadAttemptId !== 0) uploadRoster();
     },[uploadAttemptId])
 
-    function uploadRoster(){
-        // TODO: write code to uppload data to the database
-        console.log(receivedStudents);
-        console.log(headerColumnsOldToNewNamesMapping);
-        console.log(receivedHeader);
-        setMessage("Roster uploaded successfully");
-        setMessageModalOpen(true);
+
+    async function uploadRoster(){
+        // console.log(receivedStudents); // DEBUG
+        // console.log(headerColumnsOldToNewNamesMapping); // DEBUG
+        // console.log(receivedHeader); // DEBUG
+        
+        // Header and Rows columns need to be in the same order
+        let studentArray = []
+        let headerArray = []
+        
+        // Transform the student objects' data into arrays and make sure they are ordered as per the header name order
+        receivedStudents.forEach((student, idx)=>{
+            studentArray[idx] = [];
+            receivedHeader.forEach((headerColName,hidx)=>{
+                studentArray[idx][hidx] = student[headerColName]
+            })
+        })
+        console.log(studentArray) //DEBUG
+
+        // Map the header column name to the changes made by the user
+        
+        receivedHeader.forEach((headerColName,hidx)=>{
+            let tmp = {}
+            tmp.name = headerColumnsOldToNewNamesMapping[headerColName]
+            tmp.multi = true
+            // headerArray[hidx].name = headerColumnsOldToNewNamesMapping[headerColName]
+            // headerArray[hidx].multi = true
+            headerArray.push(tmp)
+        })
+        console.log(headerArray) //DEBUG
+        let postBody = {
+            header_row: headerArray,
+            data_rows: studentArray,
+            course_code:'CC1234', // Hardcoded now, will change later when it is received dynamically
+            professor_name:'Harini Ramaprasad', // Hardcoded now, will change later when it is received dynamically
+        }
+        console.log(postBody);
+
+        try{
+            let response = await fetch("http://localhost:3000/professor/1/course/1/roster/save", {
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                cache: 'no-cache',
+                body: JSON.stringify(postBody)
+            })
+    
+            let responseJson = await response.json()
+            if (responseJson){
+                if (responseJson.status == "ok"){
+                    console.log(responseJson)
+                    setMessage("Roster uploaded successfully");
+                    setMessageModalOpen(true);
+                }else{
+                    setMessage(`${responseJson.reason} || Problem uploading roster`);
+                    setMessageModalOpen(true);
+                }
+            }else{
+                setMessage("Problem uploading roster");
+                setMessageModalOpen(true);
+            }
+        }catch(error){
+            setMessage(error.message);
+            setMessageModalOpen(true);
+        }
+        
         if (lockHeader && lockHeader.current && lockHeader.current.ref && lockHeader.current.ref.current) lockHeader.current.ref.current.click()
-        // console.log(lockHeader)
     }
 
     function getHeaders(){
@@ -99,6 +158,9 @@ const DisplayPickedFile = (props) => {
         // localHeader is local to the HeaderRowComponent component and any changes to it would call render only the HeaderRowComponent
         // and not the whole DisplayPickedFile component, which is what we want
         const [ localHeader, setLocalHeader ] = useState([...receivedHeader]);
+        // const [ localHeaderCheckboxes, setLocalHeaderCheckboxes ] = useState([...receivedHeader].map((v)=> false));
+        
+        
         const [ renderedHeader, setRenderedHeader ] = useState([...receivedHeader]);
         const [ localHeaderUpdatedId, setLocalHeaderUpdatedId ] = useState(0);
         
@@ -109,21 +171,21 @@ const DisplayPickedFile = (props) => {
         // We propagate local changes to the localHeader on Lock Header button click
         const [ headerValues, setHeaderValues ] = useState([...receivedHeader]);
         
+        
         const [ headerEditable, setHeaderEditable ] = useState(false);
         let mapping = Object.assign({});
         receivedHeader.forEach((val)=>{
                 mapping[val]=val
         });
-        const [ headerNameChangeMapping, setHeaderNameChangeMapping ] = useState([headerColumnsOldToNewNamesMapping])
+        const [ headerNameChangeMapping, setHeaderNameChangeMapping ] = useState(headerColumnsOldToNewNamesMapping)
 
         useEffect(() => {
-            // if (localHeaderUpdatedId != 0){
-                console.log("useEffect of headerRowComponent called")
-                let newHeader = constructHeader();
-                newHeader ? setRenderedHeader(newHeader) : setRenderedHeader(getEmptyHeaderRow());
-                // if (newHeader) setRenderedHeader(newHeader);
-            // }
+            // console.log("useEffect of headerRowComponent called") //DEBUG
+            let newHeader = constructHeader();
+            newHeader ? setRenderedHeader(newHeader) : setRenderedHeader(getEmptyHeaderRow());
         },[localHeaderUpdatedId])
+
+        
         
         function constructHeader(){
             try{
@@ -133,37 +195,37 @@ const DisplayPickedFile = (props) => {
                 // console.log("header", header);
                 console.log("headerEditable",`${headerEditable}`);
                 let headerRowCells = []
-                if (localHeader.length<1) {console.log(`${"constructHeader returning NULL"}`);return null};
+                if (localHeader.length < 1) {console.log(`${"constructHeader returning NULL"}`);return null};
                 localHeader.forEach((col,idx) => {
                     headerRowCells.push(
                         <Table.HeaderCell key={`$header-${idx}-col-${col}`}>
                             {
-                                headerEditable &&
-                                    (<Input 
-                                        style={editHeaderCellStyle}
-                                        // value={headerValues[idx]}
-                                        value={localHeader[idx]}
-                                        onChange={(e)=> {
-                                                let changedVal = e.target.value
-                                                // create new header array with changed colName from input
-                                                let updatedHeader = [...localHeader.slice(0,idx), changedVal ,...localHeader.slice(idx+1)];
-                                                console.log("updatedHeader", updatedHeader);
-                                                
-                                                // set the new headerValues
-                                                setHeaderValues(updatedHeader);
-                                                setLocalHeader(updatedHeader);
+                                        headerEditable &&
+                                        (<Input 
+                                            style={editHeaderCellStyle}
+                                            value={headerValues[idx]}
+                                            // value={localHeader[idx]}
+                                            onChange={(e)=> {
+                                                    let changedVal = e.target.value
+                                                    // create new header array with changed colName from input
+                                                    let updatedHeader = [...localHeader.slice(0,idx), changedVal ,...localHeader.slice(idx+1)];
+                                                    console.log("updatedHeader", updatedHeader);
+                                                    
+                                                    // set the new headerValues
+                                                    setHeaderValues(updatedHeader);
+                                                    // setLocalHeader(updatedHeader);
 
-                                                // update the UI that reflects the change in (uncomitted) headerValues. 
-                                                // Uncommitted because headerValues has not been copied over to localHeader. 
-                                                // That will happen only when Lock Header is clicked.
-                                                console.log(headerNameChangeMapping)
-                                                setHeaderNameChangeMapping(Object.assign({}, headerNameChangeMapping,{[col]: changedVal}));
-                                                setLocalHeaderUpdatedId(localHeaderUpdatedId+1);
+                                                    // update the UI that reflects the change in (uncomitted) headerValues. 
+                                                    // Uncommitted because headerValues has not been copied over to localHeader. 
+                                                    // That will happen only when Lock Header is clicked.
+                                                    console.log(headerNameChangeMapping)
+                                                    setHeaderNameChangeMapping(Object.assign({}, headerNameChangeMapping,{[col]: changedVal}));
+                                                    setLocalHeaderUpdatedId(localHeaderUpdatedId+1);
+                                                }
                                             }
-                                        }
-                                    />)
-                                ||
-                                    <Label>{col}</Label>
+                                        />)
+                                    ||
+                                        <Label>{col}</Label>
                             }
                         </Table.HeaderCell>
                     );
@@ -210,6 +272,7 @@ const DisplayPickedFile = (props) => {
                                                         setHeaderEditable(false);
                                                         setLocalHeader(headerValues);
                                                         setLocalHeaderUpdatedId(localHeaderUpdatedId + 1)
+                                                        console.log("headerNameChangeMapping",{...headerNameChangeMapping});
                                                         setHeaderColumnsOldToNewNamesMapping(headerNameChangeMapping);
                                                 }}>Lock Header</Button>
                         </Table.HeaderCell>
@@ -336,3 +399,40 @@ const DisplayPickedFile = (props) => {
 }
 
 export default DisplayPickedFile
+
+
+// Code to add Checkboxes to the header to indicate multi-values
+/*
+<Checkbox 
+    id={idx} 
+    // checked={headerCheckboxes[idx]}
+    onChange={
+        (e) => {
+            console.log("received", headerCheckboxes);
+            let updated = headerCheckboxes.slice(0,headerCheckboxes.length).map(
+                (v,i) => { 
+                    if(i == idx){
+                        return e.target.checked
+                    }else{
+                        return v
+                    }
+                });
+            console.log("updated", updated)
+            setHeaderCheckboxes(updated);
+            setHeaderCheckboxesChangedId(headerCheckboxesChangedId+1);
+        }
+    } 
+></Checkbox>
+
+// useEffect(() => {
+        //     console.log("useEffect to change checkboxes state of headerRowComponent called")
+        //     console.log("headerCheckboxes", headerCheckboxes);
+        //     console.log("localHeaderCheckboxes", localHeaderCheckboxes);
+        //     // console.log(headerCheckboxes);
+        //     setLocalHeaderCheckboxes(headerCheckboxes);
+        // },[headerCheckboxesChangedId])
+
+// const [ localHeaderCheckboxes, setLocalHeaderCheckboxes ] = useState([false, false, false, false, false ]);
+// const [ headerCheckboxes, setHeaderCheckboxes ] = useState([...localHeaderCheckboxes]);
+// const [ headerCheckboxesChangedId, setHeaderCheckboxesChangedId ] = useState(0);
+*/
