@@ -1,17 +1,13 @@
 import React from 'react';
-import { parse } from 'csv-parse/lib/sync';
+// import { parse } from 'csv-parse/lib/sync';
 import { default as CreateNewCourseComponent} from "./CreateNewCourseComponent"
 import { default as UpdateCourseComponent} from "./UpdateCourseComponent";
-
-
-var path = require('path');
+import { default as PickRosterFileComponent } from "./PickRosterFileComponent";
+import { default as ErrorMessageComponent } from "./ErrorMessageComponent";
 
 import { Button, Card, Image, Grid, GridRow, Segment } from 'semantic-ui-react'
-import { default as PickRosterFileComponent } from "./PickRosterFileComponent";
-import { default as DisplayRosterDetailsComponent  } from "./DisplayRosterDetailsComponent"
-import { default as ErrorMessageComponent } from "./ErrorMessageComponent";
-import { Table, Header, HeaderCell, Row } from 'semantic-ui-react';
-import ReactDOM from 'react-dom';
+
+
 import {
 	BrowserRouter as Router,
 	Switch,
@@ -21,11 +17,12 @@ import {
 } from "react-router-dom";
 
 
+
 const CourseCardComponent = (props) => {
 	return(
 		<Card style={{marginLeft:"10rem", marginTop:"10rem"}} key={`${props.courseCode}-card`}>
 			<Card.Content>
-				<UpdateCourseComponent 
+				<UpdateCourseComponent
 					{...props}
 				/>
 				<Card.Header>{props.courseName}</Card.Header>
@@ -241,7 +238,7 @@ class DisplayCourseComponent extends React.Component {
 	render() {
 		this.filePickerRef = React.createRef();
 		console.log("this.state.redirectTo",this.state.redirectTo);
-		if (this.state.redirectTo === "courseDetails"){
+		if (this.state.redirectTo == "courseDetails"){
 			return (
 				<Grid>
 					{this.state.courseCards || <Segment>{"No Courses Found"}</Segment>}
@@ -250,14 +247,24 @@ class DisplayCourseComponent extends React.Component {
 					</Grid.Row>
 					<ErrorMessageComponent ref={this.errorMessageRef} open={this.state.errorMessageModalOpen} errorMessage={this.state.errorMessage} closeModal={() => this.setState({errorMessageModalOpen:false})}/>
 				</Grid>)
-		}else if(this.state.redirectTo === "viewDownloadedRoster"){
+		}else if(this.state.redirectTo == "viewDownloadedRoster"){
 			return <Redirect push={true} to="/professor/1/course/1/roster/9"/>
-		}else if (this.state.redirectTo === "viewUploadedRoster"){
-			<Redirect push={true} to={{ pathname:"/professor/1/course/chooseroster/view", state : { header:this.state.fileHeaderFieldsArray, data:this.state.fileValueObjects}  }} />
+		}else if (this.state.redirectTo == "viewUploadedRoster"){
+			// return <Redirect push={true} to="/professor/1/course/1/roster/9"/>
+			return <Redirect push={true} to={{ pathname:"/professor/1/course/chooseroster/view", state : { header:this.state.fileHeaderFieldsArray, data:this.state.fileValueObjects}  }} />
 		}else{
 			return <Button fluid>No Value Set for this.state.redirectTo</Button>
 		}
-		return null;
+		console.log("WE ARE SOME HOW HERE")
+		return (
+			<Grid>
+				{this.state.courseCards || <Segment>{"No Courses Found"}</Segment>}
+				<Grid.Row>
+						<CreateNewCourseComponent />
+				</Grid.Row>
+				<ErrorMessageComponent ref={this.errorMessageRef} open={this.state.errorMessageModalOpen} errorMessage={this.state.errorMessage} closeModal={() => this.setState({errorMessageModalOpen:false})}/>
+			</Grid>
+		)
 	}
 }
 
