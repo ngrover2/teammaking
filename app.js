@@ -3,6 +3,7 @@ var mysql = require('mysql');
 var app = express();
 var cors = require('cors');
 var { resolve, reject } =  Promise;
+var moment = require("moment");
 
 
 app.use(cors({
@@ -46,7 +47,171 @@ const getDbConnection = () => {
     return getConnection
 }
 
+const saveCourseForProfessor = async function (req, res, next){
+    const courseName = req.body.course_name;
+    const courseDesc = req.body.course_description;
+    const courseCode = req.body.course_code;
+    const professorId = req.body.professor_id;
+    const taName = req.body.ta_name;
+    const taEmail = req.body.ta_email;
+    const startDate = req.body.start_date;
+    const endDate = req.body.end_date;
+    // const startDateMomentObj = startDate ? moment(startDate) : null; // Not required but may be useful in the future
+    // const endDateMomentObj = endDate ? moment(endDate) : null; // Not required but may be useful in the future
+    const classStartTime = req.body.class_start_time;
+    const classEndTime = req.body.class_end_time;
+
+    // console.log("start_date", moment(startDate)); // Not required but may be useful in the future
+
+    // res.json({
+    //     status:"ok",
+    //     professor_id: professorId, // Hardcoded now, will change later when it is received dynamically
+    //     course_code: courseCode,
+    //     course_name: courseName,
+    //     course_description: courseDesc,
+    //     ta_name: taName,
+    //     ta_email: taEmail,
+    //     start_date: startDate,
+    //     end_date: endDate,
+    //     class_start_time: classStartTime,
+    //     class_end_time: classEndTime
+    // }) // DEBUG
+
+    function validateString(s){
+        return (typeof(s) == 'string' && s.length > 0)
+    }
+    function validatePositiveNumber(n){
+        return (typeof(n) == 'number' && n > 0)
+    }
+    
+    if (!validateString(courseName)){
+        res.json({
+            status:"error",
+            "reason":"course_name should be a valid text(string) value",
+            "error_code":"SCFP1CN"
+        })
+    }
+    if(!validateString(courseDesc)){
+        res.json({
+            status:"error",
+            "reason":"course_description should not be empty and be a valid text(string) value",
+            "error_code":"SCFP1CD"
+        })
+    }
+    if(!validateString(courseCode)){
+        res.json({
+            status:"error",
+            "reason":"course_code should not be empty and be a valid text(string) value",
+            "error_code":"SCFP1CC"
+        })
+    }
+    if(!validatePositiveNumber(professorId)){
+        res.json({
+            status:"error",
+            "reason":"professor_id should be a valid positive number(integer)",
+            "error_code":"SCFP1PI"
+        })
+    }
+    if(!validateString(taEmail)){
+        res.json({
+            status:"error",
+            "reason":"ta_email should not be empty and be a valid email value",
+            "error_code":"SCFP1TE"
+        })
+    }
+    if(!validateString(taName)){
+        res.json({
+            status:"error",
+            "reason":"ta_name should not be empty and be a valid text(string) value",
+            "error_code":"SCFP1TN"
+        })
+    }
+
+    let connection = getDbConnection();
+    // check professor exists
+    checkProfessorQuery = "SELECT professor_id FROM Professor P WHERE ?? = ?"
+    checkProfessorQueryIdentifiers = ['P.professor_id']
+    checkProfessorQueryValues = [ professorId ]
+    checkProfessorQuerySql = mysql.format(checkProfessorQuery, [checkProfessorQueryIdentifiers, checkProfessorQueryValues])
+    let checkProfessorResults = await executeOnDBWithPromise(connection, checkProfessorQuerySql )
+    if (checkProfessorResults){
+        if (checkProfessorResults[0]){
+            if (!checkProfessorResults[0].professor_id){
+                res.json({
+                    status:"error",
+                    "reason":`professor with professor_id ${professorId} does not exist in the database`,
+                    "error_code":"SCFP1PNE"
+                })      
+            }
+        }
+    }
+
+    // Check if a course already exists with the same course code
+    checkCourseQuery = "SELECT course_id FROM Course C WHERE ?? = ? AND ?? = ?"
+    checkCourseQueryArgs = ['C.professor_id', professorId, 'C.course_code', courseCode]
+    checkCourseQuerySql = mysql.format(checkCourseQuery, checkCourseQueryArgs)
+    let checkCourseResults = await executeOnDBWithPromise(connection, checkCourseQuerySql);
+    if (checkCourseResults && checkCourseResults.length > 0){
+        if (checkCourseResults[0].course_id){
+            res.json({
+                status:"error",
+                "reason":`A course with the course code:${courseCode} already exists in the database`,
+                "error_code":"SCFP1CAE"
+            })      
+            return
+        }
+    }
+
+    try{
+        createCourseQuery = "INSERT INTO Course (??) VALUES (?)"
+        createCourseQueryIdentifiers = [
+            'professor_id', 
+            'course_code', 
+            'course_name', 
+            'course_desc', 
+            'start_date', 
+            'end_date', 
+            'timings_start', 
+            'timings_end',
+            'ta_name',
+            'ta_email'
+        ]
+        createCourseQueryValues = [ 
+            professorId, 
+            courseCode, 
+            courseName, 
+            courseDesc, 
+            startDate, 
+            endDate, 
+            classStartTime, 
+            classEndTime,
+            taName,
+            taEmail
+        ]
+        createCourseQuerySql = mysql.format(createCourseQuery, [createCourseQueryIdentifiers, createCourseQueryValues]);
+        console.log("createCourseQuerySql", createCourseQuerySql)
+        let courseCreateResults = await executeOnDBWithPromise(connection, createCourseQuerySql);
+        if (courseCreateResults && courseCreateResults.affectedRows > 0){
+            res.json({
+                status:"ok",
+                "result":[],
+                "count": -1
+            })
+        }
+    }catch(error){
+        res.json({
+            status:"error",
+            "reason":error.message,
+            "errorFull": JSON.stringify(error),
+            "error_code":"SCFP1CCE"
+        })
+    }
+
+
+}
+
 const saveCSV = async function(req, res, next){
+    // console.log(JSON.stringify(req.body)); //DEBUG
     const header = req.body.header_row;
     const data_rows = req.body.data_rows;
     const course_code = 'CC1234';
@@ -179,8 +344,8 @@ const saveCSV = async function(req, res, next){
                                         let col4Vals = []
                                         let col5Vals = []
                                         if(header[0].multi){
-                                            // console.log(`row${i} 0: `, data_rows[i][0]) // DEBUG
-                                            data_rows[i][0].split(",").foreach(element => {
+                                            console.log(`row${i} 0: `, data_rows[i][0].split(",")) // DEBUG
+                                            data_rows[i][0].split(",").forEach(element => {
                                                 col1Vals.push([element.replace(/^\s+|\s+$/g, '') , insertedRosterRowId])
                                             });
                                         }else{
@@ -189,7 +354,7 @@ const saveCSV = async function(req, res, next){
                                         }
                                         if(header[1].multi){
                                             // console.log(`row${i} 1: `, data_rows[i][0]) // DEBUG
-                                            data_rows[i][1].split(",").foreach(element => {
+                                            data_rows[i][1].split(",").forEach(element => {
                                                 col2Vals.push([element.replace(/^\s+|\s+$/g, '') , insertedRosterRowId])
                                             });
                                         }else{
@@ -197,7 +362,7 @@ const saveCSV = async function(req, res, next){
                                             col2Vals.push([col2Data , insertedRosterRowId])
                                         }
                                         if(header[2].multi){
-                                            data_rows[i][2].split(",").foreach(element => {
+                                            data_rows[i][2].split(",").forEach(element => {
                                                 col3Vals.push([element.replace(/^\s+|\s+$/g, '') , insertedRosterRowId])
                                             });
                                         }else{
@@ -205,8 +370,6 @@ const saveCSV = async function(req, res, next){
                                             col3Vals.push([col3Data , insertedRosterRowId])
                                         }
                                         if(header[3].multi){
-                                            // console.log(`row${i} 3: `, data_rows[i][3]);
-                                            // console.log(`row${i} 3: `, data_rows[i]);
                                             // console.log(`row${i} split: ` , data_rows[i][3].split(",")) // DEBUG
                                             data_rows[i][3].split(",").forEach(element => {
                                                 col4Vals.push([element.replace(/^\s+|\s+$/g, '') , insertedRosterRowId])
@@ -216,7 +379,7 @@ const saveCSV = async function(req, res, next){
                                             col4Vals.push([col4Data , insertedRosterRowId])
                                         }
                                         if(header[4].multi){
-                                            data_rows[i][4].split(",").foreach(element => {
+                                            data_rows[i][4].split(",").forEach(element => {
                                                 col5Vals.push([element.replace(/^\s+|\s+$/g, '') , insertedRosterRowId])
                                             });
                                         }else{
@@ -269,13 +432,11 @@ const saveCSV = async function(req, res, next){
                         }
                     }
                 }
-                if (connection && connection.end) connection.end();
                 res.json({
                     status: "error",
                     reason: "Data could not be created, please try again.",
                 });
             }catch(error){
-                if (connection && connection.end) connection.end();
                 console.log(error)
                 res.json({
                     status:"error",
@@ -285,13 +446,14 @@ const saveCSV = async function(req, res, next){
             }
         }
     }catch(error){
-        if (connection && connection.end) connection.end();
         console.log(error)
         return res.json({
             status:"error",
             error:error.message,
             errorFull:JSON.stringify(error)
         })
+    }finally{
+        if (connection && connection.end) connection.end();
     }
 }
 
@@ -302,13 +464,14 @@ const getRosterById = async function(req, res, next){
             status:"error",
             reason:"roster_id not present in request"
         })
+        return
     }
-    let connection = getDbConnection();
+
+    let connection = null;
     try{
+        connection = getDbConnection();
         getRosterResultsQuery = " \
             SELECT \
-                RH.roster_id, \
-                0 row_id, \
                 RH.col1_name, \
                 RH.col2_name, \
                 RH.col3_name, \
@@ -325,8 +488,6 @@ const getRosterById = async function(req, res, next){
                 RH.roster_id = ? \
             UNION \
             SELECT \
-                R.roster_id, \
-                RR.roster_row_id row_id, \
                 GROUP_CONCAT(DISTINCT RC1.value ORDER BY RC1.value desc SEPARATOR ',') AS col1_value, \
                 GROUP_CONCAT(DISTINCT RC2.value ORDER BY RC2.value desc SEPARATOR ',') AS col2_value, \
                 GROUP_CONCAT(DISTINCT RC3.value ORDER BY RC3.value desc SEPARATOR ',') AS col3_value, \
@@ -352,7 +513,8 @@ const getRosterById = async function(req, res, next){
                 LEFT JOIN RowColumnTen RC10 ON RR.roster_row_id = RC10.roster_row_id \
             WHERE \
                 R.roster_id = ? \
-            GROUP BY row_id; \
+            GROUP BY \
+                RR.roster_row_id \
             "
 
         let rosterResults = await executeOnDBWithPromise(connection, mysql.format(getRosterResultsQuery, [roster_id, roster_id]))
@@ -363,28 +525,45 @@ const getRosterById = async function(req, res, next){
         hasHeader = false;
         if (rosterResults){
             console.log(rosterResults instanceof Array);
-            rosterResults.forEach((result) => {
-                console.log("result", Object.assign({}, result));
-                if (result.row_id == 0){
-                    hasHeader = true;       
-                    header.push(result);
+            rosterResults.forEach((result, idx) => {
+                // console.log("result", Object.assign({}, result));
+                if (idx == 0){
+                    let idx = 0
+                    for(var property in result){
+                        if (result[property] != null){
+                            header[idx] = result[property]
+                        }
+                        idx++;
+                    }
+                    // header.push(result);
+                    // console.log(header)
+                    hasHeader = true;
                     return
+                }else{
+                    if (hasHeader){
+                        let tmp = {}
+                        let sidx = 0
+                        for(var property in result){
+                            if (header[sidx] != null){
+                                tmp[header[sidx]] = result[property]
+                            }
+                            sidx++;
+                        }
+                        rosterData.push(tmp)
+                    }
                 }
-                rosterData.push(result)
             })
-            if (connection && connection.end) connection.end();
             res.json({
                 status:"ok",
                 results:{
                     data: rosterData,
-                    header: header
+                    header: hasHeader ? header : []
                 },
                 count:rosterData.length
             })
         }
         // throw Error("No roster found with this id")
     }catch(error){
-        if (connection && connection.end) connection.end();
         res.json({
             status:"error",
             reason:error.message,
@@ -395,12 +574,210 @@ const getRosterById = async function(req, res, next){
             },
             count:-1
         })
+    }finally{
+        if (connection && connection.end) connection.end();
     }
 }
 
+const getCoursesByProfessorId = async function(req, res, next){
+    const professorId = req.body.professor_id;
+    if (professorId == null){
+        res.json({
+            status:"error",
+            reason:"professor_id not present in request"
+        })
+        return
+    }
+
+    let connection = getDbConnection();
+    // check courses created by this professor's id
+    try{
+        getCoursesQuery = "SELECT C.* FROM Course C WHERE ?? = ?"
+        getCoursesQueryIdentifiers = ['C.professor_id']
+        getCoursesQueryValues = [ professorId ]
+        getCoursesQuerySql = mysql.format(getCoursesQuery, [getCoursesQueryIdentifiers, getCoursesQueryValues])
+        let getCoursesResults = await executeOnDBWithPromise(connection, getCoursesQuerySql )
+        if (getCoursesResults){
+            res.json({
+                status:"ok",
+                "result":getCoursesResults,
+                "count":getCoursesResults.length
+            })
+        }else{
+            res.json({
+                status:"ok",
+                "result":[],
+                "count":0
+            })
+        }
+    }catch(error){
+        res.json({
+            status: "error",
+            "reason": error.message,
+            "errorFull": JSON.stringify(error),
+            "errorCode": "GCP1SQE"
+        })
+    }finally{
+        if (connection && connection.end) connection.end()
+    }
+}
+
+
+const updateCourseById = async function(req, res, next){
+    const courseId = req.body.course_id;
+    const courseName = req.body.course_name;
+    const courseDesc = req.body.course_description;
+    const courseCode = req.body.course_code;
+    const professorId = req.body.professor_id;
+    const taName = req.body.ta_name;
+    const taEmail = req.body.ta_email;
+    const startDate = req.body.start_date;
+    const endDate = req.body.end_date;
+    const classStartTime = req.body.class_start_time;
+    const classEndTime = req.body.class_end_time;
+
+    if (courseId == null){
+        res.json({
+            status:"error",
+            "error":"course_id not present in body"
+        })
+        return
+    }
+
+    function validateString(s){
+        return (typeof(s) == 'string' && s.length > 0)
+    }
+    function validatePositiveNumber(n){
+        return (typeof(n) == 'number' && n > 0)
+    }
+    
+    if (!validateString(courseName)){
+        res.json({
+            status:"error",
+            "reason":"course_name should be a valid text(string) value",
+            "error_code":"SCFP1CN"
+        })
+        return
+    }
+    if(!validateString(courseDesc)){
+        res.json({
+            status:"error",
+            "reason":"course_description should not be empty and be a valid text(string) value",
+            "error_code":"SCFP1CD"
+        })
+        return
+    }
+    if(!validateString(courseCode)){
+        res.json({
+            status:"error",
+            "reason":"course_code should not be empty and be a valid text(string) value",
+            "error_code":"SCFP1CC"
+        })
+        return
+    }
+    if(!validatePositiveNumber(professorId)){
+        res.json({
+            status:"error",
+            "reason":"professor_id should be a valid positive number(integer)",
+            "error_code":"SCFP1PI"
+        })
+        return
+    }
+    if(!validateString(taEmail)){
+        res.json({
+            status:"error",
+            "reason":"ta_email should not be empty and be a valid email value",
+            "error_code":"SCFP1TE"
+        })
+        return
+    }
+    if(!validateString(taName)){
+        res.json({
+            status:"error",
+            "reason":"ta_name should not be empty and be a valid text(string) value",
+            "error_code":"SCFP1TN"
+        })
+        return
+    }
+
+    let connection = getDbConnection();
+
+    // Check if a course already exists with the same course code
+    checkCourseQuery = "SELECT course_id FROM Course C WHERE ?? = ? AND ?? = ?"
+    checkCourseQueryArgs = ['C.professor_id', professorId, 'C.course_code', courseCode]
+    checkCourseQuerySql = mysql.format(checkCourseQuery, checkCourseQueryArgs)
+    let checkCourseResults = await executeOnDBWithPromise(connection, checkCourseQuerySql);
+    if (checkCourseResults && checkCourseResults.length > 0){
+        if (checkCourseResults[0].course_id){
+            try{
+                createCourseQuery = "UPDATE Course SET ?? = ? , ?? = ? , ?? = ? , ?? = ? , ?? = ? , ?? = ? , ?? = ? , ?? = ? , ?? = ? , ?? = ? WHERE ?? = ?"
+                createCourseQueryArgs = [
+                    'professor_id', 
+                    professorId, 
+                    'course_code', 
+                    courseCode, 
+                    'course_name', 
+                    courseName, 
+                    'course_desc', 
+                    courseDesc, 
+                    'start_date', 
+                    startDate, 
+                    'end_date', 
+                    endDate, 
+                    'timings_start', 
+                    classStartTime, 
+                    'timings_end',
+                    classEndTime,
+                    'ta_name',
+                    taName,
+                    'ta_email',
+                    taEmail,
+                    'course_id',
+                    courseId,
+                ]
+                createCourseQuerySql = mysql.format(createCourseQuery, createCourseQueryArgs);
+                console.log("createCourseQuerySql", createCourseQuerySql);
+                let courseCreateResults = await executeOnDBWithPromise(connection, createCourseQuerySql);
+                if (courseCreateResults && courseCreateResults.affectedRows > 0){
+                    res.json({
+                        status:"ok",
+                        "result":[],
+                        "count": -1,
+                        "action":"updated"
+                    })
+                    return
+                }
+            }catch(error){
+                res.json({
+                    status:"error",
+                    "reason":error.message,
+                    "errorFull": JSON.stringify(error),
+                    "error_code":"SCFP1CCE"
+                })
+                return
+            }
+        
+            
+        }else{
+            res.json({
+                status:"error",
+                "reason":`The course with the course code:${courseCode} does not exist in the database`,
+                "error_code":"SCFP1CNE"
+            })  
+            return    
+        }
+    }
+    
+
+}
+
+app.post("/professor/:id/course/save", saveCourseForProfessor);
+
+app.post("/professor/:id/course", getCoursesByProfessorId);
+
 app.post("/professor/:id/course/:id/roster/save", saveCSV);
 
-app.get("professor/:id/course/:id/roster/:id", getRosterById);
+app.post("/professor/:id/course/:id/roster/:id", getRosterById);
 
-app.get("/professor/:id/course", (req, res, next)=> { return res.json({"status":"ok"})});
+app.post("/professor/:id/course/:id/update", updateCourseById)
 
