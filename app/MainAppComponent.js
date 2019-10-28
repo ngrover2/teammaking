@@ -8,7 +8,7 @@ import {
   } from "react-router-dom";
 
 import {default as DisplayCourseComponent} from "./DisplayCourseComponent";
-import {default as RosterDetails} from "./DisplayRosterDetailsComponent";
+import {default as RosterDetails} from "./DisplaySavedRosterComponent";
 import {default as DisplayPickedFile} from "./DisplayPickedFile";
 import { Table, Header, Cell } from 'semantic-ui-react';
 import {default as SurveyFormQuestionComponent} from "./SurveyFormQuestionComponent";
@@ -42,20 +42,20 @@ export default function MainAppComponent() {
             <Link to="/course"/>
             <Link to="/"/>
             <Switch>
-                <Route exact={true} path={`/course/roster/9`}>
+                <Route exact={true} path={`/professor/1/course/1/roster/9`}>
                     <RosterDetails>{headers}</RosterDetails>
                 </Route>
                 <Route 
                     exact={true} 
-                    path={"/course/survey/add"}>
+                    path={"/professor/1/course/survey/add"}>
                         <SurveyFormQuestionComponent />
                 </Route>
                 <Route 
                     exact={true} 
-                    path={"/course/chooseroster/view"}>
+                    path={"/professor/1/course/chooseroster/view"}>
                         <DisplayPickedFile />
                 </Route>
-                <Route exact={true}  path="/course">
+                <Route exact={true}  path="/professor/1/course">
                     <DisplayCourseComponent {...courseDetails}/>
                 </Route>
                 <Route path="/">
