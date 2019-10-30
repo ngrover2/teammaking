@@ -22,8 +22,6 @@ const AppHeaderComponent = (props) => {
 		backgroundColor:"black",
 		height:"inherit",
 		display:"inherit",
-		// marginLeft:"100px"
-		// alignItems:"center"
 	}
 	const hamburgerButtonStyle = {
 		height:"inherit",
