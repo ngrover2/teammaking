@@ -154,7 +154,7 @@ export default function CreateNewCourseComponent(props){
         {courseCreated && (<Redirect to={"professor/1/course"}/>)}
         {
             (<Modal 
-                trigger={<Button onClick={() => setOpen(true)} fluid>Create New Course</Button>}
+                trigger={<Button onClick={() => setOpen(true)} fluid style={{ background:"none", fontSize:"1.5rem", color:"white", border:"2px solid white", borderRadius:"7px" }}>Create New Course</Button>}
                 open={open}
             >
                 <Modal.Header>
