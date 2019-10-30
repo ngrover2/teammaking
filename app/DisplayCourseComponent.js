@@ -5,7 +5,7 @@ import { default as UpdateCourseComponent} from "./UpdateCourseComponent";
 import { default as PickRosterFileComponent } from "./PickRosterFileComponent";
 import { default as ErrorMessageComponent } from "./ErrorMessageComponent";
 
-import { Button, Card, Image, Grid, GridRow, Segment } from 'semantic-ui-react'
+import { Button, Card, Image, Grid, GridRow, Segment, GridColumn } from 'semantic-ui-react'
 
 
 import {
@@ -16,11 +16,23 @@ import {
 	Redirect
 } from "react-router-dom";
 
-
+const NoCoursesCardComponent = (props) => {
+	return(
+		<Card style = {{ minWidth:"400px"}}>
+			<Card.Content>
+				<Card.Header>{props.header || "No course defined yet"}</Card.Header>
+				<Card.Meta>{!props.header && "No Courses"}</Card.Meta>
+				<Card.Description>
+						{props.description || "Click on create new Course Button below to create your first course!"}
+				</Card.Description>
+			</Card.Content>
+		</Card>
+	);
+}
 
 const CourseCardComponent = (props) => {
 	return(
-		<Card style={{marginLeft:"10rem", marginTop:"10rem"}} key={`${props.courseCode}-card`}>
+		<Card style={{height:'250px'}} key={`${props.courseCode}-card`}>
 			<Card.Content>
 				<UpdateCourseComponent
 					{...props}
@@ -50,7 +62,6 @@ const CourseCardComponent = (props) => {
 					<PickRosterFileComponent passSelectedFile={props.getRosterFile} />
 				</div>
 			</Card.Content>
-			{/*<ErrorMessageComponent ref={props.errorMessageRef} open={props.errorMessageModalOpen} errorMessage={props.errorMessage} closeModal={props.closeModal}/>*/}
 		</Card>
 	)
 }
@@ -69,7 +80,8 @@ class DisplayCourseComponent extends React.Component {
 				errorMessageModalOpen:false,
 				errorMessage:"",
 				"courses":[],
-				courseCards:undefined
+				courseCards:undefined,
+				"getCoursesRequestSucceeded":false
 		}
 	}
 
@@ -148,7 +160,6 @@ class DisplayCourseComponent extends React.Component {
 	}
 
 	setViewRosterRedirect(str){
-		// this.setState({redirectTo:"viewDownloadedRoster"})
 		console.log("Setting redirect to ", str)
 		this.setState({redirectTo:str})
 	}
@@ -159,7 +170,7 @@ class DisplayCourseComponent extends React.Component {
 			professor_id:1
 		}
 
-		// try{
+		try{
 			console.log("Trying to fetch response")
 			let response = await fetch("http://localhost:3000/professor/1/course",{
 				method: 'POST',
@@ -176,33 +187,43 @@ class DisplayCourseComponent extends React.Component {
 				if (responseJson.status == "ok"){
 					console.log("response status ok")
 					if (responseJson.result){
-						// console.log(responseJson)
-						this.setState({
-							courses:responseJson.result
-						}, () => this.setState({
-								courseCards: this.constructCards()
-							})
-						)
+						if (responseJson.result.length > 0){
+							this.setState({
+								courses:responseJson.result
+							}, () => this.setState({
+									getCoursesRequestSucceeded:true,
+									courseCards: this.constructCards()
+								})
+							)
+						}else{
+							this.setState({
+								getCoursesRequestSucceeded:true,
+								errorMessage:"No courses found. You probably have not created any courses yet.",
+								errorMessageModalOpen:true
+							})	
+						}
 					}else{
 						this.setState({
+							getCoursesRequestSucceeded:false,
 							errorMessage:"No courses found. You probably have not created any courses yet.",
 							errorMessageModalOpen:true
 						})	
 					}
 				}else{
 					this.setState({
+						getCoursesRequestSucceeded:false,
 						errorMessage:"Could not fetch courses at this time" + responseJson.error ? responseJson.error : "Error cause unknown",
 						errorMessageModalOpen:true
 					})
 				}
-			// }
-		// }catch(error){
-		// 	this.setState({
-		// 		errorMessage:"Error occurred while fetching courses.",
-		// 		errorMessageModalOpen:true
-		// 	})
-		// }
 			}
+		}catch(error){
+			this.setState({
+				getCoursesRequestSucceeded:false,
+				errorMessage:`Error occurred while fetching courses.\n${error.message}`,
+				errorMessageModalOpen:true
+			})
+		}
 	}
 
 	constructCards(){
@@ -212,8 +233,8 @@ class DisplayCourseComponent extends React.Component {
 			console.log("Creating courseCards")
 			this.state.courses.forEach((courseObj, idx)=>{
 				cards.push(
-					<GridRow key={`${courseObj.course_id}-row`}>
-						<CourseCardComponent
+						<CourseCardComponent 
+							key={`${courseObj.course_id}-row`}
 							courseCode={courseObj.course_code}
 							courseName={courseObj.course_name}
 							courseDescription={courseObj.course_desc}
@@ -227,7 +248,6 @@ class DisplayCourseComponent extends React.Component {
 							setViewRosterClick={this.setViewRosterRedirect}
 							getRosterFile={this.getRosterFile}
 						/>
-					</GridRow>
 				);
 			})
 		}
@@ -241,9 +261,20 @@ class DisplayCourseComponent extends React.Component {
 		if (this.state.redirectTo == "courseDetails"){
 			return (
 				<Grid>
-					{this.state.courseCards || <Segment>{"No Courses Found"}</Segment>}
+					<Grid.Row columns={16}>
+						<Card.Group itemsPerRow={4}>
+							{this.state.courseCards || 
+								(this.state.getCoursesRequestSucceeded && <NoCoursesCardComponent/>) || 
+								(this.state.getCoursesRequestSucceeded == true && this.state.courseCards != undefined && this.state.courseCards.length == 0 && <NoCoursesCardComponent header={"You have not created a course yet!"} description={"Click on the Create new button below to create your new course."}/>) ||
+								(!this.state.getCoursesRequestSucceeded && <NoCoursesCardComponent header={"Sorry! Courses could not be fetched"} description={"Please try refreshing the page or try again at a later time"}/>)}
+						</Card.Group>
+					</Grid.Row>
 					<Grid.Row>
+						<GridColumn width={6}/>
+						<GridColumn width={4}>
 							<CreateNewCourseComponent />
+						</GridColumn>
+						<GridColumn width={6}/>
 					</Grid.Row>
 					<ErrorMessageComponent ref={this.errorMessageRef} open={this.state.errorMessageModalOpen} errorMessage={this.state.errorMessage} closeModal={() => this.setState({errorMessageModalOpen:false})}/>
 				</Grid>)
