@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import React from 'react';
 import { Table, Header, HeaderCell, Row, Grid, Button, Input, Label, Tab, Checkbox } from 'semantic-ui-react';
-import { Redirect , useLocation } from 'react-router-dom';
+import { Redirect , useLocation, useParams, useHistory } from 'react-router-dom';
 import { default as MessageComponent } from './ErrorMessageComponent';
 
 const getEmptyStudentRow = () => (<Table.Row><Table.Cell>No Students in the roster</Table.Cell></Table.Row>)
@@ -12,6 +12,9 @@ const DisplayPickedFile = (props) => {
     console.log(state);
     const [ receivedHeader, setReceivedHeader ] = useState(state.header || []);
     const [ receivedStudents, setReceivedStudents ] = useState(state.data || []);
+    var history = useHistory();
+
+    const { cid } = useParams();
     
     // const [ headerEditable, setHeaderEditable ] = useState(false);
     const [ header, setHeader ] = useState([]);
@@ -23,7 +26,6 @@ const DisplayPickedFile = (props) => {
     const [ headerColumnsOldToNewNamesMapping, setHeaderColumnsOldToNewNamesMapping  ] = useState(mapping);
     
     const [ students, setStudents ] = useState([]);
-    const [ goBack, setGoBack ] = useState(false);
     const [ doUpload, setDoUpload ] = useState(false);
     const [ message, setMessage ] = useState("");
     const [ messageModalOpen, setMessageModalOpen ] = useState(false);
@@ -94,6 +96,7 @@ const DisplayPickedFile = (props) => {
             data_rows: studentArray,
             course_code:'CC1234', // Hardcoded now, will change later when it is received dynamically
             professor_name:'Harini Ramaprasad', // Hardcoded now, will change later when it is received dynamically
+            course_id:cid
         }
         console.log(postBody);
 
@@ -239,14 +242,16 @@ const DisplayPickedFile = (props) => {
         }
 
         try{
+            if (receivedHeader && receivedHeader.length < 1){
+                return (
+                    <Table.Row>
+                        {renderedHeader}
+                    </Table.Row>
+                );
+            }
             return (
                 <Table.Row>
-                    {/*constructHeader() ||
-                        <Table.HeaderCell singleLine>
-                            {"Header Undefined"}
-                        </Table.HeaderCell>
-                    */
-                    renderedHeader}
+                    {renderedHeader}
                     <Table.HeaderCell key="editRow">
                         <Button type="submit" active={headerEditable} onClick={()=> {
                                                     console.log("EDIT HEADER callled")
@@ -363,7 +368,6 @@ const DisplayPickedFile = (props) => {
         }
     };
     
-    if (goBack) return (<Redirect to="/course"></Redirect>)
     return (
         <Grid>
             <Grid.Row width={12}>
@@ -387,7 +391,7 @@ const DisplayPickedFile = (props) => {
             </Grid.Row>
             <Grid.Row>
                 <Grid.Column width={3}>
-                        <Button positive onClick={()=> setGoBack(true)}>Go Back</Button>
+                        <Button positive onClick={()=> history.goBack()}>Go Back</Button>
                 </Grid.Column>
                 <Grid.Column width={3}>
                         <Button positive onClick={()=> setUploadAttemptId(uploadAttemptId+1)}>Upload</Button>

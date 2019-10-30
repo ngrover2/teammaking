@@ -45,7 +45,7 @@ const CourseCardComponent = (props) => {
 			</Card.Content>
 			<Card.Content extra>
 				<div className='ui two buttons'>
-					<Button basic color='green' onClick={() => props.setViewRosterClick("viewDownloadedRoster")}>
+					<Button basic color='green' onClick={() => props.setViewRosterClick("viewDownloadedRoster", props.courseId, props.rosterId)}>
 						View Roster
 					</Button>
 					<Button basic color='red' onClick={() => {
@@ -59,7 +59,7 @@ const CourseCardComponent = (props) => {
 					}>
 						Import Roster
 					</Button>
-					<PickRosterFileComponent passSelectedFile={props.getRosterFile} />
+					<PickRosterFileComponent passSelectedFile={(fileObj) => props.getRosterFile(fileObj, props.courseId)} />
 				</div>
 			</Card.Content>
 		</Card>
@@ -69,7 +69,9 @@ const CourseCardComponent = (props) => {
 
 class DisplayCourseComponent extends React.Component {
 	constructor(props){
+    	const professor_id = props.match.params.pid;
 		super(props)
+		this.professor_id = props.match.params.pid;
 		this.errorMessageRef = React.createRef();
 		this.getRosterFile = this.getRosterFile.bind(this);
 		this.setViewRosterRedirect = this.setViewRosterRedirect.bind(this);
@@ -79,13 +81,15 @@ class DisplayCourseComponent extends React.Component {
 				redirectTo:"courseDetails",
 				errorMessageModalOpen:false,
 				errorMessage:"",
-				"courses":[],
+				courses:[],
 				courseCards:undefined,
-				"getCoursesRequestSucceeded":false
+				getCoursesRequestSucceeded:false,
+				selectedCourseId:0,
+				selectedRosterId:0
 		}
 	}
 
-	getRosterFile(fileObj){
+	getRosterFile(fileObj, courseId){
 		if (fileObj) this.setState({selectedFile:fileObj.name}, () => console.log(`Selected: ${fileObj.name}`));
 		let fileReader = new FileReader();
 		try{
@@ -122,7 +126,11 @@ class DisplayCourseComponent extends React.Component {
 							this.setState({
 								fileHeaderFieldsArray:headerFields,
 								fileValueObjects:valueObjects
-							}, () => {this.setState({redirectTo:"viewUploadedRoster"});console.log("Redirect set") });
+							}, () => {this.setState({
+												selectedCourseId:courseId
+										}, () => this.setState({redirectTo:"viewUploadedRoster"}))
+									}
+							);
 						}else{
 							// this.setState({errorMessage: `HeaderLength:${headerSplitLength} while data length: ${valueObjectSplitLength}`, errorMessageModalOpen:true},() => this.errorMessageRef.current.ref.current.click());
 							// this.setState({
@@ -156,23 +164,38 @@ class DisplayCourseComponent extends React.Component {
 	}
 
 	componentDidMount(){
-		this.getCourses()
+		if(this.props.match.params.pid){
+			this.getCourses()
+		}else{
+			this.setState({
+				getCoursesRequestSucceeded: false,
+				errorMessage: "Could not ascertain the professor identity from the url",
+				errorMessageModalOpen:true
+			})
+			console.log("professor id is undefined or falsy", this.props)
+		}
 	}
 
-	setViewRosterRedirect(str){
+	setViewRosterRedirect(str, courseId, rosterId){
 		console.log("Setting redirect to ", str)
-		this.setState({redirectTo:str})
+		this.setState({
+			selectedCourseId:courseId,
+			selectedRosterId:rosterId
+		},()=> this.setState({
+				redirectTo:str
+			})
+		);
 	}
 	
 	async getCourses(){
 		console.log("getCourses called")
 		let requestBody = {
-			professor_id:1
+			professor_id:this.professor_id
 		}
 
 		try{
 			console.log("Trying to fetch response")
-			let response = await fetch("http://localhost:3000/professor/1/course",{
+			let response = await fetch(`http://localhost:3000/professor/${this.professor_id}/course`,{
 				method: 'POST',
 				headers:{
 					'Content-Type': 'application/json'
@@ -235,6 +258,7 @@ class DisplayCourseComponent extends React.Component {
 				cards.push(
 						<CourseCardComponent 
 							key={`${courseObj.course_id}-row`}
+							professorId={this.professor_id}
 							courseCode={courseObj.course_code}
 							courseName={courseObj.course_name}
 							courseDescription={courseObj.course_desc}
@@ -245,6 +269,7 @@ class DisplayCourseComponent extends React.Component {
 							courseId={courseObj.course_id}
 							tAEmail={courseObj.ta_email}
 							tAName={courseObj.ta_name}
+							rosterId={courseObj.roster_id}
 							setViewRosterClick={this.setViewRosterRedirect}
 							getRosterFile={this.getRosterFile}
 						/>
@@ -262,7 +287,7 @@ class DisplayCourseComponent extends React.Component {
 			return (
 				<Grid>
 					<Grid.Row columns={16}>
-						<Card.Group itemsPerRow={4}>
+						<Card.Group itemsPerRow={4} style={{ width:"inherit"}}>
 							{this.state.courseCards || 
 								(this.state.getCoursesRequestSucceeded && <NoCoursesCardComponent/>) || 
 								(this.state.getCoursesRequestSucceeded == true && this.state.courseCards != undefined && this.state.courseCards.length == 0 && <NoCoursesCardComponent header={"You have not created a course yet!"} description={"Click on the Create new button below to create your new course."}/>) ||
@@ -279,10 +304,9 @@ class DisplayCourseComponent extends React.Component {
 					<ErrorMessageComponent ref={this.errorMessageRef} open={this.state.errorMessageModalOpen} errorMessage={this.state.errorMessage} closeModal={() => this.setState({errorMessageModalOpen:false})}/>
 				</Grid>)
 		}else if(this.state.redirectTo == "viewDownloadedRoster"){
-			return <Redirect push={true} to="/professor/1/course/1/roster/9"/>
+			return <Redirect push={true} to={`/professor/${this.professor_id}/course/${this.state.selectedCourseId}/roster/${this.state.selectedRosterId}`}/>
 		}else if (this.state.redirectTo == "viewUploadedRoster"){
-			// return <Redirect push={true} to="/professor/1/course/1/roster/9"/>
-			return <Redirect push={true} to={{ pathname:"/professor/1/course/chooseroster/view", state : { header:this.state.fileHeaderFieldsArray, data:this.state.fileValueObjects}  }} />
+			return <Redirect push={true} to={{ pathname:`/professor/${this.professor_id}/course/${this.state.selectedCourseId}/chooseroster/view`, state : { header:this.state.fileHeaderFieldsArray, data:this.state.fileValueObjects}  }} />
 		}else{
 			return <Button fluid>No Value Set for this.state.redirectTo</Button>
 		}
@@ -290,22 +314,3 @@ class DisplayCourseComponent extends React.Component {
 }
 
 export default DisplayCourseComponent;
-
-// return (
-// 		(this.state.redirectTo === "courseDetails" && (
-// 			<Grid>
-// 				{this.state.courseCards || <Segment>{"No Courses Found"}</Segment>}
-// 				<Grid.Row>
-// 						<CreateNewCourseComponent />
-// 				</Grid.Row>
-// 			</Grid>))
-// 			||
-// 		(this.state.redirectTo === "viewDownloadedRoster" && (
-// 				<Redirect push={true} to="/professor/1/course/1/roster/9"/>
-// 		))
-// 			||
-// 		(this.state.redirectTo === "viewUploadedRoster" && (
-// 				<Redirect push={true} to={{ pathname:"/professor/1/course/chooseroster/view", state : { header:this.state.fileHeaderFieldsArray, data:this.state.fileValueObjects}  }} />
-// 		))
-// 		(<ErrorMessageComponent ref={this.errorMessageRef} open={this.state.errorMessageModalOpen} errorMessage={this.state.errorMessage} closeModal={() => this.setState({errorMessageModalOpen:false})}/>)    
-// );

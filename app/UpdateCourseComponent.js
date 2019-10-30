@@ -20,6 +20,10 @@ export default function UpdateCourseComponent(props){
     const [ formRef ] = useState(React.createRef());
     const [ formSubmittedId, setFormSubmittedId ] = useState(0);
     // console.log(props)
+    const pid = props.professorId;
+    const cid = props.courseId;
+
+
     var clsStartTime = null;
     if (props.classStartTime){
         let clsStartTimeHour = parseInt(props.classStartTime.split(":")[0])
@@ -135,7 +139,7 @@ export default function UpdateCourseComponent(props){
             "course_description": courseDesc,
             "ta_name": tAName,
             "ta_email": tAEmail,
-            "professor_id": 1,
+            "professor_id": pid,
             "start_date": moment(startDate).utc().format("YYYY-MM-DD HH:mm:ss"),
             "end_date": moment(endDate).utc().format("YYYY-MM-DD HH:mm:ss"),
             // "class_start_time": (classStartTime instanceof Date) ?  moment(classStartTime).format("HH:mm:ss") : classStartTime + ":00",
@@ -144,7 +148,7 @@ export default function UpdateCourseComponent(props){
             "class_end_time": (classEndTime instanceof Date) ? props.classEndTime : (classEndTime ? classEndTime + ":00" : null),
         }
         try{
-            let response = await fetch("http://localhost:3000/professor/1/course/update", {
+            let response = await fetch(`http://localhost:3000/professor/${pid}/course/${cid}/update`, {
                 method: 'POST',
                 headers:{
                     'Content-Type': 'application/json'
@@ -197,7 +201,7 @@ export default function UpdateCourseComponent(props){
 
     return (
         <div>
-        {courseCreated && (<Redirect to={"professor/1/course"}/>)}
+        {courseCreated && (<Redirect to={`professor/${pid}/course`}/>)}
         {
             (<Modal 
                 trigger={<Image 

@@ -20,6 +20,7 @@ export default function CreateNewCourseComponent(props){
     const [ open, setOpen ] = useState(false);
     const [ formRef ] = useState(React.createRef());
     const [ formSubmittedId, setFormSubmittedId ] = useState(0);
+    const pid = props.pid;
     
     const [ courseName, setCourseName ] = useState("");
     const [ courseCode, setCourseCode ] = useState("");
@@ -101,14 +102,14 @@ export default function CreateNewCourseComponent(props){
             "course_description": courseDesc,
             "ta_name": tAName,
             "ta_email": tAEmail,
-            "professor_id": 1,
+            "professor_id": pid,
             "start_date": startDate,
             "end_date": endDate,
             "class_start_time": classStartTime + ":00",
-            "class_end_time": classEndTime + ":00"
+            "class_end_time": classEndTime + ":00",
         }
         try{
-            let response = await fetch("http://localhost:3000/professor/1/course/save", {
+            let response = await fetch(`http://localhost:3000/professor/${pid}/course/save`, {
                 method: 'POST',
                 headers:{
                     'Content-Type': 'application/json'
@@ -151,7 +152,7 @@ export default function CreateNewCourseComponent(props){
 
     return (
         <div>
-        {courseCreated && (<Redirect to={"professor/1/course"}/>)}
+        {courseCreated && (<Redirect to={`professor/${pid}/course`}/>)}
         {
             (<Modal 
                 trigger={<Button onClick={() => setOpen(true)} fluid style={{ background:"none", fontSize:"1.5rem", color:"white", border:"2px solid white", borderRadius:"7px" }}>Create New Course</Button>}

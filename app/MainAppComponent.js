@@ -41,7 +41,7 @@ export default function MainAppComponent() {
     return (
         <div>
         <Router>
-            <Route path="/">
+            <Route path="/professor/:pid/">
                 <SidebarComponent setVisible={setSidebarVisible} visible={sidebarVisible} pushStyle={appBackGroundStyle}>
                     <Grid style={{ background:"inherit"}}>
                         <Grid.Row>
@@ -51,29 +51,37 @@ export default function MainAppComponent() {
                             <GridColumn width={1}/>
                             <GridColumn width={14}>
                                 <Switch>
-                                    <Route exact={true} path={`/professor/1/course/1/roster/9`}>
+                                    <Route exact={true} path={`/professor/:pid/course/:cid/roster/:rid`}>
                                         <RosterDetails>{headers}</RosterDetails>
                                     </Route>
                                     <Route 
                                         exact={true} 
-                                        path={"/professor/1/course/survey/add"}>
+                                        path={"/professor/:pid/course/:cid/survey/add"}>
                                             <SurveyFormQuestionComponent />
                                     </Route>
                                     <Route 
                                         exact={true} 
-                                        path={"/professor/1/course/chooseroster/view"}>
+                                        path={"/professor/:pid/course/:cid/chooseroster/view"}>
                                             <DisplayPickedFile />
                                     </Route>
-                                    <Route exact={true}  path="/professor/1/course">
-                                        <DisplayCourseComponent/>
-                                    </Route>
-                                    <Route path="/">
-                                        <DisplayCourseComponent/>
-                                    </Route>
-                                    <DisplayCourseComponent/>
+                                    <Route exact={true}  
+                                            path="/professor/:pid/course"
+                                            children = {({ match }) => <DisplayCourseComponent match={match}/>}
+                                    />
                                 </Switch>
                             </GridColumn>
                             <GridColumn width={1}/>
+                        </Grid.Row>
+                    </Grid>
+                </SidebarComponent>
+            </Route>
+            <Route path="/" exact={true} >
+                <SidebarComponent setVisible={setSidebarVisible} visible={sidebarVisible} pushStyle={appBackGroundStyle} pid={1}>
+                    <Grid style={{ background:"inherit"}}>
+                        <Grid.Row>
+                            <HeaderComponent setSidebarVisible={setSidebarVisible} pid={1}/>
+                        </Grid.Row>
+                        <Grid.Row>
                         </Grid.Row>
                     </Grid>
                 </SidebarComponent>

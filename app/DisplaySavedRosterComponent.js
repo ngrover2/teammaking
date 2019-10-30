@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import React from 'react';
 import { Table, Header, HeaderCell, Row, Grid, Button, Input, Label, Tab, Checkbox } from 'semantic-ui-react';
 import { default as MessageComponent } from './ErrorMessageComponent';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useParams, useHistory } from 'react-router-dom';
 
 const getEmptyStudentRow = () => (<Table.Row><Table.Cell>No Students in the roster</Table.Cell></Table.Row>)
 const getEmptyHeaderRow = () => (<Table.Row><Table.HeaderCell>No Header present in roster file</Table.HeaderCell></Table.Row>)
@@ -11,12 +11,14 @@ const DisplaySavedRosterComponent = (props) => {
     const [ receivedHeader, setReceivedHeader ] = useState(null);
     const [ receivedHeaderObj, setReceivedHeaderObj ] = useState(null);
     const [ receivedStudents, setReceivedStudents ] = useState([]);
+    const  history = useHistory();
     
     const [ header, setHeader ] = useState([]);
     const [ headerColumnsOldToNewNamesMapping, setHeaderColumnsOldToNewNamesMapping  ] = useState({});
+
+    const { rid, cid, pid } = useParams();
     
     const [ students, setStudents ] = useState([]);
-    const [ goBack, setGoBack ] = useState(false);
     const [ initialFetchId ] = useState(0);
     const [ message, setMessage ] = useState("");
     const [ messageModalOpen, setMessageModalOpen ] = useState(false);
@@ -33,9 +35,9 @@ const DisplaySavedRosterComponent = (props) => {
         console.log("useEffect called for fetchRoster called");
         async function fetchRoster(){
             let postBody = {
-                roster_id: 15,
+                roster_id: rid,
             }
-            var fetchStudents = await fetch("http://localhost:3000/professor/1/course/1/roster/9",{
+            var fetchStudents = await fetch(`http://localhost:3000/professor/1/course/1/roster/${rid}`,{
                 method: 'POST',
                 headers:{
                     'Content-Type': 'application/json'
@@ -160,6 +162,7 @@ const DisplaySavedRosterComponent = (props) => {
             data_rows: studentArray,
             course_code:'CC1234', // Hardcoded now, will change later when it is received dynamically
             professor_name:'Harini Ramaprasad', // Hardcoded now, will change later when it is received dynamically
+            course_id:cid
         }
         console.log(postBody);
 
@@ -302,6 +305,13 @@ const DisplaySavedRosterComponent = (props) => {
         }
 
         try{
+            if (receivedHeader && receivedHeader.length < 1){
+                return (
+                    <Table.Row>
+                        {renderedHeader}
+                    </Table.Row>
+                );
+            }
             return (
                 <Table.Row>
                     {renderedHeader}
@@ -416,7 +426,6 @@ const DisplaySavedRosterComponent = (props) => {
         }
     };
     
-    if (goBack) return (<Redirect to= "/professor/1/course" ></Redirect>)
     return (
         <Grid>
             <Grid.Row width={12}>
@@ -440,10 +449,10 @@ const DisplaySavedRosterComponent = (props) => {
             </Grid.Row>
             <Grid.Row>
                 <Grid.Column width={3}>
-                        <Button positive onClick={()=> setGoBack(true)}>Go Back</Button>
+                        <Button positive onClick={()=> history.goBack()}>Go Back</Button>
                 </Grid.Column>
                 <Grid.Column width={3}>
-                        <Button positive onClick={()=> setUploadAttemptId(uploadAttemptId+1)}>Upload</Button>
+                        <Button positive onClick={()=> {(receivedHeader && receivedHeader.length>0) ? setUploadAttemptId(uploadAttemptId+1) : 0}} disabled={(receivedHeader && receivedHeader.length>0) ? false : true}>Upload</Button>
                 </Grid.Column>
                 <MessageComponent ref={messageButtonRef} errorMessage={message} open={messageModalOpen} closeModal={() => setMessageModalOpen(false)}/>
             </Grid.Row>

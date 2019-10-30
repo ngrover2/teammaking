@@ -51,7 +51,7 @@ const saveCourseForProfessor = async function (req, res, next){
     const courseName = req.body.course_name;
     const courseDesc = req.body.course_description;
     const courseCode = req.body.course_code;
-    const professorId = req.body.professor_id;
+    const professorId = req.params.id;
     const taName = req.body.ta_name;
     const taEmail = req.body.ta_email;
     const startDate = req.body.start_date;
@@ -158,7 +158,7 @@ const saveCourseForProfessor = async function (req, res, next){
                 "reason":`A course with the course code:${courseCode} already exists in the database`,
                 "error_code":"SCFP1CAE"
             })      
-            return
+            return res
         }
     }
 
@@ -212,10 +212,10 @@ const saveCourseForProfessor = async function (req, res, next){
 
 const saveCSV = async function(req, res, next){
     // console.log(JSON.stringify(req.body)); //DEBUG
+    const professor_id = req.params.pid;
+    const course_id = req.params.cid;
     const header = req.body.header_row;
     const data_rows = req.body.data_rows;
-    const course_code = 'CC1234';
-    const professor_name = 'Harini Ramaprasad';
     // console.log(header); // DEBUG
     // console.log(data_rows) // DEBUG
     try{
@@ -248,13 +248,12 @@ const saveCSV = async function(req, res, next){
             }
 
             let connection = getDbConnection();
-            var course_id = null;
-            var profesor_id = null;
             var roster_id = null;
 
             // Get RosterId for the professor
-            getRosterQueryString = "SELECT R.roster_id, C.course_id, P.professor_id FROM Professor P LEFT JOIN Roster R USING (professor_id) LEFT JOIN Course C USING (professor_id) WHERE ?? = ? AND ?? = ?"
-            getRosterQueryArgs = ['P.name' , professor_name , 'C.course_code', course_code];
+            // getRosterQueryString = "SELECT R.roster_id, C.course_id, P.professor_id FROM Professor P LEFT JOIN Roster R USING (professor_id) LEFT JOIN Course C USING (professor_id) WHERE ?? = ? AND ?? = ?"
+            getRosterQueryString = "SELECT R.roster_id FROM Roster R WHERE ?? = ? AND ?? = ?"
+            getRosterQueryArgs = ['R.professor_id' , professor_id , 'R.course_id', course_id];
             getRosterSqlQuery = mysql.format(getRosterQueryString, getRosterQueryArgs);
             // console.log("getRosterSqlQuery", getRosterSqlQuery);
 
@@ -263,19 +262,13 @@ const saveCSV = async function(req, res, next){
                 if (queryResult){
                     // console.log(queryResult[0]) // DEBUG
                     let resultObj = queryResult[0];
-                    course_id = resultObj.course_id
-                    professor_id = resultObj.professor_id
                     roster_id = resultObj.roster_id
-                    if (!course_id){
-                        throw Error(`Coursecode:${course_code} does not exist in the database.`)
-                    }
-                    if (!professor_id){
-                        throw Error(`Professor:${professor_name} does not exist in the database.`)
-                    }
                     if (roster_id){
                         console.log("ROSTER EXISTS, DELETING")
                         await executeOnDBWithPromise(connection, mysql.format("DELETE FROM Roster WHERE ?? = ?",['roster_id', roster_id]));
                         await executeOnDBWithPromise(connection, mysql.format("DELETE FROM RosterHeaderRow WHERE ?? = ?",['roster_id', roster_id]));
+                    }else{
+                        throw Error(`No Roster exists for this course.`)
                     }
                     // create roster id
                     console.log("CREATING NEW ROSTER") // DEBUG
@@ -458,13 +451,14 @@ const saveCSV = async function(req, res, next){
 }
 
 const getRosterById = async function(req, res, next){
-    const roster_id = req.body.roster_id;
+    const roster_id = req.params.rid;
+    const course_id = req.params.cid;
     if (!roster_id){
         res.json({
             status:"error",
             reason:"roster_id not present in request"
         })
-        return
+        return res
     }
 
     let connection = null;
@@ -538,7 +532,7 @@ const getRosterById = async function(req, res, next){
                     // header.push(result);
                     // console.log(header)
                     hasHeader = true;
-                    return
+                    return res
                 }else{
                     if (hasHeader){
                         let tmp = {}
@@ -580,19 +574,19 @@ const getRosterById = async function(req, res, next){
 }
 
 const getCoursesByProfessorId = async function(req, res, next){
-    const professorId = req.body.professor_id;
+    const professorId = req.params.pid;
     if (professorId == null){
         res.json({
             status:"error",
             reason:"professor_id not present in request"
         })
-        return
+        return res
     }
 
     let connection = getDbConnection();
     // check courses created by this professor's id
     try{
-        getCoursesQuery = "SELECT C.* FROM Course C WHERE ?? = ?"
+        getCoursesQuery = "SELECT C.*,R.roster_id FROM Course C LEFT JOIN Roster R USING(course_id) WHERE ?? = ?"
         getCoursesQueryIdentifiers = ['C.professor_id']
         getCoursesQueryValues = [ professorId ]
         getCoursesQuerySql = mysql.format(getCoursesQuery, [getCoursesQueryIdentifiers, getCoursesQueryValues])
@@ -624,11 +618,11 @@ const getCoursesByProfessorId = async function(req, res, next){
 
 
 const updateCourseById = async function(req, res, next){
-    const courseId = req.body.course_id;
+    const courseId = req.params.cid;
     const courseName = req.body.course_name;
     const courseDesc = req.body.course_description;
     const courseCode = req.body.course_code;
-    const professorId = req.body.professor_id;
+    const professorId = req.params.pid;
     const taName = req.body.ta_name;
     const taEmail = req.body.ta_email;
     const startDate = req.body.start_date;
@@ -639,9 +633,9 @@ const updateCourseById = async function(req, res, next){
     if (courseId == null){
         res.json({
             status:"error",
-            "error":"course_id not present in body"
+            "error":"course_id not present in the url"
         })
-        return
+        return res
     }
 
     function validateString(s){
@@ -657,7 +651,7 @@ const updateCourseById = async function(req, res, next){
             "reason":"course_name should be a valid text(string) value",
             "error_code":"SCFP1CN"
         })
-        return
+        return res
     }
     if(!validateString(courseDesc)){
         res.json({
@@ -665,7 +659,7 @@ const updateCourseById = async function(req, res, next){
             "reason":"course_description should not be empty and be a valid text(string) value",
             "error_code":"SCFP1CD"
         })
-        return
+        return res
     }
     if(!validateString(courseCode)){
         res.json({
@@ -673,7 +667,7 @@ const updateCourseById = async function(req, res, next){
             "reason":"course_code should not be empty and be a valid text(string) value",
             "error_code":"SCFP1CC"
         })
-        return
+        return res
     }
     if(!validatePositiveNumber(professorId)){
         res.json({
@@ -681,7 +675,7 @@ const updateCourseById = async function(req, res, next){
             "reason":"professor_id should be a valid positive number(integer)",
             "error_code":"SCFP1PI"
         })
-        return
+        return res
     }
     if(!validateString(taEmail)){
         res.json({
@@ -689,7 +683,7 @@ const updateCourseById = async function(req, res, next){
             "reason":"ta_email should not be empty and be a valid email value",
             "error_code":"SCFP1TE"
         })
-        return
+        return res
     }
     if(!validateString(taName)){
         res.json({
@@ -697,7 +691,7 @@ const updateCourseById = async function(req, res, next){
             "reason":"ta_name should not be empty and be a valid text(string) value",
             "error_code":"SCFP1TN"
         })
-        return
+        return res
     }
 
     let connection = getDbConnection();
@@ -745,7 +739,7 @@ const updateCourseById = async function(req, res, next){
                         "count": -1,
                         "action":"updated"
                     })
-                    return
+                    return res
                 }
             }catch(error){
                 res.json({
@@ -754,7 +748,7 @@ const updateCourseById = async function(req, res, next){
                     "errorFull": JSON.stringify(error),
                     "error_code":"SCFP1CCE"
                 })
-                return
+                return res
             }
         
             
@@ -764,20 +758,20 @@ const updateCourseById = async function(req, res, next){
                 "reason":`The course with the course code:${courseCode} does not exist in the database`,
                 "error_code":"SCFP1CNE"
             })  
-            return    
+            return res    
         }
     }
     
 
 }
 
-app.post("/professor/:id/course/save", saveCourseForProfessor);
+app.post("/professor/:pid/course/save", saveCourseForProfessor);
 
-app.post("/professor/:id/course", getCoursesByProfessorId);
+app.post("/professor/:pid/course", getCoursesByProfessorId);
 
-app.post("/professor/:id/course/:id/roster/save", saveCSV);
+app.post("/professor/:pid/course/:cid/roster/save", saveCSV);
 
-app.post("/professor/:id/course/:id/roster/:id", getRosterById);
+app.post("/professor/:pid/course/:cid/roster/:rid", getRosterById);
 
-app.post("/professor/:id/course/:id/update", updateCourseById)
+app.post("/professor/:pid/course/:cid/update", updateCourseById)
 

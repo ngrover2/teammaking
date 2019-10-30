@@ -4,7 +4,8 @@ import {
 	BrowserRouter as Router,
 	Switch,
 	Route,
-	Link
+	Link,
+	useParams
 } from "react-router-dom";
 import { Image, Header ,Segment ,Sidebar, Menu, Label, Icon, Button, Divider } from 'semantic-ui-react';
 const linkLabelStyle = { 
@@ -13,6 +14,8 @@ const linkLabelStyle = {
 }
 
 const SidebarComponent = (props) => {
+
+	const { pid } = useParams()
 	return(
 		<Sidebar.Pushable as={Segment}>
 			<Sidebar
@@ -25,13 +28,13 @@ const SidebarComponent = (props) => {
 				width='thin'
 			>
 				<Menu.Item>
-					<Link to="/professor/1/course">
+					<Link to={`/professor/${pid || props.pid}/course`}>
 						<Icon name='home'/>
 						<div style = {linkLabelStyle}>Courses</div>
 					</Link>
 				</Menu.Item>
 				<Menu.Item>
-					<Link to="/professor/1/course">
+					<Link to={`/professor/${pid || props.pid}/course`}>
 						<Icon name='sticky note'/>
 						<div style = {linkLabelStyle}>Surveys</div>
 					</Link>
