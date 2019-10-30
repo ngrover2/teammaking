@@ -12,13 +12,7 @@ const DisplaySavedRosterComponent = (props) => {
     const [ receivedHeaderObj, setReceivedHeaderObj ] = useState(null);
     const [ receivedStudents, setReceivedStudents ] = useState([]);
     
-    // const [ headerEditable, setHeaderEditable ] = useState(false);
     const [ header, setHeader ] = useState([]);
-
-    // let mapping = Object.assign({});
-    //     receivedHeader.forEach((val)=>{
-    //             mapping[val]=val
-    //     });
     const [ headerColumnsOldToNewNamesMapping, setHeaderColumnsOldToNewNamesMapping  ] = useState({});
     
     const [ students, setStudents ] = useState([]);
@@ -31,7 +25,7 @@ const DisplaySavedRosterComponent = (props) => {
     const [ updatedId, setUpdatedId ] = useState(0);
     const [ headerUpdatedId, setHeaderUpdatedId ] = useState(0);
 
-    const [ lockHeader, setLockHeader ] = useState(React.createRef());
+    const [ lockHeader ] = useState(React.createRef());
 
     const messageButtonRef = React.createRef();
     
@@ -158,8 +152,6 @@ const DisplaySavedRosterComponent = (props) => {
             let tmp = {}
             tmp.name = headerColumnsOldToNewNamesMapping[headerColName]
             tmp.multi = true
-            // headerArray[hidx].name = headerColumnsOldToNewNamesMapping[headerColName]
-            // headerArray[hidx].multi = true
             headerArray.push(tmp)
         })
         console.log(headerArray) //DEBUG
@@ -233,7 +225,6 @@ const DisplaySavedRosterComponent = (props) => {
         // and not the whole DisplayPickedFile component, which is what we want
         const [ localHeader, setLocalHeader ] = useState([...receivedHeader]);
         // const [ localHeaderCheckboxes, setLocalHeaderCheckboxes ] = useState([...receivedHeader].map((v)=> false));
-        
         
         const [ renderedHeader, setRenderedHeader ] = useState([...receivedHeader]);
         const [ localHeaderUpdatedId, setLocalHeaderUpdatedId ] = useState(0);
@@ -313,12 +304,7 @@ const DisplaySavedRosterComponent = (props) => {
         try{
             return (
                 <Table.Row>
-                    {/*constructHeader() ||
-                        <Table.HeaderCell singleLine>
-                            {"Header Undefined"}
-                        </Table.HeaderCell>
-                    */
-                    renderedHeader}
+                    {renderedHeader}
                     <Table.HeaderCell key="editRow">
                         <Button type="submit" active={headerEditable} onClick={()=> {
                                                     console.log("EDIT HEADER callled")
@@ -352,11 +338,7 @@ const DisplaySavedRosterComponent = (props) => {
             );
         }catch{
             return (
-                (
-                    <Table.Row>
-                        {getEmptyHeaderRow()}
-                    </Table.Row>
-                )
+                getEmptyHeaderRow()
             );
         }
     })
