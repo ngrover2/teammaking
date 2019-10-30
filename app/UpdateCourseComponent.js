@@ -201,10 +201,11 @@ export default function UpdateCourseComponent(props){
         {
             (<Modal 
                 trigger={<Image 
+                            name="address book"
                             onClick={() => setOpen(true)}
                             floated='right'
                             size='mini'
-                            src='https://via.placeholder.com/128.png'
+                            src='/assets/icons/info-24px.svg'
                         ></Image>
                 }
                 open={open}
