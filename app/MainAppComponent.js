@@ -15,7 +15,6 @@ import { Table, Header, Cell, Icon, Button, Grid, GridColumn, Container } from '
 import {default as SurveyFormQuestionComponent} from "./SurveyFormQuestionComponent";
 import {default as SidebarComponent } from "./SidebarComponent";
 import { default as HeaderComponent } from "./AppHeaderComponent";
-import { default as RedirectComponent} from "./RedirectComponent";
 
 
 
