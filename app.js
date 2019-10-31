@@ -51,11 +51,11 @@ const saveCourseForProfessor = async function (req, res, next){
     const courseName = req.body.course_name;
     const courseDesc = req.body.course_description;
     const courseCode = req.body.course_code;
-    const professorId = req.params.id;
-    const taName = req.body.ta_name;
-    const taEmail = req.body.ta_email;
-    const startDate = req.body.start_date;
-    const endDate = req.body.end_date;
+    const professorId = req.params.pid;
+    var taName = req.body.ta_name;
+    var taEmail = req.body.ta_email;
+    var startDate = req.body.start_date;
+    var endDate = req.body.end_date;
     // const startDateMomentObj = startDate ? moment(startDate) : null; // Not required but may be useful in the future
     // const endDateMomentObj = endDate ? moment(endDate) : null; // Not required but may be useful in the future
     const classStartTime = req.body.class_start_time;
@@ -81,50 +81,47 @@ const saveCourseForProfessor = async function (req, res, next){
         return (typeof(s) == 'string' && s.length > 0)
     }
     function validatePositiveNumber(n){
-        return (typeof(n) == 'number' && n > 0)
+        if (typeof(n) == 'number' && n > 0) return true
+        else if (typeof(n) == 'string'){
+            try{
+                return parseInt(n) && parseInt(n) > 0
+            }catch{
+                return false
+            }
+        }
+        return false
     }
     
     if (!validateString(courseName)){
-        res.json({
+        return res.json({
             status:"error",
-            "reason":"course_name should be a valid text(string) value",
+            error:"course_name should not be empty and should be a valid text(string) value",
             "error_code":"SCFP1CN"
         })
     }
     if(!validateString(courseDesc)){
-        res.json({
-            status:"error",
-            "reason":"course_description should not be empty and be a valid text(string) value",
-            "error_code":"SCFP1CD"
-        })
+        courseDesc = "No description provided"
     }
     if(!validateString(courseCode)){
-        res.json({
+        return res.json({
             status:"error",
-            "reason":"course_code should not be empty and be a valid text(string) value",
+            error:"course_code should not be empty and should be a valid text(string) value",
             "error_code":"SCFP1CC"
         })
     }
     if(!validatePositiveNumber(professorId)){
-        res.json({
+        return res.json({
             status:"error",
-            "reason":"professor_id should be a valid positive number(integer)",
+            error:"professor_id should be a valid positive number(integer)",
             "error_code":"SCFP1PI"
         })
     }
+
     if(!validateString(taEmail)){
-        res.json({
-            status:"error",
-            "reason":"ta_email should not be empty and be a valid email value",
-            "error_code":"SCFP1TE"
-        })
+        taEmail = null;
     }
     if(!validateString(taName)){
-        res.json({
-            status:"error",
-            "reason":"ta_name should not be empty and be a valid text(string) value",
-            "error_code":"SCFP1TN"
-        })
+        taName = null;
     }
 
     let connection = getDbConnection();
@@ -139,7 +136,7 @@ const saveCourseForProfessor = async function (req, res, next){
             if (!checkProfessorResults[0].professor_id){
                 res.json({
                     status:"error",
-                    "reason":`professor with professor_id ${professorId} does not exist in the database`,
+                    error:`professor with professor_id ${professorId} does not exist in the database`,
                     "error_code":"SCFP1PNE"
                 })      
             }
@@ -155,7 +152,7 @@ const saveCourseForProfessor = async function (req, res, next){
         if (checkCourseResults[0].course_id){
             res.json({
                 status:"error",
-                "reason":`A course with the course code:${courseCode} already exists in the database`,
+                error:`A course with the course code:${courseCode} already exists in the database`,
                 "error_code":"SCFP1CAE"
             })      
             return res
@@ -201,13 +198,11 @@ const saveCourseForProfessor = async function (req, res, next){
     }catch(error){
         res.json({
             status:"error",
-            "reason":error.message,
+            error:error.message,
             "errorFull": JSON.stringify(error),
             "error_code":"SCFP1CCE"
         })
     }
-
-
 }
 
 const saveCSV = async function(req, res, next){
@@ -216,38 +211,77 @@ const saveCSV = async function(req, res, next){
     const course_id = req.params.cid;
     const header = req.body.header_row;
     const data_rows = req.body.data_rows;
+
+    function validatePositiveNumber(n){
+        if (typeof(n) == 'number' && n > 0) return true
+        else if (typeof(n) == 'string'){
+            try{
+                return parseInt(n) && parseInt(n) > 0
+            }catch{
+                return false
+            }
+        }
+        return false
+    }
     // console.log(header); // DEBUG
     // console.log(data_rows) // DEBUG
+    let connection = null;
     try{
+        connection = getDbConnection();
+    }catch(error){
+        return res.json({
+            status:"error",
+            error: `There seems to be problem with our database at this time. Please try again later.`,
+            errorCode:"SRFC1DBCON"
+        });
+    }
+    
+
+    try{
+        if(!validatePositiveNumber(professor_id)){
+            return res.json({
+                status:"error",
+                error:"Invalid professor_id received from request.\nprofessor_id should not be empty and should be a valid positive number(integer)",
+                "error_code":"SRFC1IVPID"
+            })
+        }
+        if(!validatePositiveNumber(course_id)){
+            return res.json({
+                status:"error",
+                error:"Invalid course_id received from request.\ncourse_id should not be empty and should be a valid positive number(integer)",
+                "error_code":"SRFC1IVCID"
+            })
+        }
+
         if (!Array.isArray(header) || !Array.isArray(data_rows)){
             return res.json({
                 status: "error",
-                "reason": "header_row and data_rows should to be non-empty arrays"
+                error: "header_row and data_rows should to be non-empty arrays"
             })
         }else{
             // check header length
             if (header.length < 1){
                 return res.json({
                     status: "error",
-                    "reason": "header_row cannot be empty"
+                    error: "header_row cannot be empty"
                 })    
             }
             // check data length
             if (data_rows.length < 1){
                 return res.json({
                     status: "error",
-                    "reason": "data_rows cannot be empty"
+                    error: "data_rows cannot be empty"
                 })    
             }
             // check header and column count validity
             if (header.length != data_rows[0].length){
                 return res.json({
                     status: "error",
-                    "reason": "header_row column count and data_rows column count does not match"
+                    error: "header_row column count and data_rows column count does not match"
                 })
             }
 
-            let connection = getDbConnection();
+            
             var roster_id = null;
 
             // Get RosterId for the professor
@@ -261,25 +295,31 @@ const saveCSV = async function(req, res, next){
                 queryResult = await executeOnDBWithPromise(connection, getRosterSqlQuery);
                 if (queryResult){
                     // console.log(queryResult[0]) // DEBUG
-                    let resultObj = queryResult[0];
-                    roster_id = resultObj.roster_id
-                    if (roster_id){
-                        console.log("ROSTER EXISTS, DELETING")
-                        await executeOnDBWithPromise(connection, mysql.format("DELETE FROM Roster WHERE ?? = ?",['roster_id', roster_id]));
-                        await executeOnDBWithPromise(connection, mysql.format("DELETE FROM RosterHeaderRow WHERE ?? = ?",['roster_id', roster_id]));
+                    if (queryResult.length > 0){
+                        let resultObj = queryResult[0];
+                        roster_id = resultObj.roster_id
+                        if (roster_id){
+                            console.log("ROSTER EXISTS, DELETING")
+                            await executeOnDBWithPromise(connection, mysql.format("DELETE FROM Roster WHERE ?? = ?",['roster_id', roster_id]));
+                            await executeOnDBWithPromise(connection, mysql.format("DELETE FROM RosterHeaderRow WHERE ?? = ?",['roster_id', roster_id]));
+                        }
                     }else{
-                        throw Error(`No Roster exists for this course.`)
+                        console.log("NO EXISTING ROSTER DETECTED, WILL CREATE NEW")
                     }
                     // create roster id
                     console.log("CREATING NEW ROSTER") // DEBUG
                     let createNewRosterQuery = "INSERT INTO Roster (??) VALUES (?)"
                     let rosterFieldIdentifiers = [ 'professor_id', 'course_id' ]
                     let rosterFieldValues = [ professor_id, course_id ]
+                    console.log("CraeteRosterSqlQuery", mysql.format(createNewRosterQuery,[rosterFieldIdentifiers, rosterFieldValues])); // DEBUG
                     let createRosterResults = await executeOnDBWithPromise(connection, mysql.format(createNewRosterQuery,[rosterFieldIdentifiers, rosterFieldValues]));
                     if (!createRosterResults){
-                        throw Error("Roster could not be created in database..")
+                        throw new Error("Roster could not be created due to a database error. We have logged your request and will investigate the error. If you want to provide any details that could help us, please write an email to teammakingsupport@email.com")
                     }else{
                         // console.log(`Created roster with id: ${createRosterResults.insertId}`)
+                        if (!createRosterResults.insertId){
+                            throw new Error("Roster could not be created due to a database error. We have logged your request and will investigate the error. If you want to provide any details that could help us, please write an email to teammakingsupport@email.com")
+                        }
                         roster_id = createRosterResults.insertId
                         
                         // insert the header in db
@@ -310,15 +350,17 @@ const saveCSV = async function(req, res, next){
                         // console.log(allValues);
                         
                         insertRowsSqlQuery = mysql.format(rowsQuery, [colNames, allValues]);
-                        // console.log("insertRowsSqlQuery", insertRowsSqlQuery);
-
+                        console.log("insertRowsSqlQuery", insertRowsSqlQuery); //DEBUG
+                        
                         headerResults = await executeOnDBWithPromise(connection, insertHeaderSqlQuery)
                         // console.log("headerResults", headerResults);
                         if (headerResults.affectedRows == 1){ // header has been created
                             rowResults = await executeOnDBWithPromise(connection, insertRowsSqlQuery)
                             if (rowResults){ // rows have been inserted
                                 // get ids of inserted rows
+                                console.log("getRowIds",mysql.format("SELECT roster_row_id FROM RosterRow where roster_id = ? AND course_id = ?", [roster_id, course_id])); // DEBUG
                                 rosterRowIds = await executeOnDBWithPromise(connection, mysql.format("SELECT roster_row_id FROM RosterRow where roster_id = ? AND course_id = ?", [roster_id, course_id]))
+
                                 if (rosterRowIds){
                                     var rosterRowIdArray = []
                                     rosterRowIds.map((v) => {
@@ -392,15 +434,19 @@ const saveCSV = async function(req, res, next){
                                         col3Query = mysql.format(insertRowDataCol3Query, [colNames, col3Vals]);
                                         col4Query = mysql.format(insertRowDataCol4Query, [colNames, col4Vals]);
                                         col5Query = mysql.format(insertRowDataCol5Query, [colNames, col5Vals]);
-                                        
+                                        console.log("put values for column one - Query: " ,col1Query); // DEBUG
                                         col1Results = await executeOnDBWithPromise(connection, col1Query);
                                         if (col1Results){
+                                            console.log("put values for column two - Query: " ,col2Query); // DEBUG
                                             col2Results = await executeOnDBWithPromise(connection, col2Query);
                                             if (col1Results){
+                                                console.log("put values for column three - Query: " ,col3Query); // DEBUG
                                                 col3Results = await executeOnDBWithPromise(connection, col3Query);
                                                 if (col3Results){
+                                                    console.log("put values for column four - Query: " ,col4Query); // DEBUG
                                                     col4Results = await executeOnDBWithPromise(connection, col4Query);
                                                     if (col4Results){
+                                                        console.log("put values for column five - Query: " ,col5Query); // DEBUG
                                                         col5Results = await executeOnDBWithPromise(connection, col5Query);
                                                         // We are done here
                                                     }
@@ -408,7 +454,7 @@ const saveCSV = async function(req, res, next){
                                             }
                                         }
                                     }
-                                    res.json({
+                                    return res.json({
                                         status: "ok",
                                         result: `Inserted ${data_rows.length} rows`,
                                         roster_id: roster_id,
@@ -417,21 +463,21 @@ const saveCSV = async function(req, res, next){
                                     });
                                 }
                             }else{
-                                res.json({
+                                return res.json({
                                     status: "error",
-                                    reason: "Rows could not be inserted",
+                                    error: "Rows could not be inserted",
                                 });
                             }
                         }
                     }
                 }
-                res.json({
+                return res.json({
                     status: "error",
-                    reason: "Data could not be created, please try again.",
+                    error: "Data could not be created, please try again.",
                 });
             }catch(error){
                 console.log(error)
-                res.json({
+                return res.json({
                     status:"error",
                     error:error.message,
                     errorFull:JSON.stringify(error)
@@ -456,7 +502,7 @@ const getRosterById = async function(req, res, next){
     if (!roster_id){
         res.json({
             status:"error",
-            reason:"roster_id not present in request"
+            error:"roster_id not present in request"
         })
         return res
     }
@@ -560,7 +606,7 @@ const getRosterById = async function(req, res, next){
     }catch(error){
         res.json({
             status:"error",
-            reason:error.message,
+            error:error.message,
             errorFull:JSON.stringify(error),
             results:{
                 data: [],
@@ -578,7 +624,7 @@ const getCoursesByProfessorId = async function(req, res, next){
     if (professorId == null){
         res.json({
             status:"error",
-            reason:"professor_id not present in request"
+            error:"professor_id not present in request"
         })
         return res
     }
@@ -607,7 +653,7 @@ const getCoursesByProfessorId = async function(req, res, next){
     }catch(error){
         res.json({
             status: "error",
-            "reason": error.message,
+            error: error.message,
             "errorFull": JSON.stringify(error),
             "errorCode": "GCP1SQE"
         })
@@ -616,6 +662,33 @@ const getCoursesByProfessorId = async function(req, res, next){
     }
 }
 
+const deleteCourseById = async function(req, res, next){
+    const courseId = req.params.cid;
+    if (courseId == null){
+        res.json({
+            status:"error",
+            "error":"course_id not present in the url"
+        })
+        return res
+    }
+    let connection = getDbConnection();
+    try{
+        await executeOnDBWithPromise(connection, mysql.format("DELETE FROM Course WHERE ?? = ?",['course_id', courseId]));
+        console.log(`DELETING COURSE(id:${courseId})`) // DEBUG
+        res.json({
+                status:"ok",
+                "action":"deleted"
+        })
+    }catch(error){
+        res.json({
+            status:"error",
+            "error":error.message
+        })
+    }finally{
+        if (connection && connection.end) connection.end();
+        return res
+    }
+}
 
 const updateCourseById = async function(req, res, next){
     const courseId = req.params.cid;
@@ -642,13 +715,20 @@ const updateCourseById = async function(req, res, next){
         return (typeof(s) == 'string' && s.length > 0)
     }
     function validatePositiveNumber(n){
-        return (typeof(n) == 'number' && n > 0)
+        if (typeof(n) == 'number' && n > 0) return true
+        else if (typeof(n) == 'string'){
+            try{
+                return parseInt(n) && parseInt(n) > 0
+            }catch{
+                return false
+            }
+        }
     }
     
     if (!validateString(courseName)){
         res.json({
             status:"error",
-            "reason":"course_name should be a valid text(string) value",
+            error:"course_name should be a valid text(string) value",
             "error_code":"SCFP1CN"
         })
         return res
@@ -656,7 +736,7 @@ const updateCourseById = async function(req, res, next){
     if(!validateString(courseDesc)){
         res.json({
             status:"error",
-            "reason":"course_description should not be empty and be a valid text(string) value",
+            error:"course_description should not be empty and be a valid text(string) value",
             "error_code":"SCFP1CD"
         })
         return res
@@ -664,7 +744,7 @@ const updateCourseById = async function(req, res, next){
     if(!validateString(courseCode)){
         res.json({
             status:"error",
-            "reason":"course_code should not be empty and be a valid text(string) value",
+            error:"course_code should not be empty and be a valid text(string) value",
             "error_code":"SCFP1CC"
         })
         return res
@@ -672,7 +752,7 @@ const updateCourseById = async function(req, res, next){
     if(!validatePositiveNumber(professorId)){
         res.json({
             status:"error",
-            "reason":"professor_id should be a valid positive number(integer)",
+            error:`professor_id should be a valid positive number(integer), received:${professorId}`,
             "error_code":"SCFP1PI"
         })
         return res
@@ -680,7 +760,7 @@ const updateCourseById = async function(req, res, next){
     if(!validateString(taEmail)){
         res.json({
             status:"error",
-            "reason":"ta_email should not be empty and be a valid email value",
+            error:"ta_email should not be empty and be a valid email value",
             "error_code":"SCFP1TE"
         })
         return res
@@ -688,7 +768,7 @@ const updateCourseById = async function(req, res, next){
     if(!validateString(taName)){
         res.json({
             status:"error",
-            "reason":"ta_name should not be empty and be a valid text(string) value",
+            error:"ta_name should not be empty and be a valid text(string) value",
             "error_code":"SCFP1TN"
         })
         return res
@@ -744,7 +824,7 @@ const updateCourseById = async function(req, res, next){
             }catch(error){
                 res.json({
                     status:"error",
-                    "reason":error.message,
+                    error:error.message,
                     "errorFull": JSON.stringify(error),
                     "error_code":"SCFP1CCE"
                 })
@@ -755,14 +835,12 @@ const updateCourseById = async function(req, res, next){
         }else{
             res.json({
                 status:"error",
-                "reason":`The course with the course code:${courseCode} does not exist in the database`,
+                error:`The course with the course code:${courseCode} does not exist in the database`,
                 "error_code":"SCFP1CNE"
             })  
             return res    
         }
     }
-    
-
 }
 
 app.post("/professor/:pid/course/save", saveCourseForProfessor);
@@ -774,4 +852,6 @@ app.post("/professor/:pid/course/:cid/roster/save", saveCSV);
 app.post("/professor/:pid/course/:cid/roster/:rid", getRosterById);
 
 app.post("/professor/:pid/course/:cid/update", updateCourseById)
+
+app.delete("/professor/:pid/course/:cid/delete", deleteCourseById)
 

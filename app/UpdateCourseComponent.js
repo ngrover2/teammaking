@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Redirect } from "react-router-dom";
-import {Icon, Divider, Modal, Form, FormField, Dropdown, Radio, FormButton, TextArea, FormCheckbox, Checkbox, Button, Grid, FormGroup, FormTextArea, Segment, Message, Image} from 'semantic-ui-react';
+import {Label, Icon, Divider, Modal, Form, FormField, Dropdown, Radio, FormButton, TextArea, FormCheckbox, Checkbox, Button, Grid, FormGroup, FormTextArea, Segment, Message, Image} from 'semantic-ui-react';
 import TimePicker from 'rc-time-picker';
 import 'rc-time-picker/assets/index.css';
 import moment from 'moment';
@@ -205,7 +205,6 @@ export default function UpdateCourseComponent(props){
         {
             (<Modal 
                 trigger={<Image 
-                            name="address book"
                             onClick={() => setOpen(true)}
                             floated='right'
                             size='mini'
@@ -281,7 +280,9 @@ export default function UpdateCourseComponent(props){
                             <FormGroup
                                 style={{ alignItems:"center" }}
                             >
+                                <Label>Select Course Start Date</Label>
                                 <DatePickerComponent onChange={setStartDate} date={startDate}/>
+                                <Label>Select Course End Date</Label>
                                 <DatePickerComponent onChange={setEndDate} date={endDate}/>
                             </FormGroup>
                     </Form>
