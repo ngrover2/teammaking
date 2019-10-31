@@ -14,7 +14,7 @@ const DisplayPickedFile = (props) => {
     const [ receivedStudents, setReceivedStudents ] = useState(state.data || []);
     var history = useHistory();
 
-    const { cid } = useParams();
+    const { cid, pid } = useParams();
     
     // const [ headerEditable, setHeaderEditable ] = useState(false);
     const [ header, setHeader ] = useState([]);
@@ -30,6 +30,9 @@ const DisplayPickedFile = (props) => {
     const [ message, setMessage ] = useState("");
     const [ messageModalOpen, setMessageModalOpen ] = useState(false);
     const [ uploadAttemptId, setUploadAttemptId ] = useState(0);
+    const [ uploadFailedId, setUploadFailedId ] = useState(0);
+    const [ uploadSucceededId, setUploadSucceededId ] = useState(0);
+    const [ responseCode, setResponseCode ] = useState(0); // 1 for success, 0 for failure
 
     const [ headerLength, setHeaderLength ] = useState(0);
     
@@ -60,6 +63,18 @@ const DisplayPickedFile = (props) => {
     useEffect(()=>{
         if (uploadAttemptId !== 0) uploadRoster();
     },[uploadAttemptId])
+
+    useEffect(()=> {
+        if (uploadFailedId !== 0){
+            // Nothing for now
+        }
+    },[uploadFailedId])
+
+    useEffect(()=> {
+        if (uploadSucceededId !== 0){
+            history.goBack()
+        }
+    },[uploadSucceededId])
 
 
     async function uploadRoster(){
@@ -101,7 +116,7 @@ const DisplayPickedFile = (props) => {
         console.log(postBody);
 
         try{
-            let response = await fetch("http://localhost:3000/professor/1/course/1/roster/save", {
+            let response = await fetch(`http://localhost:3000/professor/${pid}/course/${cid}/roster/save`, {
                 method: 'POST',
                 headers:{
                     'Content-Type': 'application/json'
@@ -114,17 +129,21 @@ const DisplayPickedFile = (props) => {
             if (responseJson){
                 if (responseJson.status == "ok"){
                     console.log(responseJson)
+                    setResponseCode(1);                    
                     setMessage("Roster uploaded successfully");
                     setMessageModalOpen(true);
                 }else{
-                    setMessage(`${responseJson.reason} || Problem uploading roster`);
+                    setResponseCode(0);                    
+                    setMessage(`${responseJson.error || "Problem uploading roster"}`);
                     setMessageModalOpen(true);
                 }
             }else{
+                setResponseCode(0);                    
                 setMessage("Problem uploading roster");
                 setMessageModalOpen(true);
             }
         }catch(error){
+            setResponseCode(0);                    
             setMessage(error.message);
             setMessageModalOpen(true);
         }
@@ -396,7 +415,22 @@ const DisplayPickedFile = (props) => {
                 <Grid.Column width={3}>
                         <Button positive onClick={()=> setUploadAttemptId(uploadAttemptId+1)}>Upload</Button>
                 </Grid.Column>
-                <MessageComponent ref={messageButtonRef} errorMessage={message} open={messageModalOpen} closeModal={() => setMessageModalOpen(false)}/>
+                <MessageComponent 
+                    ref={messageButtonRef} 
+                    errorMessage={message} 
+                    open={messageModalOpen} 
+                    closeModal={
+                        () => {
+                            setMessageModalOpen(false);
+                            if (responseCode){
+                                if (responseCode == 0 ){
+                                    setUploadFailedId(uploadFailedId + 1 );
+                                }else{
+                                    setUploadSucceededId(uploadSucceededId + 1 );
+                                }
+                            }
+                        }
+                    }/>
             </Grid.Row>
         </Grid>
     );
