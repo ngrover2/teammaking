@@ -6,7 +6,7 @@ import { Grid, Icon, Segment, Button, SegmentGroup, GridRow, GridColumn } from '
 const AppHeaderComponent = (props) => {
 
 	const [ sidebarOpen, setSidebarOpen ] = useState(false);
-	const  { pid } = useParams();
+	const  { pid,cid } = useParams();
 
 	useEffect(() => {
 		props.setSidebarVisible(sidebarOpen);
@@ -15,6 +15,7 @@ const AppHeaderComponent = (props) => {
 
 	const headerStyle = {
 		backgroundColor:"black",
+		height:"70px"
 	}
 
 	const buttonStyle = {
@@ -42,7 +43,7 @@ const AppHeaderComponent = (props) => {
 					<HeaderLinkButton to={`/professor/${pid || props.pid}/course`} name="Courses" style={buttonStyle}/>
 				</GridColumn>
 				<GridColumn width={4}>
-					<HeaderLinkButton to={`/professor/${pid || props.pid}/survey`} name="Surveys"/>
+					<HeaderLinkButton to={`/professor/${pid || props.pid}/course/${cid}/survey/add`} name="Surveys"/>
 				</GridColumn>
 				<GridColumn width={3}>
 					<HeaderLinkButton to="/duh" name="Etc"/>

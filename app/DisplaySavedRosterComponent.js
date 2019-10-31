@@ -37,7 +37,7 @@ const DisplaySavedRosterComponent = (props) => {
             let postBody = {
                 roster_id: rid,
             }
-            var fetchStudents = await fetch(`http://localhost:3000/professor/1/course/1/roster/${rid}`,{
+            var fetchStudents = await fetch(`http://localhost:3000/professor/${pid}/course/${cid}/roster/${rid}`,{
                 method: 'POST',
                 headers:{
                     'Content-Type': 'application/json'
@@ -117,9 +117,7 @@ const DisplaySavedRosterComponent = (props) => {
     useEffect(()=>{
         if (uploadAttemptId !== 0) uploadRoster();
     },[uploadAttemptId])
-
     
-
     function constructMapping(){
         let mapping = Object.assign({});
         if (receivedHeader){
@@ -167,7 +165,7 @@ const DisplaySavedRosterComponent = (props) => {
         console.log(postBody);
 
         try{
-            let response = await fetch("http://localhost:3000/professor/1/course/1/roster/save", {
+            let response = await fetch(`http://localhost:3000/professor/${pid}/course/${cid}/roster/save`, {
                 method: 'POST',
                 headers:{
                     'Content-Type': 'application/json'
@@ -175,20 +173,26 @@ const DisplaySavedRosterComponent = (props) => {
                 cache: 'no-cache',
                 body: JSON.stringify(postBody)
             })
-    
-            let responseJson = await response.json()
+            let responseJson = null;
+            if (!response){
+                throw new Error("Network error prevented the request from succeeding.")
+            }
+            try{
+                responseJson = await response.json()
+            }catch{
+                throw new Error("Invalid response received from the server")
+            }
             if (responseJson){
                 if (responseJson.status == "ok"){
                     console.log(responseJson)
                     setMessage("Roster uploaded successfully");
                     setMessageModalOpen(true);
                 }else{
-                    setMessage(`${responseJson.reason} || Problem uploading roster`);
+                    setMessage(`${responseJson.error || "An error occurred trying to update the roster"}`);
                     setMessageModalOpen(true);
                 }
             }else{
-                setMessage("Problem uploading roster");
-                setMessageModalOpen(true);
+                throw new Error("Invalid response received from the server")
             }
         }catch(error){
             setMessage(error.message);
@@ -452,7 +456,7 @@ const DisplaySavedRosterComponent = (props) => {
                         <Button positive onClick={()=> history.goBack()}>Go Back</Button>
                 </Grid.Column>
                 <Grid.Column width={3}>
-                        <Button positive onClick={()=> {(receivedHeader && receivedHeader.length>0) ? setUploadAttemptId(uploadAttemptId+1) : 0}} disabled={(receivedHeader && receivedHeader.length>0) ? false : true}>Upload</Button>
+                        <Button positive onClick={()=> {(receivedHeader && receivedHeader.length>0) ? setUploadAttemptId(uploadAttemptId+1) : 0}} disabled={(receivedHeader && receivedHeader.length>0) ? false : true}>Update</Button>
                 </Grid.Column>
                 <MessageComponent ref={messageButtonRef} errorMessage={message} open={messageModalOpen} closeModal={() => setMessageModalOpen(false)}/>
             </Grid.Row>

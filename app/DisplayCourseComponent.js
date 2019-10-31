@@ -5,7 +5,7 @@ import { default as UpdateCourseComponent} from "./UpdateCourseComponent";
 import { default as PickRosterFileComponent } from "./PickRosterFileComponent";
 import { default as ErrorMessageComponent } from "./ErrorMessageComponent";
 
-import { Button, Card, Image, Grid, GridRow, Segment, GridColumn } from 'semantic-ui-react'
+import { Button, Card, Image, Grid, GridRow, Segment, GridColumn, Divider } from 'semantic-ui-react'
 
 
 import {
@@ -45,10 +45,19 @@ const CourseCardComponent = (props) => {
 			</Card.Content>
 			<Card.Content extra>
 				<div className='ui two buttons'>
-					<Button basic color='green' onClick={() => props.setViewRosterClick("viewDownloadedRoster", props.courseId, props.rosterId)}>
+					<Button style={{ margin:"2px"}}
+						basic 
+						color='green' 
+						onClick={
+							() => props.setViewRosterClick("viewDownloadedRoster", props.courseId, props.rosterId)
+						}
+					>
 						View Roster
 					</Button>
-					<Button basic color='red' onClick={() => {
+					<Button style={{ margin:"2px"}}
+						basic 
+						color='red' 
+						onClick={() => {
 							if (document.getElementById("hiddenFilePickerButtonId") != "undefined"){
 								var fp = document.getElementById("hiddenFilePickerButtonId");
 								fp.click();
@@ -61,6 +70,8 @@ const CourseCardComponent = (props) => {
 					</Button>
 					<PickRosterFileComponent passSelectedFile={(fileObj) => props.getRosterFile(fileObj, props.courseId)} />
 				</div>
+				
+				<div style={{ textAlign:"center"}}><Button style={{ background:"none"}} onClick={(courseId) => props.deleteCourse(props.courseId)}>Delete</Button></div>
 			</Card.Content>
 		</Card>
 	)
@@ -69,13 +80,15 @@ const CourseCardComponent = (props) => {
 
 class DisplayCourseComponent extends React.Component {
 	constructor(props){
-    	const professor_id = props.match.params.pid;
 		super(props)
 		this.professor_id = props.match.params.pid;
+		this.props = props;
 		this.errorMessageRef = React.createRef();
 		this.getRosterFile = this.getRosterFile.bind(this);
 		this.setViewRosterRedirect = this.setViewRosterRedirect.bind(this);
 		this.getCourses = this.getCourses.bind(this);
+		this.deleteCourse = this.deleteCourse.bind(this);
+		this.updatePage = this.updatePage.bind(this);
 		this.state = {
 				selectedFile: null,
 				redirectTo:"courseDetails",
@@ -149,12 +162,12 @@ class DisplayCourseComponent extends React.Component {
 			})
 			fileReader.onerror = ((e) => {
 				if (this.errorMessageRef && this.errorMessageRef.current) {
-					this.setState({errorMessage:`Error reading ${fileObj.name || "undefined"} file`, errorMessageModalOpen:true},() => this.errorMessageRef.current.ref.current.click());
+					this.setState({errorMessage:`Error reading ${fileObj.name || "undefined" } file`, errorMessageModalOpen:true},() => this.errorMessageRef.current.ref.current.click());
 				};
 			})
 		}catch(error){
 			if (this.errorMessageRef && this.errorMessageRef.current) {
-				console.log("Errormessagemodal exists")
+				// console.log("Errormessagemodal exists") // DEBUG
 				this.setState({errorMessage: error.message || (`Error reading ${fileObj.name || "undefined"} file`), errorMessageModalOpen:true},() => this.errorMessageRef.current.ref.current.click());
 			}else{
 				console.log("Errormessagemodal doesnt exist")
@@ -176,6 +189,56 @@ class DisplayCourseComponent extends React.Component {
 		}
 	}
 
+	// componentWillUpdate(){
+	// 	if(this.props.match.params.pid){
+	// 		this.getCourses()
+	// 	}else{
+	// 		this.setState({
+	// 			getCoursesRequestSucceeded: false,
+	// 			errorMessage: "Could not fetch courses",
+	// 			errorMessageModalOpen:true
+	// 		})
+	// 	}
+	// }
+
+	updatePage(){
+		this.getCourses();
+	}
+
+	async deleteCourse(courseId){
+		console.log("delete course called")
+
+		try{
+			console.log("Trying to fetch response")
+			let response = await fetch(`http://localhost:3000/professor/${this.professor_id}/course/${courseId}/delete`,{
+				method: 'DELETE',
+				headers:{
+					'Content-Type': 'application/json'
+				},
+				cache: 'no-cache'
+			})
+			if (response) {console.log("response received")} else {console.log("response received", response)}
+			let responseJson = await response.json()
+			if (responseJson){
+				console.log("response json parsed")
+				if (responseJson.status == "ok"){
+					console.log("response status ok")
+					this.getCourses();
+				}else{
+					this.setState({
+						errorMessage:"Could not delete course at this time" + responseJson.error ? responseJson.error : "Error cause unknown",
+						errorMessageModalOpen:true
+					})
+				}
+			}
+		}catch(error){
+			this.setState({
+				errorMessage:`Error occurred while trying to delete the course.\n${error.message}`,
+				errorMessageModalOpen:true
+			})
+		}
+	}
+
 	setViewRosterRedirect(str, courseId, rosterId){
 		console.log("Setting redirect to ", str)
 		this.setState({
@@ -189,9 +252,6 @@ class DisplayCourseComponent extends React.Component {
 	
 	async getCourses(){
 		console.log("getCourses called")
-		let requestBody = {
-			professor_id:this.professor_id
-		}
 
 		try{
 			console.log("Trying to fetch response")
@@ -200,8 +260,7 @@ class DisplayCourseComponent extends React.Component {
 				headers:{
 					'Content-Type': 'application/json'
 				},
-				cache: 'no-cache',
-				body: JSON.stringify(requestBody)
+				cache: 'no-cache'
 			})
 			if (response) {console.log("response received")} else {console.log("response received", response)}
 			let responseJson = await response.json()
@@ -272,6 +331,7 @@ class DisplayCourseComponent extends React.Component {
 							rosterId={courseObj.roster_id}
 							setViewRosterClick={this.setViewRosterRedirect}
 							getRosterFile={this.getRosterFile}
+							deleteCourse={this.deleteCourse}
 						/>
 				);
 			})
@@ -281,6 +341,8 @@ class DisplayCourseComponent extends React.Component {
 
 
 	render() {
+		console.log("this.professor_id",this.professor_id)
+		console.log("this.props",this.props)
 		this.filePickerRef = React.createRef();
 		console.log("this.state.redirectTo",this.state.redirectTo);
 		if (this.state.redirectTo == "courseDetails"){
@@ -297,7 +359,7 @@ class DisplayCourseComponent extends React.Component {
 					<Grid.Row>
 						<GridColumn width={6}/>
 						<GridColumn width={4}>
-							<CreateNewCourseComponent />
+							<CreateNewCourseComponent pid={this.props.match.params.pid} onCreated={this.updatePage}/>
 						</GridColumn>
 						<GridColumn width={6}/>
 					</Grid.Row>

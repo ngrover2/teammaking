@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Redirect } from "react-router-dom";
-import { Divider, Modal, Form, FormField, Dropdown, Radio, FormButton, TextArea, FormCheckbox, Checkbox, Button, Grid, FormGroup, FormTextArea, Segment, Message} from 'semantic-ui-react';
+import { Divider, Modal, Form, FormField, Dropdown, Radio, FormButton, TextArea, FormCheckbox, Checkbox, Button, Grid, FormGroup, FormTextArea, Segment, Message, Label} from 'semantic-ui-react';
 import TimePicker from 'rc-time-picker';
 import 'rc-time-picker/assets/index.css';
 import moment from 'moment';
@@ -144,6 +144,14 @@ export default function CreateNewCourseComponent(props){
 
     useEffect(() => {
         setFeedbackModalOpen(false);
+        setOpen(false);
+        setOpen(false);
+        setCourseName("");
+        setCourseCode("");
+        setTaEmail("");
+        setTaName("");
+        setCourseDesc("");
+        if(props.onCreated) props.onCreated();
     },[courseCreated])
 
     useEffect(() => {
@@ -152,7 +160,7 @@ export default function CreateNewCourseComponent(props){
 
     return (
         <div>
-        {courseCreated && (<Redirect to={`professor/${pid}/course`}/>)}
+        {/*courseCreated && (<Redirect to={`professor/${pid}/course`}/>)*/}
         {
             (<Modal 
                 trigger={<Button onClick={() => setOpen(true)} fluid style={{ background:"none", fontSize:"1.5rem", color:"white", border:"2px solid white", borderRadius:"7px" }}>Create New Course</Button>}
@@ -224,8 +232,10 @@ export default function CreateNewCourseComponent(props){
                             </FormGroup>
                             <FormGroup
                                 style={{ alignItems:"center" }}
-                            >
+                            >   
+                                <Label>Select Course Start Date</Label>
                                 <DatePickerComponent onChange={setStartDate}/>
+                                <Label>Select Course End Date</Label>
                                 <DatePickerComponent onChange={setEndDate}/>
                             </FormGroup>
                     </Form>
