@@ -1,3 +1,4 @@
+// Application Page Header. Contains menu bar.
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Link, Route, useParams } from 'react-router-dom'

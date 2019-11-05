@@ -1,3 +1,4 @@
+-- Sample data to add data to database.
 -- Professor
 
 INSERT INTO 

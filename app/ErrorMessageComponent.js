@@ -1,3 +1,4 @@
+// Displays an error message for a variety of components.
 import React from 'react';
 import { Modal, Button } from 'semantic-ui-react';
 

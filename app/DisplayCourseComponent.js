@@ -1,3 +1,4 @@
+// Component to display the course cards.
 import React from 'react';
 // import { parse } from 'csv-parse/lib/sync';
 import { default as CreateNewCourseComponent} from "./CreateNewCourseComponent"

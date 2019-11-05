@@ -1,3 +1,4 @@
+// Display some data from the database. Not sure what.
 import React from 'react';
 import { Button, Modal, Grid, Segment, Label } from 'semantic-ui-react';
 var { reject, resolve } = Promise;

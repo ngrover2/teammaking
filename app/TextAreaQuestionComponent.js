@@ -1,3 +1,4 @@
+// Component to create a free form response question.
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { TextArea, Button, Grid, FormTextArea } from 'semantic-ui-react';

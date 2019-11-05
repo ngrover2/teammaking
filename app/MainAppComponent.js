@@ -1,3 +1,4 @@
+// Main App script. Compiles components from other files.
 import React from 'react';
 import { useState, useEffect } from 'react';
 import {
