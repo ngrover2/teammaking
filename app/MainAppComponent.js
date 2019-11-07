@@ -8,20 +8,18 @@ import {
     Link,
     Redirect
   } from "react-router-dom";
-
 import {default as DisplayCourseComponent} from "./DisplayCourseComponent";
 import {default as RosterDetails} from "./DisplaySavedRosterComponent";
 import {default as DisplayPickedFile} from "./DisplayPickedFile";
 import { Table, Header, Cell, Icon, Button, Grid, GridColumn, Container } from 'semantic-ui-react';
 import {default as SurveyFormQuestionComponent} from "./SurveyFormQuestionComponent";
 import {default as SidebarComponent } from "./SidebarComponent";
-import { default as HeaderComponent } from "./AppHeaderComponent";
-
-
+import {default as HeaderComponent } from "./AppHeaderComponent";
+import {default as AnswerSurveyComponent } from "./AnswerSurveyComponent.jsx";
 
 export default function MainAppComponent() {
     const wHeight = window.innerHeight;
-    console.log(wHeight)
+    console.log(wHeight);
     const [ sidebarVisible, setSidebarVisible ] = useState(false);
     
     const HeaderCellComponent = (props) => (<Table.HeaderCell singleLine>{props.headerName}</Table.HeaderCell>);
@@ -69,8 +67,11 @@ export default function MainAppComponent() {
                                             path="/professor/:pid/course"
                                             children = {({ match }) => <DisplayCourseComponent match={match}/>}
                                     />
+                                    <Route exact={true} path={"/survey/:survey_id"}>
+                                        <AnswerSurveyComponent/>
+                                    </Route>
                                     <Route
-                                            path="/"
+                                            path ="/"
                                             children = {() => <Redirect to={"/"}/>}
                                     />
                                 </Switch>

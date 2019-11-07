@@ -42,6 +42,7 @@ const getDbConnection = () => {
         host: 'localhost',
         port: 3306,
         user: 'root',
+        password: 'password',
         database: 'teammaking'}
     )
     return getConnection

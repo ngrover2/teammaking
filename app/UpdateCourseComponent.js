@@ -330,7 +330,7 @@ export default function UpdateCourseComponent(props){
                                     setOpen(false);
                                 }
                             }
-                        }>
+                        }> 
                             {okayType == "warn" ? "Cancel" : "Ok"}
                         </Button>
                         {
