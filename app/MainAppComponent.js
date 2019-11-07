@@ -15,7 +15,7 @@ import { Table, Header, Cell, Icon, Button, Grid, GridColumn, Container } from '
 import {default as SurveyFormQuestionComponent} from "./SurveyFormQuestionComponent";
 import {default as SidebarComponent } from "./SidebarComponent";
 import {default as HeaderComponent } from "./AppHeaderComponent";
-import {default as AnswerSurveyComponent } from "./AnswerSurveyComponent.jsx";
+import {default as AnswerSurveyComponent } from "./StudentAnswerSurvey/AnswerSurveyComponent.jsx";
 
 export default function MainAppComponent() {
     const wHeight = window.innerHeight;
