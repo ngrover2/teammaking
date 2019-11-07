@@ -19,7 +19,6 @@ import {default as AnswerSurveyComponent } from "./AnswerSurveyComponent.jsx";
 
 export default function MainAppComponent() {
     const wHeight = window.innerHeight;
-    console.log(wHeight);
     const [ sidebarVisible, setSidebarVisible ] = useState(false);
     
     const HeaderCellComponent = (props) => (<Table.HeaderCell singleLine>{props.headerName}</Table.HeaderCell>);
