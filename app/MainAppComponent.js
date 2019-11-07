@@ -66,9 +66,6 @@ export default function MainAppComponent() {
                                             path="/professor/:pid/course"
                                             children = {({ match }) => <DisplayCourseComponent match={match}/>}
                                     />
-                                    <Route exact={true} path={"/survey/:survey_id"}>
-                                        <AnswerSurveyComponent/>
-                                    </Route>
                                     <Route
                                             path ="/"
                                             children = {() => <Redirect to={"/"}/>}
@@ -80,7 +77,10 @@ export default function MainAppComponent() {
                     </Grid>
                 </SidebarComponent>
             </Route>
-            <Route path="/">
+            <Route exact = {true} path={"/respond/:surveyId"}>
+                <AnswerSurveyComponent/>
+            </Route>
+            <Route exact = {true} path="/">
                 <SidebarComponent setVisible={setSidebarVisible} visible={sidebarVisible} pushStyle={appBackGroundStyle} pid={1}>
                     <Grid style={{ background:"inherit"}}>
                         <Grid.Row>
