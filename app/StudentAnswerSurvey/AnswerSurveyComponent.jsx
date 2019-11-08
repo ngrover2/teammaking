@@ -1,12 +1,10 @@
-// Component to create new Survey.
+// Component for Student to answer the survey. Responsible for making network calls and calling the main component that renders the survey
 import React from 'react';
-import {
-  Container,
-  Menu,
-} from 'semantic-ui-react';
 import { useParams } from 'react-router-dom';
+import { default as CreateSurveyResponse } from './QuestionComponents/CreateSurveyResponseComponent.jsx';
 
 export default function AnswerSurveyComponent(props){
+  /* mock of object that the component should receive from the server*/
   const response = {
       "survey_details":{
         "course_name":"SSDI",
@@ -36,23 +34,11 @@ export default function AnswerSurveyComponent(props){
             }  
     }
   };
-  const deadline = new Date(response.survey_details.deadline*1000);// deadline is in UNIX timestamp. We convert it to JS date object
   const  { surveyId } = useParams();
-    return (
-      <div>
-        <Menu fixed='top' inverted>
-          <Container>
-            <Menu.Item as='a' header>
-              {response.survey_details.course_name}
-            </Menu.Item>
-            <Menu.Item as='a'>
-              {response.survey_details.course_instructor}
-            </Menu.Item>
-            <Menu.Item as='a'>
-              Deadline : {deadline.toString()}
-            </Menu.Item>
-          </Container>
-        </Menu>
-      </div>
-  );
+  return (
+    <div>
+      <CreateSurveyResponse  {...response} />
+    </div>
+  )
+  ;
 }
