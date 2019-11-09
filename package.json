@@ -30,6 +30,7 @@
     "csv-parse": "^4.6.5",
     "express": "^4.17.1",
     "express-generator": "^4.16.1",
+    "jslint": "^0.12.1",
     "moment": "^2.24.0",
     "mysql": "^2.17.1",
     "object-hash": "^1.3.1",
