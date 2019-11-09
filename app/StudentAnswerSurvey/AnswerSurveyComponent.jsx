@@ -9,7 +9,7 @@ export default function AnswerSurveyComponent(props){
       "survey_details":{
         "course_name":"SSDI",
         "course_instructor":"Harini",
-        "deadline":1893139865
+        "deadline":1003139865
     },
     "questions":
     {
