@@ -225,7 +225,7 @@ const saveCSV = async function(req, res, next){
                                         let insertRowDataCol2Query = "INSERT INTO RowColumnTwo (??) VALUES ?"
                                         let insertRowDataCol3Query = "INSERT INTO RowColumnThree (??) VALUES ?"
                                         let insertRowDataCol4Query = "INSERT INTO RowColumnFour (??) VALUES ?"
-                                        let insertRowDataCol5Query = "INSERT INTO RowColumnfive (??) VALUES ?"
+                                        let insertRowDataCol5Query = "INSERT INTO RowColumnFive (??) VALUES ?"
 
                                         let col1Query = mysql.format(insertRowDataCol1Query, [colNames, col1Vals]);
                                         let col2Query = mysql.format(insertRowDataCol2Query, [colNames, col2Vals]);
