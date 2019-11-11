@@ -92,15 +92,15 @@ const updateCourseById = async function(req, res, next){
     let connection = getDbConnection();
 
     // Check if a course already exists with the same course code
-    checkCourseQuery = "SELECT course_id FROM Course C WHERE ?? = ? AND ?? = ?"
-    checkCourseQueryArgs = ['C.professor_id', professorId, 'C.course_code', courseCode]
-    checkCourseQuerySql = mysql.format(checkCourseQuery, checkCourseQueryArgs)
+    let checkCourseQuery = "SELECT course_id FROM Course C WHERE ?? = ? AND ?? = ?"
+    let checkCourseQueryArgs = ['C.professor_id', professorId, 'C.course_code', courseCode]
+    let checkCourseQuerySql = mysql.format(checkCourseQuery, checkCourseQueryArgs)
     let checkCourseResults = await executeOnDBWithPromise(connection, checkCourseQuerySql);
     if (checkCourseResults && checkCourseResults.length > 0){
         if (checkCourseResults[0].course_id){
             try{
-                createCourseQuery = "UPDATE Course SET ?? = ? , ?? = ? , ?? = ? , ?? = ? , ?? = ? , ?? = ? , ?? = ? , ?? = ? , ?? = ? , ?? = ? WHERE ?? = ?"
-                createCourseQueryArgs = [
+                let createCourseQuery = "UPDATE Course SET ?? = ? , ?? = ? , ?? = ? , ?? = ? , ?? = ? , ?? = ? , ?? = ? , ?? = ? , ?? = ? , ?? = ? WHERE ?? = ?"
+                let createCourseQueryArgs = [
                     'professor_id', 
                     professorId, 
                     'course_code', 
@@ -124,36 +124,33 @@ const updateCourseById = async function(req, res, next){
                     'course_id',
                     courseId,
                 ]
-                createCourseQuerySql = mysql.format(createCourseQuery, createCourseQueryArgs);
+                let createCourseQuerySql = mysql.format(createCourseQuery, createCourseQueryArgs);
                 console.log("createCourseQuerySql", createCourseQuerySql);
                 let courseCreateResults = await executeOnDBWithPromise(connection, createCourseQuerySql);
                 if (courseCreateResults && courseCreateResults.affectedRows > 0){
-                    res.status(200).json({
+                    return res.status(200).json({
                         status:"ok",
                         "result":[],
                         "count": -1,
                         "action":"updated"
                     })
-                    return res
                 }
             }catch(error){
-                res.status(500).json({
+                return res.status(500).json({
                     status:"error",
                     error:error.message,
                     "errorFull": JSON.stringify(error),
                     "error_code":"SCFP1CCE"
                 })
-                return res
             }
         
             
         }else{
-            res.status(404).json({
+            return res.status(404).json({
                 status:"error",
                 error:`The course with the course code:${courseCode} does not exist in the database`,
                 "error_code":"SCFP1CNE"
-            })  
-            return res    
+            })
         }
     }
 }
