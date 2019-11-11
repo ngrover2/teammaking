@@ -1,0 +1,17 @@
+#rowitemscentered {
+	justify-content: center;
+	text-align: center;
+}
+
+.fullwidth{
+	width: 100%!important;
+}
+
+#visiblefullwidthdivider {
+	width: 100%;
+	border-bottom :1px solid rgba(255, 255, 255, 0.4);
+}
+
+#customradiobutton{
+	border: 2px solid #cccaca;
+}

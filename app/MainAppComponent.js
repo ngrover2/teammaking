@@ -1,3 +1,4 @@
+// Main App script. Compiles components from other files.
 import React from 'react';
 import { useState, useEffect } from 'react';
 import {
@@ -8,19 +9,19 @@ import {
     Redirect
   } from "react-router-dom";
 
-import {default as DisplayCourseComponent} from "./DisplayCourseComponent";
-import {default as RosterDetails} from "./DisplaySavedRosterComponent";
-import {default as DisplayPickedFile} from "./DisplayPickedFile";
+  // navit
+import {default as DisplayCourseComponent} from "./Course/DisplayCourseComponent";
+import {default as RosterDetails} from "./Roster/DisplaySavedRosterComponent";
+import {default as DisplayPickedFile} from "./Roster/DisplayPickedFile";
 import { Table, Header, Cell, Icon, Button, Grid, GridColumn, Container } from 'semantic-ui-react';
 import {default as SidebarComponent } from "./SidebarComponent";
 import { default as HeaderComponent } from "./AppHeaderComponent";
-import { default as SurveyFormQuestionComponent } from "./SurveyFormQuestionComponent";
+import { default as SurveyFormQuestionComponent } from "./Survey/SurveyFormQuestionComponent";
 
-
+import {default as AnswerSurveyComponent } from "./StudentAnswerSurvey/AnswerSurveyComponent.jsx"; // rahul
 
 export default function MainAppComponent() {
     const wHeight = window.innerHeight;
-    console.log(wHeight)
     const [ sidebarVisible, setSidebarVisible ] = useState(false);
     
     const HeaderCellComponent = (props) => (<Table.HeaderCell singleLine>{props.headerName}</Table.HeaderCell>);
@@ -69,7 +70,7 @@ export default function MainAppComponent() {
                                             children = {({ match }) => <DisplayCourseComponent match={match}/>}
                                     />
                                     <Route
-                                            path="/"
+                                            path ="/"
                                             children = {() => <Redirect to={"/"}/>}
                                     />
                                 </Switch>
@@ -79,7 +80,10 @@ export default function MainAppComponent() {
                     </Grid>
                 </SidebarComponent>
             </Route>
-            <Route path="/" exact={true}>
+            <Route exact = {true} path={"/respond/:surveyId"}>
+                <AnswerSurveyComponent/>
+            </Route>
+            <Route exact = {true} path="/">
                 <SidebarComponent setVisible={setSidebarVisible} visible={sidebarVisible} pushStyle={appBackGroundStyle} pid={1}>
                     <Grid style={{ background:"inherit"}}>
                         <Grid.Row>
