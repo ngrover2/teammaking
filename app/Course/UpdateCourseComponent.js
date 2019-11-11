@@ -236,7 +236,7 @@ export default function UpdateCourseComponent(props){
                             />
                             <FormField
                                 label={"Course Description"}
-                                placeholder={"Enter Teaching Assistant's Email ID"}
+                                placeholder={"Enter Course Description"}
                                 control="textarea"
                                 style={{height:"100px"}}
                                 value={courseDesc}
