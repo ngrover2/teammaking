@@ -7,7 +7,7 @@ const getRosterById = async function(req, res, next){
     const roster_id = req.params.rid;
     const course_id = req.params.cid;
     if (!roster_id){
-        res.json({
+        res.status(400).json({
             status:"error",
             error:"roster_id not present in request"
         })
@@ -100,7 +100,7 @@ const getRosterById = async function(req, res, next){
                     }
                 }
             })
-            res.json({
+            res.status(200).json({
                 status:"ok",
                 results:{
                     data: rosterData,
@@ -111,7 +111,7 @@ const getRosterById = async function(req, res, next){
         }
         // throw Error("No roster found with this id")
     }catch(error){
-        res.json({
+        res.status(500).json({
             status:"error",
             error:error.message,
             errorFull:JSON.stringify(error),

@@ -27,7 +27,7 @@ const saveCSV = async function(req, res, next){
     try{
         connection = getDbConnection();
     }catch(error){
-        return res.json({
+        return res.status(500).json({
             status:"error",
             error: `There seems to be problem with our database at this time. Please try again later.`,
             errorCode:"SRFC1DBCON"
@@ -37,14 +37,14 @@ const saveCSV = async function(req, res, next){
 
     try{
         if(!validatePositiveNumber(professor_id)){
-            return res.json({
+            return res.status(400).json({
                 status:"error",
                 error:"Invalid professor_id received from request.\nprofessor_id should not be empty and should be a valid positive number(integer)",
                 "error_code":"SRFC1IVPID"
             })
         }
         if(!validatePositiveNumber(course_id)){
-            return res.json({
+            return res.status(400).json({
                 status:"error",
                 error:"Invalid course_id received from request.\ncourse_id should not be empty and should be a valid positive number(integer)",
                 "error_code":"SRFC1IVCID"
@@ -52,28 +52,28 @@ const saveCSV = async function(req, res, next){
         }
 
         if (!Array.isArray(header) || !Array.isArray(data_rows)){
-            return res.json({
+            return res.status(400).json({
                 status: "error",
                 error: "header_row and data_rows should to be non-empty arrays"
             })
         }else{
             // check header length
             if (header.length < 1){
-                return res.json({
+                return res.status(404).json({
                     status: "error",
                     error: "header_row cannot be empty"
                 })    
             }
             // check data length
             if (data_rows.length < 1){
-                return res.json({
+                return res.status(404).json({
                     status: "error",
                     error: "data_rows cannot be empty"
                 })    
             }
             // check header and column count validity
             if (header.length != data_rows[0].length){
-                return res.json({
+                return res.status(404).json({
                     status: "error",
                     error: "header_row column count and data_rows column count does not match"
                 })
@@ -252,7 +252,7 @@ const saveCSV = async function(req, res, next){
                                             }
                                         }
                                     }
-                                    return res.json({
+                                    return res.status(201).json({
                                         status: "ok",
                                         result: `Inserted ${data_rows.length} rows`,
                                         roster_id: roster_id,
@@ -261,7 +261,7 @@ const saveCSV = async function(req, res, next){
                                     });
                                 }
                             }else{
-                                return res.json({
+                                return res.status(500).json({
                                     status: "error",
                                     error: "Rows could not be inserted",
                                 });
@@ -269,13 +269,13 @@ const saveCSV = async function(req, res, next){
                         }
                     }
                 }
-                return res.json({
+                return res.status(500).json({
                     status: "error",
                     error: "Data could not be created, please try again.",
                 });
             }catch(error){
                 console.log(error)
-                return res.json({
+                return res.status(500).json({
                     status:"error",
                     error:error.message,
                     errorFull:JSON.stringify(error)
@@ -284,7 +284,7 @@ const saveCSV = async function(req, res, next){
         }
     }catch(error){
         console.log(error)
-        return res.json({
+        return res.status(500).json({
             status:"error",
             error:error.message,
             errorFull:JSON.stringify(error)

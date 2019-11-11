@@ -53,7 +53,7 @@ const saveCourseForProfessor = async function (req, res, next){
     }
     
     if (!validateString(courseName)){
-        return res.json({
+        return res.status(400).json({
             status:"error",
             error:"course_name should not be empty and should be a valid text(string) value",
             "error_code":"SCFP1CN"
@@ -63,14 +63,14 @@ const saveCourseForProfessor = async function (req, res, next){
         courseDesc = "No description provided"
     }
     if(!validateString(courseCode)){
-        return res.json({
+        return res.status(400).json({
             status:"error",
             error:"course_code should not be empty and should be a valid text(string) value",
             "error_code":"SCFP1CC"
         })
     }
     if(!validatePositiveNumber(professorId)){
-        return res.json({
+        return res.status(400).json({
             status:"error",
             error:"professor_id should be a valid positive number(integer)",
             "error_code":"SCFP1PI"
@@ -94,7 +94,7 @@ const saveCourseForProfessor = async function (req, res, next){
     if (checkProfessorResults){
         if (checkProfessorResults[0]){
             if (!checkProfessorResults[0].professor_id){
-                res.json({
+                res.status(400).json({
                     status:"error",
                     error:`professor with professor_id ${professorId} does not exist in the database`,
                     "error_code":"SCFP1PNE"
@@ -110,7 +110,7 @@ const saveCourseForProfessor = async function (req, res, next){
     let checkCourseResults = await executeOnDBWithPromise(connection, checkCourseQuerySql);
     if (checkCourseResults && checkCourseResults.length > 0){
         if (checkCourseResults[0].course_id){
-            res.json({
+            res.status(403).json({
                 status:"error",
                 error:`A course with the course code:${courseCode} already exists in the database`,
                 "error_code":"SCFP1CAE"
@@ -149,14 +149,14 @@ const saveCourseForProfessor = async function (req, res, next){
         console.log("createCourseQuerySql", createCourseQuerySql)
         let courseCreateResults = await executeOnDBWithPromise(connection, createCourseQuerySql);
         if (courseCreateResults && courseCreateResults.affectedRows > 0){
-            res.json({
+            res.status(201).json({
                 status:"ok",
                 "result":[],
                 "count": -1
             })
         }
     }catch(error){
-        res.json({
+        res.status(500).json({
             status:"error",
             error:error.message,
             "errorFull": JSON.stringify(error),

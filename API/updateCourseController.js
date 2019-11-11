@@ -9,15 +9,15 @@ const updateCourseById = async function(req, res, next){
     const courseDesc = req.body.course_description;
     const courseCode = req.body.course_code;
     const professorId = req.params.pid;
-    const taName = req.body.ta_name;
-    const taEmail = req.body.ta_email;
+    var taName = req.body.ta_name;
+    var taEmail = req.body.ta_email;
     const startDate = req.body.start_date;
     const endDate = req.body.end_date;
     const classStartTime = req.body.class_start_time;
     const classEndTime = req.body.class_end_time;
 
     if (courseId == null){
-        res.json({
+        res.status(400).json({
             status:"error",
             "error":"course_id not present in the url"
         })
@@ -39,7 +39,7 @@ const updateCourseById = async function(req, res, next){
     }
     
     if (!validateString(courseName)){
-        res.json({
+        res.status(400).json({
             status:"error",
             error:"course_name should be a valid text(string) value",
             "error_code":"SCFP1CN"
@@ -47,7 +47,7 @@ const updateCourseById = async function(req, res, next){
         return res
     }
     if(!validateString(courseDesc)){
-        res.json({
+        res.status(400).json({
             status:"error",
             error:"course_description should not be empty and be a valid text(string) value",
             "error_code":"SCFP1CD"
@@ -55,7 +55,7 @@ const updateCourseById = async function(req, res, next){
         return res
     }
     if(!validateString(courseCode)){
-        res.json({
+        res.status(400).json({
             status:"error",
             error:"course_code should not be empty and be a valid text(string) value",
             "error_code":"SCFP1CC"
@@ -63,7 +63,7 @@ const updateCourseById = async function(req, res, next){
         return res
     }
     if(!validatePositiveNumber(professorId)){
-        res.json({
+        res.status(400).json({
             status:"error",
             error:`professor_id should be a valid positive number(integer), received:${professorId}`,
             "error_code":"SCFP1PI"
@@ -71,20 +71,22 @@ const updateCourseById = async function(req, res, next){
         return res
     }
     if(!validateString(taEmail)){
-        res.json({
-            status:"error",
-            error:"ta_email should not be empty and be a valid email value",
-            "error_code":"SCFP1TE"
-        })
-        return res
+        taEmail = "";
+        // res.status(400).json({
+        //     status:"error",
+        //     error:"ta_email should not be empty and be a valid email value",
+        //     "error_code":"SCFP1TE"
+        // })
+        // return res
     }
     if(!validateString(taName)){
-        res.json({
-            status:"error",
-            error:"ta_name should not be empty and be a valid text(string) value",
-            "error_code":"SCFP1TN"
-        })
-        return res
+        taName = "";
+        // res.status(500).json({
+        //     status:"error",
+        //     error:"ta_name should not be empty and be a valid text(string) value",
+        //     "error_code":"SCFP1TN"
+        // })
+        // return res
     }
 
     let connection = getDbConnection();
@@ -126,7 +128,7 @@ const updateCourseById = async function(req, res, next){
                 console.log("createCourseQuerySql", createCourseQuerySql);
                 let courseCreateResults = await executeOnDBWithPromise(connection, createCourseQuerySql);
                 if (courseCreateResults && courseCreateResults.affectedRows > 0){
-                    res.json({
+                    res.status(200).json({
                         status:"ok",
                         "result":[],
                         "count": -1,
@@ -135,7 +137,7 @@ const updateCourseById = async function(req, res, next){
                     return res
                 }
             }catch(error){
-                res.json({
+                res.status(500).json({
                     status:"error",
                     error:error.message,
                     "errorFull": JSON.stringify(error),
@@ -146,7 +148,7 @@ const updateCourseById = async function(req, res, next){
         
             
         }else{
-            res.json({
+            res.status(404).json({
                 status:"error",
                 error:`The course with the course code:${courseCode} does not exist in the database`,
                 "error_code":"SCFP1CNE"

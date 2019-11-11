@@ -6,7 +6,7 @@ var router = express.Router({mergeParams: true});
 const getCoursesByProfessorId = async function(req, res, next){
     const professorId = req.params.pid;
     if (professorId == null){
-        res.json({
+        res.status(400).json({
             status:"error",
             error:"professor_id not present in request"
         })
@@ -22,20 +22,20 @@ const getCoursesByProfessorId = async function(req, res, next){
         getCoursesQuerySql = mysql.format(getCoursesQuery, [getCoursesQueryIdentifiers, getCoursesQueryValues])
         let getCoursesResults = await executeOnDBWithPromise(connection, getCoursesQuerySql )
         if (getCoursesResults){
-            res.json({
+            res.status(200).json({
                 status:"ok",
                 "result":getCoursesResults,
                 "count":getCoursesResults.length
             })
         }else{
-            res.json({
+            res.status(200).json({
                 status:"ok",
                 "result":[],
                 "count":0
             })
         }
     }catch(error){
-        res.json({
+        res.status(500).json({
             status: "error",
             error: error.message,
             "errorFull": JSON.stringify(error),

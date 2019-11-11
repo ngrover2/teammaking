@@ -16,12 +16,12 @@ const deleteCourseById = async function(req, res, next){
     try{
         await executeOnDBWithPromise(connection, mysql.format("DELETE FROM Course WHERE ?? = ?",['course_id', courseId]));
         console.log(`DELETING COURSE(id:${courseId})`) // DEBUG
-        res.json({
+        res.status(204).json({
                 status:"ok",
                 "action":"deleted"
         })
     }catch(error){
-        res.json({
+        res.status(500).json({
             status:"error",
             "error":error.message
         })
