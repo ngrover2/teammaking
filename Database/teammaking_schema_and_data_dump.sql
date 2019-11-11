@@ -520,7 +520,7 @@ DROP TABLE IF EXISTS `SurveyQuestions`;
 CREATE TABLE `SurveyQuestions` (
   `question_id` int(11) NOT NULL AUTO_INCREMENT,
   `survey_id` int(11) NOT NULL,
-  `question_object` varchar(200) DEFAULT NULL,
+  `question_object` JSON DEFAULT NULL,
   PRIMARY KEY (`question_id`),
   KEY `survey_id` (`survey_id`),
   CONSTRAINT `surveyquestions_ibfk_1` FOREIGN KEY (`survey_id`) REFERENCES `Survey` (`survey_id`) ON DELETE CASCADE ON UPDATE CASCADE
