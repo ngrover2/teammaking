@@ -7,15 +7,13 @@ import { useState, useEffect } from 'react';
 const PickRosterFileComponent = (props) =>  {
     const [file, setFile] = useState(null);
     const [ courseId, setCourseId ] = useState(props.course_id);
-    var [currentSelection, setCurrentSelection] = useState("Selected file name will appear here.");
 
     useEffect(() => {
         setCourseId(props.course_id);
-        console.log(`picker ids now for course_id:${props.course_id} `)
     },[props]);
 
     useEffect(() => {
-        console.log(`will pass file for course_id:${courseId} `)
+        // console.log(`will pass file for course_id:${courseId} `)
         if (file) props.passSelectedFile(file, courseId);
     },[file]);
 
@@ -23,11 +21,11 @@ const PickRosterFileComponent = (props) =>  {
     function setFileName(e,d){
         if (e.target.files.length > 0){
             setFile(e.target.files[0]);
-            setCurrentSelection(`You selected: ${e.target.files[0].name}`);
+            // setCurrentSelection(`You selected: ${e.target.files[0].name}`);
         }else{
             console.log("No files selected.")
             setFile({name:""})
-            setCurrentSelection("Selected file name will appear here.")
+            // setCurrentSelection("Selected file name will appear here.")
         }
     }
 
