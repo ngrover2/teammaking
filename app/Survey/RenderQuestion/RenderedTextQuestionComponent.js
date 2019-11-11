@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Input, Form, Grid, Message, Segment, TextArea, Button, FormTextArea, Header } from 'semantic-ui-react';
-import { GridRowMessageComponent, QuestionWeightFormFieldComponent, questionWeights } from "./UtilComponents";
+import { GridRowMessageComponent, QuestionWeightFormFieldComponent, questionWeights } from "../../Utils/UtilComponents";
 
 
 const TextQuestion = (props) => {

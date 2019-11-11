@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react'
 import { Form, Label, Grid, Message, Segment, Button, Checkbox, Icon, Header, Input } from 'semantic-ui-react';
-import { QuestionWeightFormFieldComponent, questionWeights } from "./UtilComponents";
+import { QuestionWeightFormFieldComponent, questionWeights } from "../../Utils/UtilComponents";
 
 
 const RenderedMulValuesQuestionComponent = (props) => {

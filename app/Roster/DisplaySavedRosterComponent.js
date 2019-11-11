@@ -1,82 +1,133 @@
-// Component to display rosters to pick from.
+// Component to display the roster from the database.
 import { useState, useEffect } from 'react';
 import React from 'react';
 import { Table, Header, HeaderCell, Row, Grid, Button, Input, Label, Tab, Checkbox } from 'semantic-ui-react';
-import { Redirect , useLocation, useParams, useHistory } from 'react-router-dom';
-import { default as MessageComponent } from './ErrorMessageComponent';
+import { default as MessageComponent } from '../Utils/ErrorMessageComponent';
+import { Redirect, useParams, useHistory } from 'react-router-dom';
 
 const getEmptyStudentRow = () => (<Table.Row><Table.Cell>No Students in the roster</Table.Cell></Table.Row>)
-const getEmptyHeaderRow = () => (<Table.Cell>No Header present in roster file</Table.Cell>)
+const getEmptyHeaderRow = () => (<Table.Row><Table.HeaderCell>No Header present in roster file</Table.HeaderCell></Table.Row>)
 
-const DisplayPickedFile = (props) => {
-    var { state } = useLocation();
-    console.log(state);
-    const [ receivedHeader, setReceivedHeader ] = useState(state.header || []);
-    const [ receivedStudents, setReceivedStudents ] = useState(state.data || []);
-    var history = useHistory();
-
-    const { cid, pid } = useParams();
+const DisplaySavedRosterComponent = (props) => {
+    const [ receivedHeader, setReceivedHeader ] = useState(null);
+    const [ receivedHeaderObj, setReceivedHeaderObj ] = useState(null);
+    const [ receivedStudents, setReceivedStudents ] = useState([]);
+    const  history = useHistory();
     
-    // const [ headerEditable, setHeaderEditable ] = useState(false);
     const [ header, setHeader ] = useState([]);
+    const [ headerColumnsOldToNewNamesMapping, setHeaderColumnsOldToNewNamesMapping  ] = useState({});
 
-    let mapping = Object.assign({});
-        receivedHeader.forEach((val)=>{
-                mapping[val]=val
-        });
-    const [ headerColumnsOldToNewNamesMapping, setHeaderColumnsOldToNewNamesMapping  ] = useState(mapping);
+    const { rid, cid, pid } = useParams();
     
     const [ students, setStudents ] = useState([]);
-    const [ doUpload, setDoUpload ] = useState(false);
+    const [ initialFetchId ] = useState(0);
     const [ message, setMessage ] = useState("");
     const [ messageModalOpen, setMessageModalOpen ] = useState(false);
     const [ uploadAttemptId, setUploadAttemptId ] = useState(0);
-    const [ uploadFailedId, setUploadFailedId ] = useState(0);
-    const [ uploadSucceededId, setUploadSucceededId ] = useState(0);
-    const [ responseCode, setResponseCode ] = useState(0); // 1 for success, 0 for failure
-
-    const [ headerLength, setHeaderLength ] = useState(0);
     
     const [ updatedId, setUpdatedId ] = useState(0);
     const [ headerUpdatedId, setHeaderUpdatedId ] = useState(0);
 
-    const [ lockHeader, setLockHeader ] = useState(React.createRef());
+    const [ lockHeader ] = useState(React.createRef());
 
     const messageButtonRef = React.createRef();
+    
+    useEffect(() => {
+        console.log("useEffect called for fetchRoster called");
+        async function fetchRoster(){
+            let postBody = {
+                roster_id: rid,
+            }
+            var fetchStudents = await fetch(`http://localhost:3000/professor/${pid}/course/${cid}/roster/${rid}`,{
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                cache: 'no-cache',
+                body: JSON.stringify(postBody)
+            })
+            .then(
+                (successRes) => successRes,
+                (failureRes) => []
+            )
+            .then(
+                (resolvedRes) => {console.log("resolvedRes",resolvedRes);return resolvedRes.json()},
+            )
+            .then(
+                (json) => {console.log("json",json);return json.results},
+            )
+            .catch((error) => {
+                console.log(error);
+                return [];
+            })
+            if (fetchStudents){
+                console.log(`Data Fetched, setting headerUpdateId from ${headerUpdatedId} to ${headerUpdatedId+1}`)
+                // console.log(fetchStudents.header);
+                // console.log(fetchStudents.data);
+                setReceivedHeader(fetchStudents.header);
+                setReceivedStudents(fetchStudents.data);
+                setHeaderUpdatedId(headerUpdatedId+1);
+            }
+        }
+        fetchRoster();
+    }, [initialFetchId])
 
     useEffect(()=> {
-        // console.log("useEffect setHeader called") //DEBUG
-        let formattedHeader = true;
-        if (formattedHeader){
+        console.log("useEffect for headerUpdatedId called") //DEBUG        
+        // let formattedHeader = true;
+        if (receivedHeader){
+            // let hdr = [];
+            console.log(receivedHeader);
+            // for (var property in receivedHeader){
+            //     console.log(property);
+            //     console.log(receivedHeader[property]);
+            //     hdr.push(receivedHeaderObj[property]);  
+            // }
+            // console.log(hdr);
+            // setReceivedHeader(hdr);
+            console.log("receivedHeader, creating HeaderRow") //DEBUG        
+            // console.log(receivedHeaderObj);
             setHeader(<HeaderRowComponent id="headerRow" ref={lockHeader}/>);
+            setUpdatedId(updatedId+1);
+            constructMapping();
+        }else{
+            console.log("No receivedHeader, cannot create HeaderRow") //DEBUG        
+            setHeader(getEmptyHeaderRow());
+            setStudents(getEmptyStudentRow());
         }
     },[headerUpdatedId])
 
-    useEffect(()=> {
-        let formattedStudents = getRows();
-        if (formattedStudents && formattedStudents.length > 0){
-            setStudents(formattedStudents);
+    useEffect(() => {
+        console.log("useEffect for updatedId called") //DEBUG        
+        if (receivedHeader){
+            console.log("receivedHeader, creating StudentObjects") //DEBUG        
+            let formattedStudents = getRows();
+            if (formattedStudents && formattedStudents.length > 0){
+                console.log("Got Student Rows, creating StudentRows") //DEBUG        
+                setStudents(formattedStudents);
+            }else{
+                console.log("No StudentObjects, cannot create StudentRows") //DEBUG        
+                setStudents(getEmptyStudentRow());
+            }
         }else{
-            setStudents(getEmptyStudentRow())
+            console.log("No receivedHeader, cannot create StudentObjects") //DEBUG        
+            setStudents(getEmptyStudentRow());
         }
     },[updatedId])
 
     useEffect(()=>{
         if (uploadAttemptId !== 0) uploadRoster();
     },[uploadAttemptId])
-
-    useEffect(()=> {
-        if (uploadFailedId !== 0){
-            // Nothing for now
+    
+    function constructMapping(){
+        let mapping = Object.assign({});
+        if (receivedHeader){
+            receivedHeader.forEach((val)=>{
+                mapping[val]=val
+            });
+            setHeaderColumnsOldToNewNamesMapping(mapping)
         }
-    },[uploadFailedId])
-
-    useEffect(()=> {
-        if (uploadSucceededId !== 0){
-            history.goBack()
-        }
-    },[uploadSucceededId])
-
+    }
 
     async function uploadRoster(){
         // console.log(receivedStudents); // DEBUG
@@ -102,8 +153,6 @@ const DisplayPickedFile = (props) => {
             let tmp = {}
             tmp.name = headerColumnsOldToNewNamesMapping[headerColName]
             tmp.multi = true
-            // headerArray[hidx].name = headerColumnsOldToNewNamesMapping[headerColName]
-            // headerArray[hidx].multi = true
             headerArray.push(tmp)
         })
         console.log(headerArray) //DEBUG
@@ -125,26 +174,28 @@ const DisplayPickedFile = (props) => {
                 cache: 'no-cache',
                 body: JSON.stringify(postBody)
             })
-    
-            let responseJson = await response.json()
+            let responseJson = null;
+            if (!response){
+                throw new Error("Network error prevented the request from succeeding.")
+            }
+            try{
+                responseJson = await response.json()
+            }catch{
+                throw new Error("Invalid response received from the server")
+            }
             if (responseJson){
                 if (responseJson.status == "ok"){
                     console.log(responseJson)
-                    setResponseCode(1);                    
                     setMessage("Roster uploaded successfully");
                     setMessageModalOpen(true);
                 }else{
-                    setResponseCode(0);                    
-                    setMessage(`${responseJson.error || "Problem uploading roster"}`);
+                    setMessage(`${responseJson.error || "An error occurred trying to update the roster"}`);
                     setMessageModalOpen(true);
                 }
             }else{
-                setResponseCode(0);                    
-                setMessage("Problem uploading roster");
-                setMessageModalOpen(true);
+                throw new Error("Invalid response received from the server")
             }
         }catch(error){
-            setResponseCode(0);                    
             setMessage(error.message);
             setMessageModalOpen(true);
         }
@@ -183,23 +234,22 @@ const DisplayPickedFile = (props) => {
         const [ localHeader, setLocalHeader ] = useState([...receivedHeader]);
         // const [ localHeaderCheckboxes, setLocalHeaderCheckboxes ] = useState([...receivedHeader].map((v)=> false));
         
-        
         const [ renderedHeader, setRenderedHeader ] = useState([...receivedHeader]);
         const [ localHeaderUpdatedId, setLocalHeaderUpdatedId ] = useState(0);
         
         // headerValues keeps track of state changes to the input tags (modifiable header column names) in the localHeader
         // headerValues is initialised with a copy of receivedHeader. 
-        // We keep duplicate local state in headerValues, because if we change localHeader directly, 
+        // We keep duplicate local state in headerValues, because if we change localHeader directly,
         // the input tags' values will be matched with localHeader values but they have not been updated yet because updating them requires a re-render of HeaderRowComponent
         // We propagate local changes to the localHeader on Lock Header button click
         const [ headerValues, setHeaderValues ] = useState([...receivedHeader]);
         
         
         const [ headerEditable, setHeaderEditable ] = useState(false);
-        let mapping = Object.assign({});
-        receivedHeader.forEach((val)=>{
-                mapping[val]=val
-        });
+        // let mapping = Object.assign({});
+        // receivedHeader.forEach((val)=>{
+        //         mapping[val]=val
+        // });
         const [ headerNameChangeMapping, setHeaderNameChangeMapping ] = useState(headerColumnsOldToNewNamesMapping)
 
         useEffect(() => {
@@ -208,8 +258,6 @@ const DisplayPickedFile = (props) => {
             newHeader ? setRenderedHeader(newHeader) : setRenderedHeader(getEmptyHeaderRow());
         },[localHeaderUpdatedId])
 
-        
-        
         function constructHeader(){
             try{
                 console.log(`${""}`);
@@ -305,15 +353,9 @@ const DisplayPickedFile = (props) => {
             );
         }catch{
             return (
-                (
-                    <Table.Row>
-                        {getEmptyHeaderRow()}
-                    </Table.Row>
-                )
+                getEmptyHeaderRow()
             );
         }
-        
-
     })
 
     const StudentRowComponent = (props) => {
@@ -329,7 +371,7 @@ const DisplayPickedFile = (props) => {
             console.log("constructRow called")
   
             function getMatchingHeaderName(colName){
-                if(colName) return state.header[state.header.indexOf(colName)]
+                if(colName) return receivedHeader[receivedHeader.indexOf(colName)]
                 return null;
             }
             let rowCells = []
@@ -384,6 +426,7 @@ const DisplayPickedFile = (props) => {
                 </Table.Cell>
             </Table.Row>)
         }catch(err){
+            console.log(err);
             return getEmptyStudentRow();
         }
     };
@@ -414,30 +457,15 @@ const DisplayPickedFile = (props) => {
                         <Button positive onClick={()=> history.goBack()}>Go Back</Button>
                 </Grid.Column>
                 <Grid.Column width={3}>
-                        <Button positive onClick={()=> setUploadAttemptId(uploadAttemptId+1)}>Upload</Button>
+                        <Button positive onClick={()=> {(receivedHeader && receivedHeader.length>0) ? setUploadAttemptId(uploadAttemptId+1) : 0}} disabled={(receivedHeader && receivedHeader.length>0) ? false : true}>Update</Button>
                 </Grid.Column>
-                <MessageComponent 
-                    ref={messageButtonRef} 
-                    errorMessage={message} 
-                    open={messageModalOpen} 
-                    closeModal={
-                        () => {
-                            setMessageModalOpen(false);
-                            if (responseCode){
-                                if (responseCode == 0 ){
-                                    setUploadFailedId(uploadFailedId + 1 );
-                                }else{
-                                    setUploadSucceededId(uploadSucceededId + 1 );
-                                }
-                            }
-                        }
-                    }/>
+                <MessageComponent ref={messageButtonRef} errorMessage={message} open={messageModalOpen} closeModal={() => setMessageModalOpen(false)}/>
             </Grid.Row>
         </Grid>
     );
 }
 
-export default DisplayPickedFile
+export default DisplaySavedRosterComponent
 
 
 // Code to add Checkboxes to the header to indicate multi-values

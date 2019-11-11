@@ -1,11 +1,11 @@
 // Component to display the course cards.
 import React from 'react';
-import { default as CreateNewCourseComponent} from "./CreateNewCourseComponent"
-import { default as UpdateCourseComponent} from "./UpdateCourseComponent";
-import { default as PickRosterFileComponent } from "./PickRosterFileComponent";
-import { default as ErrorMessageComponent } from "./ErrorMessageComponent";
+import { default as CreateNewCourseComponent} from "../Course/CreateNewCourseComponent"
+import { default as UpdateCourseComponent} from "../Course/UpdateCourseComponent";
+import { default as PickRosterFileComponent } from "../Roster/PickRosterFileComponent";
+import { default as ErrorMessageComponent } from "../Utils/ErrorMessageComponent";
 
-import { Button, Card, Image, Grid, GridRow, Segment, GridColumn, Divider } from 'semantic-ui-react'
+import { Button, Card, Image, Grid, GridRow, Segment, GridColumn, Divider } from 'semantic-ui-react';
 
 
 import {
@@ -44,30 +44,10 @@ const CourseCardComponent = (props) => {
 				</Card.Description>
 			</Card.Content>
 			<Card.Content extra>
-				<div className='ui four buttons'>
+				<div className='ui two buttons'>
 					<Button style={{ margin:"2px"}}
 						basic 
-						color='green' 
-						onClick={
-							// Not sure how to view surveys on click
-							() => props.setViewSurveysClick("viewSurveys", props.courseId) 
-						}
-					>
-						View Surveys
-					</Button>
-					<Button style={{ margin:"2px"}}
-						basic 
-						color='green' 
-						onClick={
-							// not sure how to go to new survey on click
-							() => props.setNewSurveyClick("newSurvey", props.courseId)
-						}
-					>
-						New Survey
-					</Button>
-					<Button style={{ margin:"2px"}}
-						basic 
-						color='green' 
+						color='green'
 						onClick={
 							() => props.setViewRosterClick("viewDownloadedRoster", props.courseId, props.rosterId)
 						}

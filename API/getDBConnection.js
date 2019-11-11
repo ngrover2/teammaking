@@ -7,7 +7,7 @@ const getDbConnection = () => {
         user: 'root',
         database: 'teammaking'}
     )
-    return getConnection
+    return getConnection;
 }
 
 const executeOnDBWithPromise = (connection, query) => {

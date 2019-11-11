@@ -3,23 +3,23 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { Grid, Segment, Button } from 'semantic-ui-react';
 import { default as SelectQuestionType} from "./SelectQuestionTypeRadioComponent";
-import { default as CreateTextQuestion } from "./CreateTextTypeQuestionComponent";
-import { default as CreateMCQuestionComponent} from "./CreateMCTypeQuestionComponent";
-import { default as CreateMulValuesQuestionComponent } from "./CreateMulValuesQuestionComponent";
-import { default as CreateSingleChoiceQuestionComponent } from "./CreateSingleChoiceQuestionComponent";
+import { default as CreateTextQuestion } from "./CreateQuestion/CreateTextTypeQuestionComponent";
+import { default as CreateMCQuestionComponent} from "./CreateQuestion/CreateMCTypeQuestionComponent";
+import { default as CreateMulValuesQuestionComponent } from "./CreateQuestion/CreateMulValuesQuestionComponent";
+import { default as CreateSingleChoiceQuestionComponent } from "./CreateQuestion/CreateSingleChoiceQuestionComponent";
 
-import { default as RenderedTextQuestionComponent} from "./RenderedTextQuestionComponent";
-import { default as RenderedMCQuestionComponent} from "./RenderedMCQuestionComponent";
-import { default as RenderedMulValuesQuestionComponent} from "./RenderedMulValuesQuestionComponent";
-import { default as RenderedSingleChoiceQuestionComponent } from "./RenderedSingleChoiceQuestionComponent";
+import { default as RenderedTextQuestionComponent} from "./RenderQuestion/RenderedTextQuestionComponent";
+import { default as RenderedMCQuestionComponent} from "./RenderQuestion/RenderedMCQuestionComponent";
+import { default as RenderedMulValuesQuestionComponent} from "./RenderQuestion/RenderedMulValuesQuestionComponent";
+import { default as RenderedSingleChoiceQuestionComponent } from "./RenderQuestion/RenderedSingleChoiceQuestionComponent";
 
-import { FullWidthDivider, GridRowMessageComponent, DatePickerGridRowComponent } from "./UtilComponents";
+import { FullWidthDivider, GridRowMessageComponent, DatePickerGridRowComponent } from "../Utils/UtilComponents";
 
 const mockQuestionObj = {
     qid:1,
     qtype:"text",
-    qtext:"test question",
-    qweight:"LittleImportant"
+    qtext:"This is a mocked question",
+    qweight:"Not Important"
 }
 
 

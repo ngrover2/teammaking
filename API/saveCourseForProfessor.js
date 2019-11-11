@@ -1,9 +1,7 @@
 var express = require("express");
 var mysql = require('mysql');
 var [ getDbConnection, executeOnDBWithPromise ] = require('./getDBConnection');
-var router = express.Router();
-
-console.log(getDbConnection);
+var router = express.Router({mergeParams: true});
 
 const saveCourseForProfessor = async function (req, res, next){
     const courseName = req.body.course_name;
@@ -14,14 +12,14 @@ const saveCourseForProfessor = async function (req, res, next){
     var taEmail = req.body.ta_email;
     var startDate = req.body.start_date;
     var endDate = req.body.end_date;
-    // const startDateMomentObj = startDate ? moment(startDate) : null; // Not required but may be useful in the future
-    // const endDateMomentObj = endDate ? moment(endDate) : null; // Not required but may be useful in the future
     const classStartTime = req.body.class_start_time;
 	const classEndTime = req.body.class_end_time;
-	console.log("Request body", JSON.stringify(req.body));
-	console.log("Request params", JSON.stringify(req.params));
-
+    // const startDateMomentObj = startDate ? moment(startDate) : null; // Not required but may be useful in the future
+    // const endDateMomentObj = endDate ? moment(endDate) : null; // Not required but may be useful in the future
     // console.log("start_date", moment(startDate)); // Not required but may be useful in the future
+	// console.log("Request params", JSON.stringify(req.params)); // DEBUG
+
+    
 
     // res.json({
     //     status:"ok",
@@ -167,6 +165,6 @@ const saveCourseForProfessor = async function (req, res, next){
     }
 }
 
-router.post("/:pid/course/save", saveCourseForProfessor);
+router.post("/", saveCourseForProfessor);
 
 module.exports = router;

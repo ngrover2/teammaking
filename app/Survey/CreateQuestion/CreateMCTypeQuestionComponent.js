@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Grid, Input, Label, Segment, Button, Form, Message, Header } from 'semantic-ui-react';
-import { QuestionWeightFormFieldComponent, questionWeights, qtypeToReadableMapping } from "./UtilComponents";
+import { QuestionWeightFormFieldComponent, questionWeights } from "../../Utils/UtilComponents";
 
 export default function CreateMCTypeQuestionComponent(props){
 	const [ questionText, setQuestionText ] = useState(""); // Tracks local changes to question Text via the 'Enter Question Text' input box

@@ -1,139 +1,76 @@
 import React from 'react';
 import { useState, useEffect } from 'react'
 import { Form, Label, Grid, Message, Segment, TextArea, Button, Checkbox, Icon, Header, Input } from 'semantic-ui-react';
-import { GridRowMessageComponent, QuestionWeightFormFieldComponent, questionWeights } from "./UtilComponents";
-
-const CheckboxComponent = (props) => <Checkbox checked={props.checked} onChange={(e, { checked } ) => props.onChange(checked)}/>
-const LabelComponent = (props) => <Label>{props.value}</Label>
-
-const ChoiceComponent = (props) => {
-	if (props.checked){
-		// controlled component
-		return (
-			<div>
-				<CheckboxComponent checked={props.checked} onChange={(checked) => {(props.onChange) ? props.onChange(checked) : 0}}/>
-				<LabelComponent value={props.value}/>
-			</div>
-		);
-	}else{
-		// Uncontrolled component
-		return (
-			<div>
-				<CheckboxComponent onChange={(checked) => {(props.onChange) ? props.onChange(checked) : 0}}/>
-				<LabelComponent value={props.value}/>
-				<Icon name="address book" onClick={props.onRemove ? props.onRemove : false}/>
-			</div>
-		);
-	}
-}
+import { GridRowMessageComponent, QuestionWeightFormFieldComponent, questionWeights } from "../../Utils/UtilComponents";
 
 
-const RenderedMCQuestionComponentInGrid = (props) => {
-
-
-	const createValues = () => {
-		let values = []
-		if (props.choices && props.choices.length > 0){
-			props.choices.forEach((v,i)=>{
-				values.push(<Grid.Column width={16}><ChoiceComponent key={i} checked={v.checked} value={v.value} onRemove={() => props.onRemove(props.qid,i)}/></Grid.Column>)
-			});
-		}else{
-			values.push(<Grid.Column width={16}><Message size="tiny"><Header>No Choices</Header></Message></Grid.Column>)
-		}
-		return values;
-	}
-	
-
-	return [
-		<Grid.Row columns={12} key={`rendered-mc-${props.qid}`}>
-			<Grid.Column width={16}>
-				<Segment className="fullwidth">
-					<Grid>
-						<Grid.Row columns={16}>
-							<Grid.Column width={16}>
-								<GridRowMessageComponent size="large" message={props.qtext}/>
-							</Grid.Column>
-						</Grid.Row>
-						{
-							props.choices && props.choices.length > 0 &&
-								<Grid.Row columns={16}>
-										{createValues()}
-								</Grid.Row>
-						}
-						<Grid.Row columns={12}>
-							<Grid.Column width={16}>
-								<Button onClick={() => props.onDeleteClick(props.qid)}>DELETE</Button>
-							</Grid.Column>
-						</Grid.Row>
-					</Grid>
-				</Segment>
-			</Grid.Column>
-		</Grid.Row>
-	];
-}
-
-
-const RenderedMCQuestionComponent = (props) => {
-	
+const RenderedSingleChoiceQuestionComponent = (props) => {
 	const [ questionWeight, setQuestionWeight ] = useState(props.qweight);
 	const [ questionText, setQuestionText ] = useState(props.qtext);
 	const [ questionChoices, setQuestionChoices ] = useState(props.choices);
 	const [ newQuestionChoice, setNewQuestionChoice ] = useState("");
+	const [ selectedChoice, setSelectedChoice ] = useState(props.defaultChoice);
+	const [ selectedAsDefaultChoice, setSelectedAsDefaultChoice ] = useState(props.defaultSelected);
 	const [ questionEditable, setQuestionEditable ]  = useState(false);
 	const [ questionUpdatedId, setQuestionUpdatedId ] = useState(0);
 
 	useEffect(() => {
 		if (questionUpdatedId == 0) return
-		
 		let updatedQObj = Object.assign({},{
 			qid: props.qid,
-			qtype: "multiplechoice",
+			qtype: "singlechoice",
 			qtext: questionText,
 			qweight: questionWeight,
 			choices: questionChoices,
-		})
+			defaultChoice: selectedChoice,
+			defaultSelected: selectedAsDefaultChoice
+		});
 		props.onQuestionUpdated(updatedQObj);
 	},[questionUpdatedId])
 
 	useEffect(() => {
 		setQuestionText(props.qtext);
-		mergeChoices();
 		setQuestionWeight(props.qweight);
+		setSelectedChoice(props.defaultChoice);
+		setSelectedAsDefaultChoice(props.defaultSelected == null ? false : props.defaultSelected);
 	},[props.qid])
 
-	const mergeChoices = () => {
-		console.log("mergeChoices called with choices: ", questionChoices);
-		let localChoices = [...questionChoices]
-		let localChoiceValues = localChoices.map((v)=> v.value);
-		let newChoices = props.choices.filter((v) => !localChoiceValues.includes(v.value));
-		let mergedChoices = [...localChoices, ...newChoices];
-		setQuestionChoices(mergedChoices);
-	}
+	useEffect(() => {
+		setQuestionText(props.qtext);
+		setQuestionWeight(props.qweight);
+		setSelectedChoice(props.defaultChoice);
+		setSelectedAsDefaultChoice(props.defaultSelected == null ? false : props.defaultSelected);
+	},[props]);
 
-	function removeChoice(choiceId){
-		// console.log(`${choiceId} to be deleted`) // DEBUG
+	function removeChoice(valueId){
 		setQuestionChoices([
-			...questionChoices.slice(0, choiceId),
-			...questionChoices.slice(choiceId+1, questionChoices.length),
+			...questionChoices.slice(0, valueId),
+			...questionChoices.slice(valueId+1, questionChoices.length),
 		]);
 	}
 
-	function addChoice(choiceText){
-		let choiceObj = {
-			value:choiceText,
-			checked:false
-		};
-
-		let isDuplicate = questionChoices.filter((v) => {
-			if (v.value == choiceText){
-				return v
-			}
-		}).length > 0;
+	function addChoice(valueText){
+		let isDuplicate = questionChoices.filter((v) => v == valueText).length > 0;
 		isDuplicate ? undefined : setQuestionChoices([
 										...questionChoices.slice(0),
-										choiceObj
+										valueText
 									]);
 		setNewQuestionChoice("");
+	}
+
+	function renderSetAsDefaultCheckbox(){
+		return (
+			<Form.Checkbox
+				key={`rendered-sc-${props.qid}-set-selected-as-default`}
+				label="Use selected value as the default choice"
+				checked={selectedAsDefaultChoice}
+				onChange={(e) => {
+					setSelectedAsDefaultChoice(!selectedAsDefaultChoice);
+					setQuestionUpdatedId(questionUpdatedId+1);
+				}}
+			>
+			</Form.Checkbox>
+		);
 	}
 
 	const createValues = () => {
@@ -142,20 +79,24 @@ const RenderedMCQuestionComponent = (props) => {
 			questionChoices.forEach((v,i)=>{
 				values.push(
 					<Form.Group key={`mc-Q-${props.qid || -1}-choice-${i}`} style={{ alignItems:"center"}}>
-						<Form.Checkbox
-							label={v.value}
-							key={i}	
+						<Form.Radio
+							label={v}
+							key={i}
+							checked={selectedChoice == v}
+							onChange={(e,{label}) => {
+								setSelectedChoice(label);
+							}}
 						>
-						</Form.Checkbox>
+						</Form.Radio>
 						{questionEditable && <Form.Button icon="remove" size="mini"
-							onClick={() => {/*props.onRemove(props.qid, i);*/removeChoice(i)}}
+							onClick={() => {removeChoice(i)}}
 						>
 						</Form.Button>}
 					</Form.Group>
 				)
 			});
 		}else{
-			return <Message key={`mc-Q-${props.qid || -1}-no-choices`} size="tiny">No Choices Added Yet</Message>
+			return <Message key={`sc-Q-${props.qid || -1}-no-choices`} size="tiny">No Choices Added Yet</Message>
 		}
 		return values;
 	}
@@ -186,6 +127,10 @@ const RenderedMCQuestionComponent = (props) => {
 						}
 						{
 							createValues()
+						}
+						{
+							questionEditable &&
+							renderSetAsDefaultCheckbox()
 						}
 						{questionEditable &&
 							<Form.Field key={`rendered-mc-qtext-addchoiceInp-${props.qid}`}>
@@ -235,7 +180,4 @@ const RenderedMCQuestionComponent = (props) => {
 	];
 }
 
-export default RenderedMCQuestionComponent;
-
-
-
+export default RenderedSingleChoiceQuestionComponent;

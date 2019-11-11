@@ -1,8 +1,8 @@
 // Component to display the survey cards.
 import React from 'react';
 // import { parse } from 'csv-parse/lib/sync';
-import { default as CreateNewSurveyComponent} from "./CreateNewSurveyComponent"
-import { default as ErrorMessageComponent } from "./ErrorMessageComponent";
+import { default as CreateNewSurveyComponent} from "../Unused/CreateNewSurveyComponent"
+import { default as ErrorMessageComponent } from "../Utils/ErrorMessageComponent";
 
 import { Button, Card, Image, Grid, GridRow, Segment, GridColumn, Divider } from 'semantic-ui-react'
 

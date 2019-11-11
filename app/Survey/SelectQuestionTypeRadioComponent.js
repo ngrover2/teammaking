@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 import { Radio, Grid, Label, Button, Container, Message, Header, Divider } from 'semantic-ui-react';
-import { FullWidthDivider, GridRowMessageComponent } from "./UtilComponents";
+import { FullWidthDivider, GridRowMessageComponent } from "../Utils/UtilComponents";
 
 const Labelled = (props) => {
 	return (

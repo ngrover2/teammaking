@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Grid, Input, Label, Segment, Button, Form, Message, Header } from 'semantic-ui-react';
-import { QuestionWeightFormFieldComponent, questionWeights, qtypeToReadableMapping } from "./UtilComponents";
+import { QuestionWeightFormFieldComponent, questionWeights, qtypeToReadableMapping } from "../../Utils/UtilComponents";
 import { userInfo } from 'os';
 
 export default function CreateSingleChoiceQuestionComponent(props){
