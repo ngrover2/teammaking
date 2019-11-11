@@ -1,4 +1,4 @@
-const app = require('../../app');
+const app = require('../../../app.js');
 const supertest = require('supertest');
 const request = supertest(app);
 var [ mockRoster, mockCourse ] = require('./mockObjects');
@@ -11,7 +11,7 @@ describe('POST /professor/1/course/save', function () {
     it('should delete the mockCourse from database and recreate it succesfully', async (done) => {
 		// delete if the mockCourse already exists
 		const responseDelete = await request
-									.delete('/professor/:pid/course/deletebycode')
+									.delete('/professor/1/course/deletebycode')
 									.set('Accept', 'application/json')
 									.send({course_code:mockCourse.course_code});
 		// console.log(responseDelete);
