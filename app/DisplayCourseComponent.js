@@ -1,3 +1,4 @@
+// Component to display the course cards.
 import React from 'react';
 import { default as CreateNewCourseComponent} from "./CreateNewCourseComponent"
 import { default as UpdateCourseComponent} from "./UpdateCourseComponent";
@@ -43,7 +44,27 @@ const CourseCardComponent = (props) => {
 				</Card.Description>
 			</Card.Content>
 			<Card.Content extra>
-				<div className='ui two buttons'>
+				<div className='ui four buttons'>
+					<Button style={{ margin:"2px"}}
+						basic 
+						color='green' 
+						onClick={
+							// Not sure how to view surveys on click
+							() => props.setViewSurveysClick("viewSurveys", props.courseId) 
+						}
+					>
+						View Surveys
+					</Button>
+					<Button style={{ margin:"2px"}}
+						basic 
+						color='green' 
+						onClick={
+							// not sure how to go to new survey on click
+							() => props.setNewSurveyClick("newSurvey", props.courseId)
+						}
+					>
+						New Survey
+					</Button>
 					<Button style={{ margin:"2px"}}
 						basic 
 						color='green' 
@@ -201,7 +222,7 @@ class DisplayCourseComponent extends React.Component {
 				errorMessage: "Could not ascertain the professor identity from the url",
 				errorMessageModalOpen:true
 			})
-			console.log("professor id is undefined or falsy", this.props)
+			console.log("professor id is undefined or false", this.props)
 		}
 	}
 
@@ -381,6 +402,12 @@ class DisplayCourseComponent extends React.Component {
 					</Grid.Row>
 					<ErrorMessageComponent ref={this.errorMessageRef} open={this.state.errorMessageModalOpen} errorMessage={this.state.errorMessage} closeModal={() => this.setState({errorMessageModalOpen:false})}/>
 				</Grid>)
+		}else if(this.state.redirectTo == "viewSurveys"){
+			// Not sure about this redirect for view surveys button
+			return <Redirect push={true} to={`/professor/${this.professor_id}/course/${this.state.selectedCourseId}/surveys`}/>
+		}else if(this.state.redirectTo == "newSurvey"){
+			// not sure about this redirect for new survey button
+			return <Redirect push={true} to={`/professor/${this.professor_id}/course/${this.state.selectedCourseId}/surveys/newSurvey`}/>
 		}else if(this.state.redirectTo == "viewDownloadedRoster"){
 			return <Redirect push={true} to={`/professor/${this.professor_id}/course/${this.state.selectedCourseId}/roster/${this.state.selectedRosterId}`}/>
 		}else if (this.state.redirectTo == "viewUploadedRoster"){

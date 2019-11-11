@@ -1,0 +1,22 @@
+{
+    "1":{
+        "type":"freeform",
+        "answer":"I don't like databases. They're too complex and clunky"
+        },
+    "2":{    
+        "type":"mcq",
+        "answer":["python","c++", "java"]
+    },
+    "3":{    
+        "type":"bool",
+        "answer":true
+    },
+    "4":{
+        "type":"available_times",
+        "answer": {
+            "monday":["9-10","10-11"],
+            "tuesday":["18-19","19-20"]
+        }  
+    }     
+    
+}

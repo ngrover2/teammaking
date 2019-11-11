@@ -1,3 +1,4 @@
+// Submit new roster to update a course.
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Redirect } from "react-router-dom";
@@ -329,7 +330,7 @@ export default function UpdateCourseComponent(props){
                                     setOpen(false);
                                 }
                             }
-                        }>
+                        }> 
                             {okayType == "warn" ? "Cancel" : "Ok"}
                         </Button>
                         {
