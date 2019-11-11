@@ -27,7 +27,7 @@ export default function CreateNewCourseComponent(props){
     const [ courseDesc, setCourseDesc ] = useState("");
     const [ tAEmail, setTaEmail ] = useState("");
     const [ tAName, setTaName ] = useState("");
-    const [ startDate, setStartDate ] = useState()
+    const [ startDate, setStartDate ] = useState();
     const [ endDate, setEndDate ] = useState()
     const [ classStartTime, setClassStartTime ] = useState(moment().format("hh:mm"))
     const [ classEndTime, setClassEndTime ] = useState(moment().format("hh:mm"))
