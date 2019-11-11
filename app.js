@@ -2,14 +2,14 @@ var express = require("express");
 var mysql = require('mysql');
 var app = express();
 var cors = require('cors');
-// const [ getDbConnection, executeOnDBWithPromise ] = require('./API/getDBConnection');
 
-const saveCourseController = require('./API/saveCourseForProfessor');
+const saveCourseController = require('./API/saveCourseController');
 const saveCSVController = require('./API/saveCSVController');
 const getRosterController = require('./API/getRosterController');
 const updateCourseByIdController = require('./API/updateCourseController');
 const getCoursesByProfessorIdController = require('./API/getCoursesController');
 const deleteCourseByIdController = require('./API/deleteCourseController');
+const deleteCourseByCodeController = require('./API/deleteCourseByCodeController');
 
 app.use(cors({
     origin: ['http://localhost:8080', 'http://127.0.0.1:80']
@@ -24,21 +24,7 @@ app.use("/professor/:pid/course/:cid/roster/save", saveCSVController);
 app.use("/professor/:pid/course/:cid/roster/:rid", getRosterController);
 app.use("/professor/:pid/course/:cid/update", updateCourseByIdController);
 app.use("/professor/:pid/course/:cid/delete", deleteCourseByIdController);
+app.use("/professor/:pid/course/deletebycode", deleteCourseByCodeController);
 
-// app.listen(3000, () => {
-//  console.log("Server running on port 3000");
-// });
 
 module.exports = app;
-
-// app.post("/professor/:pid/course/save", saveCourseForProfessor);
-
-// app.post("/professor/:pid/course", getCoursesByProfessorId);
-
-// app.post("/professor/:pid/course/:cid/roster/save", saveCSV);
-
-// app.post("/professor/:pid/course/:cid/roster/:rid", getRosterById);
-
-// app.post("/professor/:pid/course/:cid/update", updateCourseById)
-
-// app.delete("/professor/:pid/course/:cid/delete", deleteCourseById)
