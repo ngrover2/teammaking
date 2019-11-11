@@ -16,10 +16,10 @@ const getCoursesByProfessorId = async function(req, res, next){
     let connection = getDbConnection();
     // check courses created by this professor's id
     try{
-        getCoursesQuery = "SELECT C.*,R.roster_id FROM Course C LEFT JOIN Roster R USING(course_id) WHERE ?? = ?"
-        getCoursesQueryIdentifiers = ['C.professor_id']
-        getCoursesQueryValues = [ professorId ]
-        getCoursesQuerySql = mysql.format(getCoursesQuery, [getCoursesQueryIdentifiers, getCoursesQueryValues])
+        let getCoursesQuery = "SELECT C.*,R.roster_id FROM Course C LEFT JOIN Roster R USING(course_id) WHERE ?? = ?"
+        let getCoursesQueryIdentifiers = ['C.professor_id']
+        let getCoursesQueryValues = [ professorId ]
+        let getCoursesQuerySql = mysql.format(getCoursesQuery, [getCoursesQueryIdentifiers, getCoursesQueryValues])
         let getCoursesResults = await executeOnDBWithPromise(connection, getCoursesQuerySql )
         if (getCoursesResults){
             res.status(200).json({
