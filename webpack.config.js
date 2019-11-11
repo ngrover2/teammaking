@@ -8,9 +8,12 @@ module.exports = {
         filename: 'index_bundle.js',
         publicPath: "/",
     },
+    resolve: {
+        extensions: ['.js', '.jsx']
+      },
     module : {
         rules : [
-            {test : /\.(js)$/, use:{
+            {test : /\.jsx?$/, use:{
                 loader: 'babel-loader',
                     options: {
                         // exclude: "/(node_modules|bower_components)/",
