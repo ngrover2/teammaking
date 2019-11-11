@@ -7,7 +7,6 @@ import { default as ErrorMessageComponent } from "../Utils/ErrorMessageComponent
 
 import { Button, Card, Image, Grid, GridRow, Segment, GridColumn, Divider } from 'semantic-ui-react';
 
-
 import {
 	BrowserRouter as Router,
 	Switch,
@@ -66,7 +65,7 @@ const CourseCardComponent = (props) => {
 							}
 						}
 					}>
-						{`Import Roster ${props.courseId}`}
+						{`Import Roster`}
 					</Button>
 					<PickRosterFileComponent
 						course_id={props.courseId}
@@ -85,7 +84,7 @@ const CourseCardComponent = (props) => {
 							() => props.setViewRosterClick("createNewSurvey", props.courseId, props.rosterId)
 						}
 					>
-						{`Create Survey ${props.courseId}`}
+						{`Create Survey`}
 					</Button>
 					<Button style={{ margin:"2px"}}
 						basic 
