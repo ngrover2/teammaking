@@ -1,6 +1,5 @@
 // Component to display the course cards.
 import React from 'react';
-// import { parse } from 'csv-parse/lib/sync';
 import { default as CreateNewCourseComponent} from "./CreateNewCourseComponent"
 import { default as UpdateCourseComponent} from "./UpdateCourseComponent";
 import { default as PickRosterFileComponent } from "./PickRosterFileComponent";
@@ -91,6 +90,27 @@ const CourseCardComponent = (props) => {
 					</Button>
 					<PickRosterFileComponent passSelectedFile={(fileObj) => props.getRosterFile(fileObj, props.courseId)} />
 				</div>
+				<div className='ui two buttons'>
+					<Button style={{ margin:"2px"}}
+						basic 
+						color='green'
+						onClick={
+							() => props.setViewRosterClick("createNewSurvey", props.courseId, props.rosterId)
+						}
+					>
+						Create Survey
+					</Button>
+					<Button style={{ margin:"2px"}}
+						basic 
+						color='red' 
+						onClick={
+							() => props.setViewRosterClick("editSavedSurvey", props.courseId, props.rosterId)
+						}
+					>
+						View Survey
+					</Button>
+					<PickRosterFileComponent passSelectedFile={(fileObj) => props.getRosterFile(fileObj, props.courseId)} />
+				</div>
 				
 				<div style={{ textAlign:"center"}}><Button style={{ background:"none"}} onClick={(courseId) => props.deleteCourse(props.courseId)}>Delete</Button></div>
 			</Card.Content>
@@ -119,7 +139,8 @@ class DisplayCourseComponent extends React.Component {
 				courseCards:undefined,
 				getCoursesRequestSucceeded:false,
 				selectedCourseId:0,
-				selectedRosterId:0
+				selectedRosterId:0,
+				surveyId:0
 		}
 	}
 
@@ -166,11 +187,6 @@ class DisplayCourseComponent extends React.Component {
 									}
 							);
 						}else{
-							// this.setState({errorMessage: `HeaderLength:${headerSplitLength} while data length: ${valueObjectSplitLength}`, errorMessageModalOpen:true},() => this.errorMessageRef.current.ref.current.click());
-							// this.setState({
-							//   fileHeaderFieldsArray:[],
-							//   fileValueObjects:[]
-							// }, () => this.setState({redirectTo:"viewUploadedRoster"}) );
 							this.setState({errorMessage: `The file does not appear to be a valid csv file`, errorMessageModalOpen:true},() => this.errorMessageRef.current.ref.current.click());
 						}
 					}else{
@@ -334,7 +350,7 @@ class DisplayCourseComponent extends React.Component {
 		let cards = []
 		if (this.state.courses){
 			console.log("Creating courseCards")
-			this.state.courses.forEach((courseObj, idx)=>{
+			this.state.courses.forEach((courseObj, idx)=> {
 				cards.push(
 						<CourseCardComponent 
 							key={`${courseObj.course_id}-row`}
@@ -396,6 +412,10 @@ class DisplayCourseComponent extends React.Component {
 			return <Redirect push={true} to={`/professor/${this.professor_id}/course/${this.state.selectedCourseId}/roster/${this.state.selectedRosterId}`}/>
 		}else if (this.state.redirectTo == "viewUploadedRoster"){
 			return <Redirect push={true} to={{ pathname:`/professor/${this.professor_id}/course/${this.state.selectedCourseId}/chooseroster/view`, state : { header:this.state.fileHeaderFieldsArray, data:this.state.fileValueObjects}  }} />
+		}else if (this.state.redirectTo == "createNewSurvey"){
+			return <Redirect push={true} to={{ pathname:`/professor/${this.professor_id}/course/${this.state.selectedCourseId}/survey/create`, state : { header:this.state.fileHeaderFieldsArray, data:this.state.fileValueObjects}  }} />
+		}else if (this.state.redirectTo == "editSavedSurvey"){
+			return <Redirect push={true} to={{ pathname:`/professor/${this.professor_id}/course/${this.state.selectedCourseId}/survey/${this.state.surveyId}/edit`, state : { header:this.state.fileHeaderFieldsArray, data:this.state.fileValueObjects}  }} />
 		}else{
 			return <Button fluid>No Value Set for this.state.redirectTo</Button>
 		}

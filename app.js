@@ -2,15 +2,18 @@ var express = require("express");
 var mysql = require('mysql');
 var app = express();
 var cors = require('cors');
-var { resolve, reject } =  Promise;
-var moment = require("moment");
 
+const saveCourseRouter = require('./API/saveCourseForProfessor');
+
+// console.log(saveCourse);
 
 app.use(cors({
     origin: 'http://localhost:8080'
   }));
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+
+app.use("/professor", saveCourseRouter);
 
 app.listen(3000, () => {
  console.log("Server running on port 3000");
@@ -48,7 +51,7 @@ const getDbConnection = () => {
     return getConnection
 }
 
-const saveCourseForProfessor = async function (req, res, next){
+const saveCourseForProfessor_2 = async function (req, res, next){
     const courseName = req.body.course_name;
     const courseDesc = req.body.course_description;
     const courseCode = req.body.course_code;
@@ -844,7 +847,8 @@ const updateCourseById = async function(req, res, next){
     }
 }
 
-app.post("/professor/:pid/course/save", saveCourseForProfessor);
+
+// app.post("/professor/:pid/course/save", saveCourseForProfessor);
 
 app.post("/professor/:pid/course", getCoursesByProfessorId);
 

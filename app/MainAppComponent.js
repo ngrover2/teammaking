@@ -8,14 +8,17 @@ import {
     Link,
     Redirect
   } from "react-router-dom";
+
+  // navit
 import {default as DisplayCourseComponent} from "./DisplayCourseComponent";
 import {default as RosterDetails} from "./DisplaySavedRosterComponent";
 import {default as DisplayPickedFile} from "./DisplayPickedFile";
 import { Table, Header, Cell, Icon, Button, Grid, GridColumn, Container } from 'semantic-ui-react';
-import {default as SurveyFormQuestionComponent} from "./SurveyFormQuestionComponent";
 import {default as SidebarComponent } from "./SidebarComponent";
-import {default as HeaderComponent } from "./AppHeaderComponent";
-import {default as AnswerSurveyComponent } from "./StudentAnswerSurvey/AnswerSurveyComponent.jsx";
+import { default as HeaderComponent } from "./AppHeaderComponent";
+import { default as SurveyFormQuestionComponent } from "./SurveyFormQuestionComponent";
+
+import {default as AnswerSurveyComponent } from "./StudentAnswerSurvey/AnswerSurveyComponent.jsx"; // rahul
 
 export default function MainAppComponent() {
     const wHeight = window.innerHeight;
@@ -54,7 +57,7 @@ export default function MainAppComponent() {
                                     </Route>
                                     <Route 
                                         exact={true} 
-                                        path={"/professor/:pid/course/:cid/survey/add"}>
+                                        path={"/professor/:pid/course/:cid/survey/create"}>
                                             <SurveyFormQuestionComponent />
                                     </Route>
                                     <Route 
@@ -62,7 +65,7 @@ export default function MainAppComponent() {
                                         path={"/professor/:pid/course/:cid/chooseroster/view"}>
                                             <DisplayPickedFile />
                                     </Route>
-                                    <Route exact={true}  
+                                    <Route exact={true} 
                                             path="/professor/:pid/course"
                                             children = {({ match }) => <DisplayCourseComponent match={match}/>}
                                     />
