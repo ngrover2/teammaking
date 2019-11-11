@@ -4,6 +4,8 @@ var [ getDbConnection, executeOnDBWithPromise ] = require('./getDBConnection');
 var router = express.Router({mergeParams: true});
 
 const saveCourseForProfessor = async function (req, res, next){
+    console.log(`Save course endpoint (${req.url}) called with the following body`)
+    console.log(req.body)
     const courseName = req.body.course_name;
     const courseDesc = req.body.course_description;
     const courseCode = req.body.course_code;
@@ -86,15 +88,15 @@ const saveCourseForProfessor = async function (req, res, next){
 
     let connection = getDbConnection();
     // check professor exists
-    checkProfessorQuery = "SELECT professor_id FROM Professor P WHERE ?? = ?"
-    checkProfessorQueryIdentifiers = ['P.professor_id']
-    checkProfessorQueryValues = [ professorId ]
-    checkProfessorQuerySql = mysql.format(checkProfessorQuery, [checkProfessorQueryIdentifiers, checkProfessorQueryValues])
+    let checkProfessorQuery = "SELECT professor_id FROM Professor P WHERE ?? = ?"
+    let checkProfessorQueryIdentifiers = ['P.professor_id']
+    let checkProfessorQueryValues = [ professorId ]
+    let checkProfessorQuerySql = mysql.format(checkProfessorQuery, [checkProfessorQueryIdentifiers, checkProfessorQueryValues])
     let checkProfessorResults = await executeOnDBWithPromise(connection, checkProfessorQuerySql )
     if (checkProfessorResults){
         if (checkProfessorResults[0]){
             if (!checkProfessorResults[0].professor_id){
-                res.status(400).json({
+                return res.status(400).json({
                     status:"error",
                     error:`professor with professor_id ${professorId} does not exist in the database`,
                     "error_code":"SCFP1PNE"
@@ -104,24 +106,23 @@ const saveCourseForProfessor = async function (req, res, next){
     }
 
     // Check if a course already exists with the same course code
-    checkCourseQuery = "SELECT course_id FROM Course C WHERE ?? = ? AND ?? = ?"
-    checkCourseQueryArgs = ['C.professor_id', professorId, 'C.course_code', courseCode]
-    checkCourseQuerySql = mysql.format(checkCourseQuery, checkCourseQueryArgs)
+    let checkCourseQuery = "SELECT course_id FROM Course C WHERE ?? = ? AND ?? = ?"
+    let checkCourseQueryArgs = ['C.professor_id', professorId, 'C.course_code', courseCode]
+    let checkCourseQuerySql = mysql.format(checkCourseQuery, checkCourseQueryArgs)
     let checkCourseResults = await executeOnDBWithPromise(connection, checkCourseQuerySql);
     if (checkCourseResults && checkCourseResults.length > 0){
         if (checkCourseResults[0].course_id){
-            res.status(403).json({
+            return res.status(403).json({
                 status:"error",
                 error:`A course with the course code:${courseCode} already exists in the database`,
                 "error_code":"SCFP1CAE"
             })      
-            return res
         }
     }
 
     try{
-        createCourseQuery = "INSERT INTO Course (??) VALUES (?)"
-        createCourseQueryIdentifiers = [
+        let createCourseQuery = "INSERT INTO Course (??) VALUES (?)"
+        let createCourseQueryIdentifiers = [
             'professor_id', 
             'course_code', 
             'course_name', 
@@ -133,7 +134,7 @@ const saveCourseForProfessor = async function (req, res, next){
             'ta_name',
             'ta_email'
         ]
-        createCourseQueryValues = [ 
+        let createCourseQueryValues = [ 
             professorId, 
             courseCode, 
             courseName, 
@@ -145,18 +146,18 @@ const saveCourseForProfessor = async function (req, res, next){
             taName,
             taEmail
         ]
-        createCourseQuerySql = mysql.format(createCourseQuery, [createCourseQueryIdentifiers, createCourseQueryValues]);
+        let createCourseQuerySql = mysql.format(createCourseQuery, [createCourseQueryIdentifiers, createCourseQueryValues]);
         console.log("createCourseQuerySql", createCourseQuerySql)
         let courseCreateResults = await executeOnDBWithPromise(connection, createCourseQuerySql);
         if (courseCreateResults && courseCreateResults.affectedRows > 0){
-            res.status(201).json({
+            return res.status(201).json({
                 status:"ok",
                 "result":[],
                 "count": -1
             })
         }
     }catch(error){
-        res.status(500).json({
+        return res.status(500).json({
             status:"error",
             error:error.message,
             "errorFull": JSON.stringify(error),
