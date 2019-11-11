@@ -19,6 +19,7 @@ import { default as HeaderComponent } from "./AppHeaderComponent";
 import { default as SurveyFormQuestionComponent } from "./Survey/SurveyFormQuestionComponent";
 
 import {default as AnswerSurveyComponent } from "./StudentAnswerSurvey/AnswerSurveyComponent.jsx"; // rahul
+import { default as RenderSavedSurveyComponent } from "./Survey/RenderSavedSurveyComponent"
 
 export default function MainAppComponent() {
     const wHeight = window.innerHeight;
@@ -59,6 +60,11 @@ export default function MainAppComponent() {
                                         exact={true} 
                                         path={"/professor/:pid/course/:cid/survey/create"}>
                                             <SurveyFormQuestionComponent />
+                                    </Route>
+                                    <Route 
+                                        exact={true} 
+                                        path={"/professor/:pid/course/:cid/survey/:sid"}>
+                                            <RenderSavedSurveyComponent />
                                     </Route>
                                     <Route 
                                         exact={true} 
