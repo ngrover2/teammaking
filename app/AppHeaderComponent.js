@@ -43,10 +43,13 @@ const AppHeaderComponent = (props) => {
 				<GridColumn width={4}>
 					<HeaderLinkButton to={`/professor/${pid || props.pid}/course`} name="Courses" style={buttonStyle}/>
 				</GridColumn>
+				<GridColumn width={4}>
+					<HeaderLinkButton to={`/respond/1`} name="Respond"/>
+				</GridColumn>
 				{
 					// Add appropriate Links in the future
 					/*<GridColumn width={4}>
-						<HeaderLinkButton to={`/professor/${pid || props.pid}/course/${cid}/survey/add`} name="Surveys"/>
+						<HeaderLinkButton to={`/respond/1`} name="Respond"/>
 					</GridColumn>
 					<GridColumn width={3}>
 						<HeaderLinkButton to="/duh" name="Etc"/>

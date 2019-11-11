@@ -34,6 +34,12 @@ const SidebarComponent = (props) => {
 						<div style = {linkLabelStyle}>Courses</div>
 					</Link>
 				</Menu.Item>
+				<Menu.Item>
+					<Link to={`/respond/1`}>
+						<Icon name='sticky note'/>
+						<div style = {linkLabelStyle}>Respond</div>
+					</Link>
+				</Menu.Item>
 				{
 					// Add appropriate Links in the future
 					/*<Menu.Item>

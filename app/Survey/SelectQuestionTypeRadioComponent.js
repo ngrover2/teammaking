@@ -61,16 +61,18 @@ const SelectQuestionType = (props) => {
 						<Label pointing="left">Multiple Values</Label>
 					</div>
 				</Grid.Column>
-				<Grid.Column width={3}>
-					<div>
-						<Radio
-							value="schedule"
-							checked={selected === "schedule"}
-							onChange={((e, { value } ) => { setSelected(value) } )}
-						/>
-						<Label pointing="left">Schedule</Label>
-					</div>
-				</Grid.Column>
+				{
+					/*<Grid.Column width={3}>
+						<div>
+							<Radio
+								value="schedule"
+								checked={selected === "schedule"}
+								onChange={((e, { value } ) => { setSelected(value) } )}
+							/>
+							<Label pointing="left">Schedule</Label>
+						</div>
+					</Grid.Column>*/
+				}
 			</Grid.Row>,
 			<Grid.Row columns={16} key={`selected-choice-label`}>
 				<Grid.Column width={16}>

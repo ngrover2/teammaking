@@ -39,7 +39,7 @@ CREATE TABLE `Course` (
   PRIMARY KEY (`course_id`),
   KEY `professor_id` (`professor_id`),
   CONSTRAINT `course_ibfk_1` FOREIGN KEY (`professor_id`) REFERENCES `Professor` (`professor_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -48,7 +48,7 @@ CREATE TABLE `Course` (
 
 LOCK TABLES `Course` WRITE;
 /*!40000 ALTER TABLE `Course` DISABLE KEYS */;
-INSERT INTO `Course` VALUES (12,1,'saa;','SSDI','smnd;cnw;','2019-10-01 13:00:00','2019-10-03 13:00:00','03:34:00','03:34:00','sd;n;v','sc;lnd'),(13,1,'ITCS 312','test','Test Course','2019-11-18 13:00:00','2019-11-17 13:00:00','04:44:00','04:44:00','ta@email.com','ta'),(14,1,'ITCS 3122','test','Test Course','2019-11-18 13:00:00','2019-11-17 13:00:00','04:44:00','04:44:00','ta@email.com','ta');
+INSERT INTO `Course` VALUES (12,1,'saa;','SSDI','smnd;cnw;','2019-10-01 13:00:00','2019-10-03 13:00:00','03:34:00','03:34:00','sd;n;v','sc;lnd'),(13,1,'ITCS 312','test','Test Course','2019-11-18 13:00:00','2019-11-17 13:00:00','04:44:00','04:44:00','ta@email.com','ta'),(14,1,'ITCS 3122','test','Test Course','2019-11-18 13:00:00','2019-11-17 13:00:00','04:44:00','04:44:00','ta@email.com','ta'),(17,1,'ITCS TEST2','test','This is a test course','2019-11-09 13:00:00','2019-11-29 13:00:00','04:02:00','04:02:00','testta@email.com','test ta'),(87,1,'ITCS TEST','Test Course','This Course teaches you avout the facts about life (and people and illnesses and death!, but not by Loopus)','2019-07-09 13:00:00','2019-12-12 13:00:00','02:30:00','05:15:00','SeekerOfVicodine@EverybodyLies.com','Gregory House');
 /*!40000 ALTER TABLE `Course` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -95,7 +95,7 @@ CREATE TABLE `Roster` (
   KEY `professor_id` (`professor_id`),
   CONSTRAINT `roster_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `Course` (`course_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `roster_ibfk_2` FOREIGN KEY (`professor_id`) REFERENCES `Professor` (`professor_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -104,7 +104,7 @@ CREATE TABLE `Roster` (
 
 LOCK TABLES `Roster` WRITE;
 /*!40000 ALTER TABLE `Roster` DISABLE KEYS */;
-INSERT INTO `Roster` VALUES (22,1,12);
+INSERT INTO `Roster` VALUES (23,1,12),(24,1,13);
 /*!40000 ALTER TABLE `Roster` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -151,7 +151,7 @@ CREATE TABLE `RosterHeaderRow` (
 
 LOCK TABLES `RosterHeaderRow` WRITE;
 /*!40000 ALTER TABLE `RosterHeaderRow` DISABLE KEYS */;
-INSERT INTO `RosterHeaderRow` VALUES (22,12,'name','email','skill','age','studentId',NULL,NULL,NULL,NULL,NULL,'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0');
+INSERT INTO `RosterHeaderRow` VALUES (23,12,'name','email','skill','age','studentId',NULL,NULL,NULL,NULL,NULL,'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'),(24,13,'name','email','skill','age','studentId',NULL,NULL,NULL,NULL,NULL,'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0');
 /*!40000 ALTER TABLE `RosterHeaderRow` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -174,7 +174,7 @@ CREATE TABLE `RosterRow` (
   CONSTRAINT `rosterrow_ibfk_1` FOREIGN KEY (`roster_id`) REFERENCES `Roster` (`roster_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `rosterrow_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `Course` (`course_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `rosterrow_ibfk_3` FOREIGN KEY (`professor_id`) REFERENCES `Professor` (`professor_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=133 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -183,7 +183,7 @@ CREATE TABLE `RosterRow` (
 
 LOCK TABLES `RosterRow` WRITE;
 /*!40000 ALTER TABLE `RosterRow` DISABLE KEYS */;
-INSERT INTO `RosterRow` VALUES (37,22,12,1),(38,22,12,1),(39,22,12,1),(40,22,12,1);
+INSERT INTO `RosterRow` VALUES (41,23,12,1),(42,23,12,1),(43,23,12,1),(44,23,12,1),(45,24,13,1),(46,24,13,1),(47,24,13,1),(48,24,13,1);
 /*!40000 ALTER TABLE `RosterRow` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -227,7 +227,7 @@ CREATE TABLE `RowColumnFive` (
   PRIMARY KEY (`id`),
   KEY `roster_row_id` (`roster_row_id`),
   CONSTRAINT `rowcolumnfive_ibfk_1` FOREIGN KEY (`roster_row_id`) REFERENCES `RosterRow` (`roster_row_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=121 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -236,7 +236,7 @@ CREATE TABLE `RowColumnFive` (
 
 LOCK TABLES `RowColumnFive` WRITE;
 /*!40000 ALTER TABLE `RowColumnFive` DISABLE KEYS */;
-INSERT INTO `RowColumnFive` VALUES (25,'80100010',37),(26,'80100011',38),(27,'80100012',39),(28,'80100010',40);
+INSERT INTO `RowColumnFive` VALUES (29,'80100010',41),(30,'80100011',42),(31,'80100012',43),(32,'80100010',44),(33,'80100010',45),(34,'80100011',46),(35,'80100012',47),(36,'80100010',48);
 /*!40000 ALTER TABLE `RowColumnFive` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -254,7 +254,7 @@ CREATE TABLE `RowColumnFour` (
   PRIMARY KEY (`id`),
   KEY `roster_row_id` (`roster_row_id`),
   CONSTRAINT `rowcolumnfour_ibfk_1` FOREIGN KEY (`roster_row_id`) REFERENCES `RosterRow` (`roster_row_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=121 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -263,7 +263,7 @@ CREATE TABLE `RowColumnFour` (
 
 LOCK TABLES `RowColumnFour` WRITE;
 /*!40000 ALTER TABLE `RowColumnFour` DISABLE KEYS */;
-INSERT INTO `RowColumnFour` VALUES (25,'28',37),(26,'25',38),(27,'23',39),(28,'23',40);
+INSERT INTO `RowColumnFour` VALUES (29,'28',41),(30,'25',42),(31,'23',43),(32,'23',44),(33,'28',45),(34,'25',46),(35,'23',47),(36,'23',48);
 /*!40000 ALTER TABLE `RowColumnFour` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -307,7 +307,7 @@ CREATE TABLE `RowColumnOne` (
   PRIMARY KEY (`id`),
   KEY `roster_row_id` (`roster_row_id`),
   CONSTRAINT `rowcolumnone_ibfk_1` FOREIGN KEY (`roster_row_id`) REFERENCES `RosterRow` (`roster_row_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=121 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -316,7 +316,7 @@ CREATE TABLE `RowColumnOne` (
 
 LOCK TABLES `RowColumnOne` WRITE;
 /*!40000 ALTER TABLE `RowColumnOne` DISABLE KEYS */;
-INSERT INTO `RowColumnOne` VALUES (25,'Navit',37),(26,'Rachel',38),(27,'Rahul',39),(28,'Devika',40);
+INSERT INTO `RowColumnOne` VALUES (29,'Navit',41),(30,'Rachel',42),(31,'Rahul',43),(32,'Devika',44),(33,'Navit',45),(34,'Rachel',46),(35,'Rahul',47),(36,'Devika',48);
 /*!40000 ALTER TABLE `RowColumnOne` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -412,7 +412,7 @@ CREATE TABLE `RowColumnThree` (
   PRIMARY KEY (`id`),
   KEY `roster_row_id` (`roster_row_id`),
   CONSTRAINT `rowcolumnthree_ibfk_1` FOREIGN KEY (`roster_row_id`) REFERENCES `RosterRow` (`roster_row_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=121 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -421,7 +421,7 @@ CREATE TABLE `RowColumnThree` (
 
 LOCK TABLES `RowColumnThree` WRITE;
 /*!40000 ALTER TABLE `RowColumnThree` DISABLE KEYS */;
-INSERT INTO `RowColumnThree` VALUES (25,'react',37),(26,'UI',38),(27,'python',39),(28,'express',40);
+INSERT INTO `RowColumnThree` VALUES (29,'react',41),(30,'UI',42),(31,'python',43),(32,'express',44),(33,'react',45),(34,'UI',46),(35,'python',47),(36,'express',48);
 /*!40000 ALTER TABLE `RowColumnThree` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -439,7 +439,7 @@ CREATE TABLE `RowColumnTwo` (
   PRIMARY KEY (`id`),
   KEY `roster_row_id` (`roster_row_id`),
   CONSTRAINT `rowcolumntwo_ibfk_1` FOREIGN KEY (`roster_row_id`) REFERENCES `RosterRow` (`roster_row_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=121 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -448,7 +448,7 @@ CREATE TABLE `RowColumnTwo` (
 
 LOCK TABLES `RowColumnTwo` WRITE;
 /*!40000 ALTER TABLE `RowColumnTwo` DISABLE KEYS */;
-INSERT INTO `RowColumnTwo` VALUES (25,'navit@email.com',37),(26,'rachel@email.com',38),(27,'rahul@email.com',39),(28,'devika@email.com',40);
+INSERT INTO `RowColumnTwo` VALUES (29,'navit@email.com',41),(30,'rachel@email.com',42),(31,'rahul@email.com',43),(32,'devika@email.com',44),(33,'navit@email.com',45),(34,'rachel@email.com',46),(35,'rahul@email.com',47),(36,'devika@email.com',48);
 /*!40000 ALTER TABLE `RowColumnTwo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -545,4 +545,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-11-11 10:10:00
+-- Dump completed on 2019-11-11 20:55:36
