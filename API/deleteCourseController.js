@@ -6,22 +6,30 @@ var router = express.Router({mergeParams: true});
 const deleteCourseById = async function(req, res, next){
     const courseId = req.params.cid;
     if (courseId == null){
-        res.json({
+        return res.status(400).json({
             status:"error",
             "error":"course_id not present in the url"
         })
-        return res
     }
     let connection = getDbConnection();
     try{
-        await executeOnDBWithPromise(connection, mysql.format("DELETE FROM Course WHERE ?? = ?",['course_id', courseId]));
+        const deleted = await executeOnDBWithPromise(connection, mysql.format("DELETE FROM Course WHERE ?? = ?",['course_id', courseId]));
         console.log(`DELETING COURSE(id:${courseId})`) // DEBUG
-        res.status(204).json({
+        if (deleted){
+            console.log(`mysql client response:`, deleted) // DEBUG
+            return res.status(200).json({
                 status:"ok",
                 "action":"deleted"
-        })
+            })
+        }
+        else{
+            return res.status(500).json({
+                status:"error",
+                "error":"mysql request did not succed in deleting the course"
+            })
+        }
     }catch(error){
-        res.status(500).json({
+        return res.status(500).json({
             status:"error",
             "error":error.message
         })
