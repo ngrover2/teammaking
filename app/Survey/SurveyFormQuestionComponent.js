@@ -2,6 +2,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Grid, Segment, Button } from 'semantic-ui-react';
+import { Redirect, useParams, useHistory } from 'react-router-dom';
 import { default as SelectQuestionType} from "./SelectQuestionTypeRadioComponent";
 import { default as CreateTextQuestion } from "./CreateQuestion/CreateTextTypeQuestionComponent";
 import { default as CreateMCQuestionComponent} from "./CreateQuestion/CreateMCTypeQuestionComponent";
@@ -14,29 +15,35 @@ import { default as RenderedMulValuesQuestionComponent} from "./RenderQuestion/R
 import { default as RenderedSingleChoiceQuestionComponent } from "./RenderQuestion/RenderedSingleChoiceQuestionComponent";
 
 import { FullWidthDivider, GridRowMessageComponent, DatePickerGridRowComponent } from "../Utils/UtilComponents";
+import { default as MessageComponent } from "../Utils/ErrorMessageComponent";
 
-const mockQuestionObj = {
-    qid:1,
-    qtype:"text",
-    qtext:"This is a mocked question",
-    qweight:"Not Important"
-}
+
+
 
 
 export default function SurveyFormQuestionComponent(props) {
 
+    const  history = useHistory();
+    const { cid, pid } = useParams();
+
     const [ displayedQuestionComponents, setDisplayedQuestionComponents ] = useState(<Grid.Row columns={16}><Grid.Column width={16}><Segment key={"mock-message"}>No Questons Added Yet</Segment></Grid.Column></Grid.Row>); // Placeholder content when there have been no questions added yet.
-    const [ displayedQuestionObjects, setDisplayedQuestionObjects ] = useState([mockQuestionObj]); // For holding rendered questions (i.e. question components created from questions data we have so far)
+    const [ displayedQuestionObjects, setDisplayedQuestionObjects ] = useState([]); // For holding rendered questions (i.e. question components created from questions data we have so far)
 
     const [ questionUpdatedId, setQuestionUpdatedId ] = useState(0); // For side effects on new Question creation  OR existing question modification
 
     const [ newQuestionType, setNewQuestionType ] = useState("text"); // Track new question's answer type
 
-    const[ currentQuestionId, setCurrentQuestionId ] = useState([mockQuestionObj].length); // Track if a new question is being created
+    const[ currentQuestionId, setCurrentQuestionId ] = useState(); // Track if a new question is being created
 
     const[ clearInputsId, setClearInputsId ] = useState(0); // Track if a new question is being created
     
     const[ surveyDeadline, setSurveyDeadline ] = useState(); // Track survey deadline date
+
+    const [ message, setMessage ] = useState("");
+    const [ messageModalOpen, setMessageModalOpen ] = useState(false);
+
+    const [ uploadAttemptId, setUploadAttemptId ] = useState(0);
+    const [ uploadSucceeded, setUploadSucceeded ] = useState(false);
 
 
     useEffect(() => {
@@ -109,6 +116,57 @@ export default function SurveyFormQuestionComponent(props) {
         });
         setDisplayedQuestionComponents(newDisplayedQuestionComponents);
     },[questionUpdatedId])
+
+    useEffect(()=>{
+        if (uploadAttemptId !== 0) uploadSurvey();
+    },[uploadAttemptId])
+
+    async function uploadSurvey(){
+        let postBody = {
+            surveyObject: {
+                questions: displayedQuestionObjects,
+                deadline: surveyDeadline,
+                title: "Help me help you"
+            },
+        }
+        console.log("Will upload", postBody); // DEBUG
+
+        try{
+            let response = await fetch(`http://localhost:3000/professor/${pid}/course/${cid}/survey/save`, {
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                cache: 'no-cache',
+                body: JSON.stringify(postBody)
+            })
+            let responseJson = null;
+            if (!response){
+                throw new Error("Network error prevented the request from succeeding.")
+            }
+            try{
+                responseJson = await response.json()
+            }catch{
+                throw new Error("Invalid response received from the server")
+            }
+            if (responseJson){
+                if (responseJson.status == "ok"){
+                    console.log(responseJson)
+                    setMessage("Survey uploaded successfully");
+                    setMessageModalOpen(true);
+                    setUploadSucceeded(true);
+                }else{
+                    setMessage(`${responseJson.error || "An error occurred trying to upload the survey"}`);
+                    setMessageModalOpen(true);
+                }
+            }else{
+                throw new Error("Invalid response received from the server")
+            }
+        }catch(error){
+            setMessage(error.message);
+            setMessageModalOpen(true);
+        }
+    }
 
     const deleteQuestionObject = (questionId) => {
         console.log(`deleteQuestionObject called for ${questionId}`);
@@ -201,8 +259,12 @@ export default function SurveyFormQuestionComponent(props) {
         setCurrentQuestionId(currentQuestionId + 1);
     }
 
-    return (
-            <Grid columns={12}>
+    if (uploadSucceeded && (messageModalOpen == false)){
+        return <Redirect to={`/professor/${pid}/course`} />       
+    }
+
+    return [
+            <Grid columns={12} key={`course-${cid}-create-survey-grid`}>
                 <SelectQuestionType readyAddNewQuestion={(type) => readyAddNewQuestion(type)} clearInputs={clearInputs}/>
                 <GridRowMessageComponent message={"Construct your question below"}/>
                 {getQuestionCreatorComponent()}
@@ -210,12 +272,27 @@ export default function SurveyFormQuestionComponent(props) {
                 <GridRowMessageComponent size="small" message={"All questions created by you will appear below"}/>
                 <DatePickerGridRowComponent key={`survey-pick-deadline`} onChange={setSurveyDeadline}/>
                 {displayedQuestionComponents.length > 0 && displayedQuestionComponents || (<Grid.Row columns={16}><Grid.Column width={16}><Segment key={"mock-message"}>No Questons Added Yet</Segment></Grid.Column></Grid.Row>)}
-                <Grid.Row columns={16}>
-                    <Grid.Column width={16}><Button fluid onClick={() => console.log({deadline: surveyDeadline,questions:displayedQuestionObjects})}>Save Survey</Button></Grid.Column>
+                <Grid.Row columns={16} centered>
+                    <Grid.Column width={8} >
+                        <Button positive fluid onClick={() => {
+                                setUploadAttemptId(uploadAttemptId+1); 
+                            }
+                        }>
+                            Save Survey
+                        </Button>
+                    </Grid.Column>
+                    <Grid.Column width={8}>
+                        <Button basic inverted fluid onClick={() => history.goBack()}>
+                            Cancel
+                        </Button>
+                    </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={16} style={{minHeight:"100px"}}>
                     <Grid.Column width={16} />
                 </Grid.Row>
-            </Grid>
-    );
+            </Grid>,
+            <MessageComponent key={`course-${cid}-create-survey-feedback`} errorMessage={message} open={messageModalOpen} closeModal={() => setMessageModalOpen(false)}/>
+    ];
 }
+
+/*<MessageComponent key={`course-${cid}-create-survey-grid`} ref={messageButtonRef} errorMessage={message} open={messageModalOpen} closeModal={() => setMessageModalOpen(false)}/>*/
