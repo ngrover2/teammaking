@@ -8,6 +8,7 @@ const updateCourseById = async function(req, res, next){
     const courseName = req.body.course_name;
     const courseDesc = req.body.course_description;
     const courseCode = req.body.course_code;
+    console.log(`REQUEST TO Update ${courseCode}`)
     const professorId = req.params.pid;
     var taName = req.body.ta_name;
     var taEmail = req.body.ta_email;
@@ -46,6 +47,7 @@ const updateCourseById = async function(req, res, next){
         })
         return res
     }
+
     if(!validateString(courseDesc)){
         res.status(400).json({
             status:"error",
@@ -54,6 +56,7 @@ const updateCourseById = async function(req, res, next){
         })
         return res
     }
+
     if(!validateString(courseCode)){
         res.status(400).json({
             status:"error",
@@ -92,7 +95,7 @@ const updateCourseById = async function(req, res, next){
     let connection = getDbConnection();
 
     // Check if a course already exists with the same course code
-    let checkCourseQuery = "SELECT course_id FROM Course C WHERE ?? = ? AND ?? = ?"
+    let checkCourseQuery = "SELECT course_id FROM Course C WHERE ?? = ? AND ?? = ?";
     let checkCourseQueryArgs = ['C.professor_id', professorId, 'C.course_code', courseCode]
     let checkCourseQuerySql = mysql.format(checkCourseQuery, checkCourseQueryArgs)
     let checkCourseResults = await executeOnDBWithPromise(connection, checkCourseQuerySql);
@@ -153,6 +156,13 @@ const updateCourseById = async function(req, res, next){
             })
         }
     }
+    return res.status(500).json({
+        status:"error",
+        error:`The course with the course code:${courseCode} does not exist in the database`,
+        "error_code":"SCFP1CNE",
+        "result":JSON.stringify(checkCourseResults)
+    })
+    
 }
 
 router.post("/", updateCourseById);

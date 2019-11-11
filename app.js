@@ -5,6 +5,7 @@ var cors = require('cors');
 
 const saveCourseController = require('./API/saveCourseController');
 const saveCSVController = require('./API/saveCSVController');
+const deleteRosterController = require('./API/deleteRosterByCourseCodeController');
 const getRosterController = require('./API/getRosterController');
 const updateCourseByIdController = require('./API/updateCourseController');
 const getCoursesByProfessorIdController = require('./API/getCoursesController');
@@ -24,7 +25,10 @@ app.use("/professor/:pid/course/:cid/roster/save", saveCSVController);
 app.use("/professor/:pid/course/:cid/roster/:rid", getRosterController);
 app.use("/professor/:pid/course/:cid/update", updateCourseByIdController);
 app.use("/professor/:pid/course/:cid/delete", deleteCourseByIdController);
+
+// routes primarily created for testing
 app.use("/professor/:pid/course/deletebycode", deleteCourseByCodeController);
+app.use("/professor/:pid/course/roster/deletebycode", deleteRosterController);
 
 
 module.exports = app;
