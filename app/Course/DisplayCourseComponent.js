@@ -90,7 +90,7 @@ const CourseCardComponent = (props) => {
 						basic 
 						color='red' 
 						onClick={
-							() => props.setViewRosterClick("editSavedSurvey", props.courseId, props.rosterId)
+							() => props.setViewSurveyClick("editSavedSurvey", props.courseId, props.surveyId)
 						}
 					>
 						View Survey
@@ -113,6 +113,7 @@ class DisplayCourseComponent extends React.Component {
 		this.errorMessageRef = React.createRef();
 		this.getRosterFile = this.getRosterFile.bind(this);
 		this.setViewRosterRedirect = this.setViewRosterRedirect.bind(this);
+		this.setViewSurveyRedirect = this.setViewSurveyRedirect.bind(this);
 		this.getCourses = this.getCourses.bind(this);
 		this.deleteCourse = this.deleteCourse.bind(this);
 		this.updatePage = this.updatePage.bind(this);
@@ -212,18 +213,6 @@ class DisplayCourseComponent extends React.Component {
 		}
 	}
 
-	// componentWillUpdate(){
-	// 	if(this.props.match.params.pid){
-	// 		this.getCourses()
-	// 	}else{
-	// 		this.setState({
-	// 			getCoursesRequestSucceeded: false,
-	// 			errorMessage: "Could not fetch courses",
-	// 			errorMessageModalOpen:true
-	// 		})
-	// 	}
-	// }
-
 	updatePage(){
 		this.getCourses();
 	}
@@ -267,6 +256,17 @@ class DisplayCourseComponent extends React.Component {
 		this.setState({
 			selectedCourseId:courseId,
 			selectedRosterId:rosterId
+		},()=> this.setState({
+				redirectTo:str
+			})
+		);
+	}
+
+	setViewSurveyRedirect(str, courseId, surveyId){
+		console.log("Setting redirect to ", str)
+		this.setState({
+			selectedCourseId:courseId,
+			surveyId:surveyId
 		},()=> this.setState({
 				redirectTo:str
 			})
@@ -349,10 +349,12 @@ class DisplayCourseComponent extends React.Component {
 							classStartTime={courseObj.timings_start}
 							classEndTime={courseObj.timings_end}
 							courseId={courseObj.course_id}
+							surveyId={courseObj.survey_id}
 							tAEmail={courseObj.ta_email}
 							tAName={courseObj.ta_name}
 							rosterId={courseObj.roster_id}
 							setViewRosterClick={this.setViewRosterRedirect}
+							setViewSurveyClick={this.setViewSurveyRedirect}
 							getRosterFile={this.getRosterFile}
 							deleteCourse={this.deleteCourse}
 						/>
@@ -401,9 +403,9 @@ class DisplayCourseComponent extends React.Component {
 		}else if (this.state.redirectTo == "createNewSurvey"){
 			return <Redirect push={true} to={{ pathname:`/professor/${this.professor_id}/course/${this.state.selectedCourseId}/survey/create`, state : { header:this.state.fileHeaderFieldsArray, data:this.state.fileValueObjects}  }} />
 		}else if (this.state.redirectTo == "editSavedSurvey"){
-			return <Redirect push={true} to={{ pathname:`/professor/${this.professor_id}/course/${this.state.selectedCourseId}/survey/${this.state.surveyId}/edit`, state : { header:this.state.fileHeaderFieldsArray, data:this.state.fileValueObjects}  }} />
+			return <Redirect push={true} to={{ pathname:`/professor/${this.professor_id}/course/${this.state.selectedCourseId}/survey/${this.state.surveyId}`, state : { header:this.state.fileHeaderFieldsArray, data:this.state.fileValueObjects}  }} />
 		}else{
-			return <Button fluid>No Value Set for this.state.redirectTo</Button>
+			return <Button fluid>Oops! Looks like you have lost your way!</Button>
 		}
 	}
 }
