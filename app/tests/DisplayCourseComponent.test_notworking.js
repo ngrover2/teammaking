@@ -2,7 +2,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import renderer from 'react-test-renderer';
-import DisplayCourseComponent from '../DisplayCourseComponent'
+import DisplayCourseComponent from '../Course/DisplayCourseComponent'
 
 var courseDetails = {
   name:"SSDI Fall'19",

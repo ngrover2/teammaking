@@ -1,11 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import renderer from 'react-test-renderer';
-import MainAppComponent from '../MainAppComponent'
+import DisplayPickedFile from '../Roster/DisplayPickedFile'
+import {useLocation} from 'react-use';
+
 
 it('renders correctly', () => {
   const tree = renderer.create(
-    <MainAppComponent></MainAppComponent>
+    <DisplayPickedFile/>
   ).toJSON();
   expect(tree).toMatchSnapshot();
 });

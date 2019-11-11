@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import renderer from 'react-test-renderer';
-import DisplayRosterDetailsComponent from '../DisplayRosterDetailsComponent'
+import DisplaySavedRosterComponent from '../Roster/DisplaySavedRosterComponent'
 
 const HeaderCellComponent = (props) => (<Table.HeaderCell singleLine>{props.headerName}</Table.HeaderCell>);
     var getHeaders = () => {
