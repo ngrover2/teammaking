@@ -10,7 +10,7 @@ const getEmptyHeaderRow = () => (<Table.Cell>No Header present in roster file</T
 
 const DisplayPickedFile = (props) => {
     var { state } = useLocation();
-    console.log(state);
+    // console.log(state);
     const [ receivedHeader, setReceivedHeader ] = useState(state.header || []);
     const [ receivedStudents, setReceivedStudents ] = useState(state.data || []);
     var history = useHistory();
@@ -129,7 +129,7 @@ const DisplayPickedFile = (props) => {
             let responseJson = await response.json()
             if (responseJson){
                 if (responseJson.status == "ok"){
-                    console.log(responseJson)
+                    // console.log(responseJson)
                     setResponseCode(1);                    
                     setMessage("Roster uploaded successfully");
                     setMessageModalOpen(true);
@@ -172,7 +172,7 @@ const DisplayPickedFile = (props) => {
     }
 
     const HeaderRowComponent = React.forwardRef((props,ref) => {
-        console.log("HeaderRowComponent Created")
+        // console.log("HeaderRowComponent Created")
         let editHeaderCellStyle = {
             backgroundColor:"black",
             color:"white"
@@ -212,11 +212,11 @@ const DisplayPickedFile = (props) => {
         
         function constructHeader(){
             try{
-                console.log(`${""}`);
-                console.log(`${"constructHeader called"}`);
+                // console.log(`${""}`);
+                // console.log(`${"constructHeader called"}`);
                 // console.log("localHeader",localHeader);
                 // console.log("header", header);
-                console.log("headerEditable",`${headerEditable}`);
+                // console.log("headerEditable",`${headerEditable}`);
                 let headerRowCells = []
                 if (localHeader.length < 1) {console.log(`${"constructHeader returning NULL"}`);return null};
                 localHeader.forEach((col,idx) => {
@@ -232,7 +232,7 @@ const DisplayPickedFile = (props) => {
                                                     let changedVal = e.target.value
                                                     // create new header array with changed colName from input
                                                     let updatedHeader = [...localHeader.slice(0,idx), changedVal ,...localHeader.slice(idx+1)];
-                                                    console.log("updatedHeader", updatedHeader);
+                                                    // console.log("updatedHeader", updatedHeader);
                                                     
                                                     // set the new headerValues
                                                     setHeaderValues(updatedHeader);
@@ -241,7 +241,7 @@ const DisplayPickedFile = (props) => {
                                                     // update the UI that reflects the change in (uncomitted) headerValues. 
                                                     // Uncommitted because headerValues has not been copied over to localHeader. 
                                                     // That will happen only when Lock Header is clicked.
-                                                    console.log(headerNameChangeMapping)
+                                                    // console.log(headerNameChangeMapping)
                                                     setHeaderNameChangeMapping(Object.assign({}, headerNameChangeMapping,{[col]: changedVal}));
                                                     setLocalHeaderUpdatedId(localHeaderUpdatedId+1);
                                                 }
