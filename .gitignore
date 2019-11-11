@@ -1,5 +1,5 @@
 node_modules/
-css/
+./css/
 data/
 scripts/
 package-lock.json
