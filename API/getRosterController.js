@@ -7,11 +7,10 @@ const getRosterById = async function(req, res, next){
     const roster_id = req.params.rid;
     const course_id = req.params.cid;
     if (!roster_id){
-        res.status(400).json({
+        return res.status(400).json({
             status:"error",
             error:"roster_id not present in request"
         })
-        return res
     }
 
     let connection = null;
@@ -67,9 +66,9 @@ const getRosterById = async function(req, res, next){
         let rosterResults = await executeOnDBWithPromise(connection, mysql.format(getRosterResultsQuery, [roster_id, roster_id]))
         console.log("query", mysql.format(getRosterResultsQuery, [roster_id, roster_id]));
         // console.log(rosterResults);
-        rosterData = []
-        header = [];
-        hasHeader = false;
+        let rosterData = []
+        let header = [];
+        let hasHeader = false;
         if (rosterResults){
             console.log(rosterResults instanceof Array);
             rosterResults.forEach((result, idx) => {
@@ -100,7 +99,7 @@ const getRosterById = async function(req, res, next){
                     }
                 }
             })
-            res.status(200).json({
+            return res.status(200).json({
                 status:"ok",
                 results:{
                     data: rosterData,
@@ -111,7 +110,7 @@ const getRosterById = async function(req, res, next){
         }
         // throw Error("No roster found with this id")
     }catch(error){
-        res.status(500).json({
+        return res.status(500).json({
             status:"error",
             error:error.message,
             errorFull:JSON.stringify(error),
