@@ -56,19 +56,26 @@ const CourseCardComponent = (props) => {
 					</Button>
 					<Button style={{ margin:"2px"}}
 						basic 
-						color='red' 
+						color='red'
 						onClick={() => {
-							if (document.getElementById("hiddenFilePickerButtonId") != "undefined"){
-								var fp = document.getElementById("hiddenFilePickerButtonId");
+							if (document.getElementById(`hiddenFilePickerButtonId-course${props.courseId}`) != "undefined"){
+								var fp = document.getElementById(`hiddenFilePickerButtonId-course${props.courseId}`);
 								fp.click();
 							}else{
 								console.log("fp is undefined");
 							}
 						}
 					}>
-						Import Roster
+						{`Import Roster ${props.courseId}`}
 					</Button>
-					<PickRosterFileComponent passSelectedFile={(fileObj) => props.getRosterFile(fileObj, props.courseId)} />
+					<PickRosterFileComponent
+						course_id={props.courseId}
+						passSelectedFile={(fileObj, courseId) => {
+								// console.log(`PickRosterFileComponent for ${courseId}`);
+								props.getRosterFile(fileObj, courseId)
+							}
+						}
+					/>
 				</div>
 				<div className='ui two buttons'>
 					<Button style={{ margin:"2px"}}
@@ -78,7 +85,7 @@ const CourseCardComponent = (props) => {
 							() => props.setViewRosterClick("createNewSurvey", props.courseId, props.rosterId)
 						}
 					>
-						Create Survey
+						{`Create Survey ${props.courseId}`}
 					</Button>
 					<Button style={{ margin:"2px"}}
 						basic 
@@ -89,7 +96,7 @@ const CourseCardComponent = (props) => {
 					>
 						View Survey
 					</Button>
-					<PickRosterFileComponent passSelectedFile={(fileObj) => props.getRosterFile(fileObj, props.courseId)} />
+					{/*<PickRosterFileComponent passSelectedFile={(fileObj) => props.getRosterFile(fileObj, props.courseId)} />*/}
 				</div>
 				
 				<div style={{ textAlign:"center"}}><Button style={{ background:"none"}} onClick={(courseId) => props.deleteCourse(props.courseId)}>Delete</Button></div>
@@ -125,7 +132,7 @@ class DisplayCourseComponent extends React.Component {
 	}
 
 	getRosterFile(fileObj, courseId){
-		if (fileObj) this.setState({selectedFile:fileObj.name}, () => console.log(`Selected: ${fileObj.name}`));
+		if (fileObj) this.setState({selectedFile:fileObj.name}, () => console.log(`Selected: ${fileObj.name} for courseid:${courseId}`));
 		let fileReader = new FileReader();
 		try{
 			var dataArray = [];
@@ -170,7 +177,7 @@ class DisplayCourseComponent extends React.Component {
 							this.setState({errorMessage: `The file does not appear to be a valid csv file`, errorMessageModalOpen:true},() => this.errorMessageRef.current.ref.current.click());
 						}
 					}else{
-						console.log(error)
+						// console.log(error)
 						this.setState({errorMessage: "The selected file does not have data in the right format", errorMessageModalOpen:true},() => this.errorMessageRef.current.ref.current.click());
 					};
 				}catch(error){
@@ -358,10 +365,10 @@ class DisplayCourseComponent extends React.Component {
 
 
 	render() {
-		console.log("this.professor_id",this.professor_id)
-		console.log("this.props",this.props)
+		// console.log("this.professor_id",this.professor_id) // DEBUG
+		// console.log("this.props",this.props)
 		this.filePickerRef = React.createRef();
-		console.log("this.state.redirectTo",this.state.redirectTo);
+		// console.log("this.state.redirectTo",this.state.redirectTo); // DEBUG
 		if (this.state.redirectTo == "courseDetails"){
 			return (
 				<Grid>
