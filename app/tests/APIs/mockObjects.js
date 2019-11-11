@@ -42,6 +42,42 @@ const mockUpdateCourse = {
 	class_end_time: '05:15:00'
 }
 
+const mockSurvey = {
+	course_id: 1,
+	professor_id: '1',
+	question_object:{
+		deadline: '2019-12-31 11:59:59',
+		questions: [
+			{
+				qtype: "text",
+				qtext: "Mock text type question, am I ?",
+				qweight: "Little Important"
+			},
+			{
+				qtype: "multiplechoice",
+				qtext: "Mock MCQ type question, am I ?",
+				qweight: "Little Important",
+				choices: ["Am I", "Am I not", "Not sure", "Semms legit", "Other"]
+			},
+			{
+				qtype: "multiplevalues",
+				qtext: "Mock multiple values type question, am I ?",
+				qweight: "Little Important",
+				qMaxVals: 4
+			},
+			{
+				qtype: "single",
+				qtext: "Mock single choice type question, am I ?",
+				qweight: "Little Important",
+				choices: ["this one", "that one", "None", "All"],
+				defaultChoice: "this one",
+				defaultSelected: true
+			}
+		],
+		title: "This will help me make the best teams out of you"
+	}
+}
+
 const invalidMockCourseCode = 'ANINVALIDMOCKCOURSECODETHATSHOULDNOTEXIST';
 
 module.exports = [ mockRoster, mockCourse, mockUpdateCourse ]
