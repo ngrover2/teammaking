@@ -13,22 +13,35 @@ const mockRoster = {
 	  [ 'Rahul', 'rahul@email.com', 'python', '23', '80100012' ],
 	  [ 'Devika', 'devika@email.com', 'express', '23', '80100010' ]
 	],
-	course_code: 'CC1234',
-	professor_name: 'Harini Ramaprasad',
-	course_id: '13'
+	course_code: 'ITCS TEST'
 }
 
 const mockCourse = {
 	course_code: 'ITCS TEST',
-	course_name: 'test',
-	course_description: 'This is a test course',
-	ta_name: 'test ta',
-	ta_email: 'testta@email.com',
+	course_name: 'Test Course',
+	course_description: 'This Course teaches you avout the facts about life (and people and illnesses and death!, but not by Loopus)',
+	ta_name: 'Gregory House',
+	ta_email: 'SeekerOfVicodine@EverybodyLies.com',
 	professor_id: '1',
-	start_date: '2019-11-09 18:30:00',
-	end_date: '2019-11-29 18:30:00',
-	class_start_time: '04:02:00',
-	class_end_time: '04:02:00'
+	start_date: '2019-7-09 18:30:00',
+	end_date: '2019-12-12 18:30:00',
+	class_start_time: '02:30:00',
+	class_end_time: '05:15:00'
 }
 
-module.exports = [ mockRoster, mockCourse ]
+const mockUpdateCourse = {
+	course_code: 'ITCS TEST',
+	course_name: 'Test Course',
+	course_description: 'This course teaches you patience. At the end of this course, you will either be in absolute control of how you deal with impatience OR you will quit your job.',
+	ta_name: 'Lisa Cuddy',
+	ta_email: 'ControllerOfHouse@ImmenselyPatient.com',
+	professor_id: '1',
+	start_date: '2019-7-09 18:30:00',
+	end_date: '2019-12-12 18:30:00',
+	class_start_time: '02:30:00',
+	class_end_time: '05:15:00'
+}
+
+const invalidMockCourseCode = 'ANINVALIDMOCKCOURSECODETHATSHOULDNOTEXIST';
+
+module.exports = [ mockRoster, mockCourse, mockUpdateCourse ]
