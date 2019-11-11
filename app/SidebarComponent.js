@@ -34,12 +34,15 @@ const SidebarComponent = (props) => {
 						<div style = {linkLabelStyle}>Courses</div>
 					</Link>
 				</Menu.Item>
-				<Menu.Item>
-					<Link to={`/professor/${pid || props.pid}/course`}>
-						<Icon name='sticky note'/>
-						<div style = {linkLabelStyle}>Surveys</div>
-					</Link>
-				</Menu.Item>
+				{
+					// Add appropriate Links in the future
+					/*<Menu.Item>
+						<Link to={`/professor/${pid || props.pid}/course`}>
+							<Icon name='sticky note'/>
+							<div style = {linkLabelStyle}>Surveys</div>
+						</Link>
+					</Menu.Item>*/
+				}
 			</Sidebar>
 			<Sidebar.Pusher style={props.pushStyle}>
 				{props.children}
