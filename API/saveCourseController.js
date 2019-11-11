@@ -4,7 +4,6 @@ var [ getDbConnection, executeOnDBWithPromise ] = require('./getDBConnection');
 var router = express.Router({mergeParams: true});
 
 const saveCourseForProfessor = async function (req, res, next){
-    console.log(`Save course endpoint (${req.url}) called with the following body`)
     console.log(req.body)
     const courseName = req.body.course_name;
     const courseDesc = req.body.course_description;
@@ -69,14 +68,14 @@ const saveCourseForProfessor = async function (req, res, next){
             status:"error",
             error:"course_code should not be empty and should be a valid text(string) value",
             "error_code":"SCFP1CC"
-        })
+        });
     }
     if(!validatePositiveNumber(professorId)){
         return res.status(400).json({
             status:"error",
             error:"professor_id should be a valid positive number(integer)",
             "error_code":"SCFP1PI"
-        })
+        });
     }
 
     if(!validateString(taEmail)){
@@ -156,6 +155,7 @@ const saveCourseForProfessor = async function (req, res, next){
                 "count": -1
             })
         }
+        throw Error("No response from server")
     }catch(error){
         return res.status(500).json({
             status:"error",
