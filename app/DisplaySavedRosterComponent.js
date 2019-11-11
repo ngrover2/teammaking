@@ -1,3 +1,4 @@
+// Component to display the roster from the database.
 import { useState, useEffect } from 'react';
 import React from 'react';
 import { Table, Header, HeaderCell, Row, Grid, Button, Input, Label, Tab, Checkbox } from 'semantic-ui-react';

@@ -1,3 +1,4 @@
+// Component to create new Survey.
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Grid, Segment, Button } from 'semantic-ui-react';

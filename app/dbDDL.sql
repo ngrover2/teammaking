@@ -1,3 +1,5 @@
+-- Create database to store data.
+
 -- drop database teammaking;
 -- 
 -- create database teammaking;

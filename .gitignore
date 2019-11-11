@@ -1,6 +1,7 @@
 node_modules/
-css/
+./css/
 data/
 scripts/
 package-lock.json
 .DS_STORE
+app/tests/__snapshots__

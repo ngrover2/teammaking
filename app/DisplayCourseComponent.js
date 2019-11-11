@@ -1,3 +1,4 @@
+// Component to display the course cards.
 import React from 'react';
 import { default as CreateNewCourseComponent} from "./CreateNewCourseComponent"
 import { default as UpdateCourseComponent} from "./UpdateCourseComponent";

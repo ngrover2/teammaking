@@ -1,3 +1,4 @@
+// Component to display a particular roster.
 import React from 'react';
 import { Button, Input } from 'semantic-ui-react';
 import { useState, useEffect } from 'react';

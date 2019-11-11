@@ -1,3 +1,4 @@
+// Component to ask for info about new course and submit to the database.
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Redirect } from "react-router-dom";
