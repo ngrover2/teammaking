@@ -4,7 +4,7 @@ var [ getDbConnection, executeOnDBWithPromise ] = require('./getDBConnection');
 var router = express.Router({mergeParams: true});
 
 const saveCSV = async function(req, res, next){
-    // console.log(JSON.stringify(req.body)); //DEBUG
+    console.log(req.body); //DEBUG
     const professor_id = req.params.pid;
     const course_id = req.params.cid;
     const header = req.body.header_row;
@@ -84,13 +84,13 @@ const saveCSV = async function(req, res, next){
 
             // Get RosterId for the professor
             // getRosterQueryString = "SELECT R.roster_id, C.course_id, P.professor_id FROM Professor P LEFT JOIN Roster R USING (professor_id) LEFT JOIN Course C USING (professor_id) WHERE ?? = ? AND ?? = ?"
-            getRosterQueryString = "SELECT R.roster_id FROM Roster R WHERE ?? = ? AND ?? = ?"
-            getRosterQueryArgs = ['R.professor_id' , professor_id , 'R.course_id', course_id];
-            getRosterSqlQuery = mysql.format(getRosterQueryString, getRosterQueryArgs);
+            let getRosterQueryString = "SELECT R.roster_id FROM Roster R WHERE ?? = ? AND ?? = ?"
+            let getRosterQueryArgs = ['R.professor_id' , professor_id , 'R.course_id', course_id];
+            let getRosterSqlQuery = mysql.format(getRosterQueryString, getRosterQueryArgs);
             // console.log("getRosterSqlQuery", getRosterSqlQuery);
 
             try{
-                queryResult = await executeOnDBWithPromise(connection, getRosterSqlQuery);
+                let queryResult = await executeOnDBWithPromise(connection, getRosterSqlQuery);
                 if (queryResult){
                     // console.log(queryResult[0]) // DEBUG
                     if (queryResult.length > 0){
@@ -123,9 +123,9 @@ const saveCSV = async function(req, res, next){
                         // insert the header in db
                         
                         // create query to insert header
-                        headerQuery = `INSERT INTO RosterHeaderRow (??) VALUES(?)`
-                        colNames = ['roster_id' , 'course_id']
-                        colValues = [roster_id, course_id]
+                        let headerQuery = `INSERT INTO RosterHeaderRow (??) VALUES(?)`
+                        let colNames = ['roster_id' , 'course_id']
+                        let colValues = [roster_id, course_id]
                         for (let i = 1; i <= 10; i++){
                             if (header[i-1] && header[i-1].name){
                                 colNames.push(`col${i}_name`)
@@ -134,30 +134,30 @@ const saveCSV = async function(req, res, next){
                                 continue
                             }
                         }
-                        insertHeaderSqlQuery = mysql.format(headerQuery, [colNames, colValues]);
+                        let insertHeaderSqlQuery = mysql.format(headerQuery, [colNames, colValues]);
                         console.log("insertHeaderSqlQuery", insertHeaderSqlQuery);
 
                         // create query to insert rows in RosterRow, this will generate row ids
-                        rowsQuery = `INSERT INTO RosterRow (??) VALUES ?`
+                        let rowsQuery = `INSERT INTO RosterRow (??) VALUES ?`
                         colNames = ['roster_id' , 'course_id', 'professor_id']
                         colValues = [roster_id, course_id, professor_id]
-                        allValues = []
+                        let allValues = []
                         for (let i=0; i<data_rows.length;i++){
                             allValues.push(colValues)
                         }
                         // console.log(allValues);
                         
-                        insertRowsSqlQuery = mysql.format(rowsQuery, [colNames, allValues]);
+                        let insertRowsSqlQuery = mysql.format(rowsQuery, [colNames, allValues]);
                         console.log("insertRowsSqlQuery", insertRowsSqlQuery); //DEBUG
                         
-                        headerResults = await executeOnDBWithPromise(connection, insertHeaderSqlQuery)
+                        let headerResults = await executeOnDBWithPromise(connection, insertHeaderSqlQuery)
                         // console.log("headerResults", headerResults);
                         if (headerResults.affectedRows == 1){ // header has been created
-                            rowResults = await executeOnDBWithPromise(connection, insertRowsSqlQuery)
+                            let rowResults = await executeOnDBWithPromise(connection, insertRowsSqlQuery)
                             if (rowResults){ // rows have been inserted
                                 // get ids of inserted rows
                                 console.log("getRowIds",mysql.format("SELECT roster_row_id FROM RosterRow where roster_id = ? AND course_id = ?", [roster_id, course_id])); // DEBUG
-                                rosterRowIds = await executeOnDBWithPromise(connection, mysql.format("SELECT roster_row_id FROM RosterRow where roster_id = ? AND course_id = ?", [roster_id, course_id]))
+                                let rosterRowIds = await executeOnDBWithPromise(connection, mysql.format("SELECT roster_row_id FROM RosterRow where roster_id = ? AND course_id = ?", [roster_id, course_id]))
 
                                 if (rosterRowIds){
                                     var rosterRowIdArray = []
@@ -169,7 +169,7 @@ const saveCSV = async function(req, res, next){
                                     // for each rosterRowId, insert the correpsonding data
                                     for (let i=0; i < data_rows.length;i++){
                                         if (!data_rows[i]) continue
-                                        insertedRosterRowId = rosterRowIdArray[i]
+                                        let insertedRosterRowId = rosterRowIdArray[i]
                                         colNames = ['value','roster_row_id']
                                         let col1Vals = []
                                         let col2Vals = []
@@ -221,31 +221,31 @@ const saveCSV = async function(req, res, next){
                                         }
 
 
-                                        insertRowDataCol1Query = "INSERT INTO RowColumnOne (??) VALUES ?"
-                                        insertRowDataCol2Query = "INSERT INTO RowColumnTwo (??) VALUES ?"
-                                        insertRowDataCol3Query = "INSERT INTO RowColumnThree (??) VALUES ?"
-                                        insertRowDataCol4Query = "INSERT INTO RowColumnFour (??) VALUES ?"
-                                        insertRowDataCol5Query = "INSERT INTO RowColumnfive (??) VALUES ?"
+                                        let insertRowDataCol1Query = "INSERT INTO RowColumnOne (??) VALUES ?"
+                                        let insertRowDataCol2Query = "INSERT INTO RowColumnTwo (??) VALUES ?"
+                                        let insertRowDataCol3Query = "INSERT INTO RowColumnThree (??) VALUES ?"
+                                        let insertRowDataCol4Query = "INSERT INTO RowColumnFour (??) VALUES ?"
+                                        let insertRowDataCol5Query = "INSERT INTO RowColumnfive (??) VALUES ?"
 
-                                        col1Query = mysql.format(insertRowDataCol1Query, [colNames, col1Vals]);
-                                        col2Query = mysql.format(insertRowDataCol2Query, [colNames, col2Vals]);
-                                        col3Query = mysql.format(insertRowDataCol3Query, [colNames, col3Vals]);
-                                        col4Query = mysql.format(insertRowDataCol4Query, [colNames, col4Vals]);
-                                        col5Query = mysql.format(insertRowDataCol5Query, [colNames, col5Vals]);
+                                        let col1Query = mysql.format(insertRowDataCol1Query, [colNames, col1Vals]);
+                                        let col2Query = mysql.format(insertRowDataCol2Query, [colNames, col2Vals]);
+                                        let col3Query = mysql.format(insertRowDataCol3Query, [colNames, col3Vals]);
+                                        let col4Query = mysql.format(insertRowDataCol4Query, [colNames, col4Vals]);
+                                        let col5Query = mysql.format(insertRowDataCol5Query, [colNames, col5Vals]);
                                         console.log("put values for column one - Query: " ,col1Query); // DEBUG
-                                        col1Results = await executeOnDBWithPromise(connection, col1Query);
+                                        let col1Results = await executeOnDBWithPromise(connection, col1Query);
                                         if (col1Results){
                                             console.log("put values for column two - Query: " ,col2Query); // DEBUG
-                                            col2Results = await executeOnDBWithPromise(connection, col2Query);
+                                            let col2Results = await executeOnDBWithPromise(connection, col2Query);
                                             if (col1Results){
                                                 console.log("put values for column three - Query: " ,col3Query); // DEBUG
-                                                col3Results = await executeOnDBWithPromise(connection, col3Query);
+                                                let col3Results = await executeOnDBWithPromise(connection, col3Query);
                                                 if (col3Results){
                                                     console.log("put values for column four - Query: " ,col4Query); // DEBUG
-                                                    col4Results = await executeOnDBWithPromise(connection, col4Query);
+                                                    let col4Results = await executeOnDBWithPromise(connection, col4Query);
                                                     if (col4Results){
                                                         console.log("put values for column five - Query: " ,col5Query); // DEBUG
-                                                        col5Results = await executeOnDBWithPromise(connection, col5Query);
+                                                        let col5Results = await executeOnDBWithPromise(connection, col5Query);
                                                         // We are done here
                                                     }
                                                 }
