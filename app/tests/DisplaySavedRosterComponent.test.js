@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import renderer from 'react-test-renderer';
 
 import {useLocation} from 'react-use';
-import DisplaySavedRosterComponent from '..\Roster\DisplaySavedRosterComponent.js';
+import DisplaySavedRosterComponent from '../Roster/DisplaySavedRosterComponent.js';
 
 
 it('renders correctly', () => {

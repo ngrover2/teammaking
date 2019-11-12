@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import renderer from 'react-test-renderer';
-import SurveyFormQuestionComponent from '..\Survey\SurveyFormQuestionComponent.js'
+import SurveyFormQuestionComponent from '../Survey/SurveyFormQuestionComponent.js'
 import {useLocation} from 'react-use';
 
 

@@ -2,7 +2,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import renderer from 'react-test-renderer';
-import AnswerSurveyComponent from '..\StudentAnswerSurvey\AnswerSurveyComponent.jsx'
+import AnswerSurveyComponent from '../StudentAnswerSurvey/AnswerSurveyComponent.jsx'
 
 var AnswerSurveyComponentDetails = {
     "survey_details":{
