@@ -1,7 +1,7 @@
 const app = require('../../../app.js');
 const supertest = require('supertest');
 const request = supertest(app);
-var [ mockRoster, mockCourse ] = require('./mockObjects');
+var { mockRoster, mockCourse, mockUpdateCourse, mockSurvey, mockUpdateSurvey } = require('./mockObjects');
 
 /**
  * Testing a create course (with a valid mockCourse body) for a professor with professor_id: 1 in the URL path
