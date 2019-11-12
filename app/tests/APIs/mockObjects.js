@@ -43,9 +43,7 @@ const mockUpdateCourse = {
 }
 
 const mockSurvey = {
-	course_id: 1,
-	professor_id: '1',
-	question_object:{
+	surveyObject:{
 		deadline: '2019-12-31 11:59:59',
 		questions: [
 			{
@@ -66,7 +64,7 @@ const mockSurvey = {
 				qMaxVals: 4
 			},
 			{
-				qtype: "single",
+				qtype: "singlechoice",
 				qtext: "Mock single choice type question, am I ?",
 				qweight: "Little Important",
 				choices: ["this one", "that one", "None", "All"],
@@ -77,7 +75,41 @@ const mockSurvey = {
 		title: "This will help me make the best teams out of you"
 	}
 }
+	
+const mockUpdateSurvey = {
+	surveyObject:{
+		deadline: '2019-12-31 11:59:59',
+		questions: [
+			{
+				qtype: "text",
+				qtext: "What else could it be ?",
+				qweight: "Somewhat Important"
+			},
+			{
+				qtype: "multiplechoice",
+				qtext: "May be her bravery isn't bravery, it is a synmptom",
+				qweight: "Somewhat Important",
+				choices: ["Am I", "Am I not", "Not sure", "Semms legit", "Other"]
+			},
+			{
+				qtype: "multiplevalues",
+				qtext: "May be her bravery isn't bravery, it is a synmptom ?",
+				qweight: "Little Important",
+				qMaxVals: 4
+			},
+			{
+				qtype: "singlechoice",
+				qtext: "May be her bravery isn't bravery, it is a synmptom ?",
+				qweight: "Little Important",
+				choices: ["Go to hell, House", "I agrre with you", "How would you test it", "You are miserable"],
+				defaultChoice: "Go to hell, House",
+				defaultSelected: true
+			}
+		],
+		title: "This will help me make the best teams out of you"
+	}
+}
 
 const invalidMockCourseCode = 'ANINVALIDMOCKCOURSECODETHATSHOULDNOTEXIST';
 
-module.exports = [ mockRoster, mockCourse, mockUpdateCourse ]
+module.exports = { mockRoster, mockCourse, mockUpdateCourse, mockSurvey, mockUpdateSurvey }
