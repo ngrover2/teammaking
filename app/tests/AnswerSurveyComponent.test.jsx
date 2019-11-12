@@ -2,7 +2,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import renderer from 'react-test-renderer';
-import AnswerSurveyComponent from '..\StudentAnswerSurvey\AnswerSurveyComponent.jsx'
+import AnswerSurveyComponent from '../AnswerSurveyComponent'
 
 var AnswerSurveyComponentDetails = {
     "survey_details":{
@@ -31,6 +31,7 @@ var AnswerSurveyComponentDetails = {
                 "type":"available_times",
                 "question":"what times are you free?"
             }  
+            
     }
 }; 
 it('renders correctly', () => {
