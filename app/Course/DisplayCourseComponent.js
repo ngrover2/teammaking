@@ -31,7 +31,7 @@ const NoCoursesCardComponent = (props) => {
 
 const CourseCardComponent = (props) => {
 	return(
-		<Card style={{height:'250px'}} key={`${props.courseCode}-card`}>
+		<Card style={{minHeight:'250px'}} key={`${props.courseCode}-card`}>
 			<Card.Content>
 				<UpdateCourseComponent
 					{...props}
@@ -293,11 +293,13 @@ class DisplayCourseComponent extends React.Component {
 					console.log("response status ok")
 					if (responseJson.result){
 						if (responseJson.result.length > 0){
+							console.log(`downloaded courses: from database for professor ${this.professor_id}`,responseJson.result);
 							this.setState({
 								courses:responseJson.result
 							}, () => this.setState({
 									getCoursesRequestSucceeded:true,
-									courseCards: this.constructCards()
+									courseCards: this.constructCards(),
+									errorMessageModalOpen:false
 								})
 							)
 						}else{

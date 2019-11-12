@@ -14,11 +14,11 @@ const getSurveyController = async function(req, res, next){
 
     let connection = getDbConnection();
     try{
-        let getSurveyQuery = "SELECT SQ.question_object FROM SurveyQuestions SQ WHERE ?? = ?"
+        let getSurveyQuery = "SELECT S.deadline, SQ.question_object FROM Survey S LEFT JOIN SurveyQuestions SQ USING(survey_id) WHERE ?? = ?"
         let getSurveyQueryIdentifiers = ['SQ.survey_id']
         let getSurveyQueryValues = [ surveyId ]
         let getSurveyQueryQuerySql = mysql.format(getSurveyQuery, [getSurveyQueryIdentifiers, getSurveyQueryValues])
-        let getSurveyQueryResults = await executeOnDBWithPromise(connection, getSurveyQueryQuerySql )
+        let getSurveyQueryResults = await executeOnDBWithPromise(connection, getSurveyQueryQuerySql)
         if (getSurveyQueryResults){
             return res.status(200).json({
                 status:"ok",

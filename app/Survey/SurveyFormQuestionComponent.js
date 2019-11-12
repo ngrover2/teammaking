@@ -18,9 +18,6 @@ import { FullWidthDivider, GridRowMessageComponent, DatePickerGridRowComponent }
 import { default as MessageComponent } from "../Utils/ErrorMessageComponent";
 
 
-
-
-
 export default function SurveyFormQuestionComponent(props) {
 
     const  history = useHistory();
@@ -122,10 +119,24 @@ export default function SurveyFormQuestionComponent(props) {
     },[uploadAttemptId])
 
     async function uploadSurvey(){
+        if (displayedQuestionObjects.length <= 0){
+            setMessage("A survey needs to have at least one question");
+            setMessageModalOpen(true);
+            return;
+        }
+
+        if (surveyDeadline == undefined || surveyDeadline == null){
+            setMessage("You have not selected a deadline. it is a required argument");
+            setMessageModalOpen(true);
+            return;
+        }else{
+            console.log("Saving date:", surveyDeadline);
+        }
+        
         let postBody = {
             surveyObject: {
                 questions: displayedQuestionObjects,
-                deadline: surveyDeadline,
+                deadline: surveyDeadline ? surveyDeadline.format("YYYY-MM-DD HH:mm:ss") : null,
                 title: "Help me help you"
             },
         }
@@ -270,7 +281,7 @@ export default function SurveyFormQuestionComponent(props) {
                 {getQuestionCreatorComponent()}
                 <FullWidthDivider/>
                 <GridRowMessageComponent size="small" message={"All questions created by you will appear below"}/>
-                <DatePickerGridRowComponent key={`survey-pick-deadline`} onChange={setSurveyDeadline}/>
+                <DatePickerGridRowComponent key={`survey-pick-deadline`} onChange={setSurveyDeadline} defaultDate={surveyDeadline}/>
                 {displayedQuestionComponents.length > 0 && displayedQuestionComponents || (<Grid.Row columns={16}><Grid.Column width={16}><Segment key={"mock-message"}>No Questons Added Yet</Segment></Grid.Column></Grid.Row>)}
                 <Grid.Row columns={16} centered>
                     <Grid.Column width={8} >

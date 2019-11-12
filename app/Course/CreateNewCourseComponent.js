@@ -6,15 +6,10 @@ import { Divider, Modal, Form, FormField, Dropdown, Radio, FormButton, TextArea,
 import TimePicker from 'rc-time-picker';
 import 'rc-time-picker/assets/index.css';
 import moment from 'moment';
+moment.locale("en-gb");
 import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
-
-const DatePickerComponent = (props) => {
-    const [ date, setDate ] = useState();
-    return (
-      <DatePicker selected={date} onChange={date => {let d = moment(date).utc().format("YYYY-MM-DD HH:mm:ss");setDate(date); props.onChange(d)}} />
-    );
-};
+import { DatePickerComponent } from '../Utils/UtilComponents'
 
 export default function CreateNewCourseComponent(props){
 
@@ -41,23 +36,8 @@ export default function CreateNewCourseComponent(props){
 
     const [ ignoreWarnings, setIgnoreWarnings ] = useState(false);
 
-    // console.log("startDate", startDate)
-    // console.log("endDate", endDate)
-    // console.log("classStartTime", classStartTime)
-    // console.log("classEndTime", classEndTime) // DEBUG
-
     useEffect(() => {
         if (formSubmittedId == 0) return;
-        console.log("Handle Submit called"); 
-        // console.log(startDate);
-        // console.log(endDate);
-        // console.log(classStartTime);
-        // console.log(classEndTime);
-        // console.log(courseName);
-        // console.log(courseCode);
-        // console.log(courseDesc);
-        // console.log(tAEmail);
-        // console.log(tAName); // DEBUG
         let warningMessages = ""
         if (!courseCode){
             setFeedbackModalMessage("Course Code cannot be empty.")
@@ -104,8 +84,8 @@ export default function CreateNewCourseComponent(props){
             "ta_name": tAName,
             "ta_email": tAEmail,
             "professor_id": pid,
-            "start_date": startDate,
-            "end_date": endDate,
+            "start_date": startDate.format("YYYY-MM-DD HH:mm:ss"),
+            "end_date": endDate.format("YYYY-MM-DD HH:mm:ss"),
             "class_start_time": classStartTime + ":00",
             "class_end_time": classEndTime + ":00",
         }
@@ -128,7 +108,7 @@ export default function CreateNewCourseComponent(props){
                     setFeedbackModalMessage("Course created successfully");
                     setFeedbackModalOpen(true);
                 }else{
-                    setFeedbackModalMessage((responseJson.reason && `${responseJson.reason}`) || (responseJson.errorFull && `${responseJson.errorFull}`) || "Problem creating the new course");
+                    setFeedbackModalMessage((responseJson.error && `${responseJson.reason}`) || (responseJson.errorFull && `${responseJson.errorFull}`) || "Problem creating the new course");
                     setFeedbackModalOpen(true);
                 }
             }else{
@@ -189,7 +169,7 @@ export default function CreateNewCourseComponent(props){
                             />
                             <FormField
                                 label={"Course Description"}
-                                placeholder={"Enter Course Description"}
+                                placeholder={"Enter a brief summary for what the students can expect to learn from this course"}
                                 control="textarea"
                                 style={{height:"100px"}}
                                 value={courseDesc}
@@ -209,36 +189,40 @@ export default function CreateNewCourseComponent(props){
                                 value={tAEmail}
                                 onChange={(e) => setTaEmail(e.target.value)}
                             />
-                            <FormGroup
-                                style={{ alignItems:"center" }}
-                            >
-                                <FormField
-                                    label={"Class Start Time"}
-                                    placeholder={"Enter Teaching Assistant's Email ID"}
-                                />
-                                <TimePicker
-                                    showSecond={false}
-                                    defaultValue={moment()}
-                                    onChange={(value) => setClassStartTime(value.format('HH:mm'))}
-                                />
-                                <FormField
-                                    label={"Class End Time"}
-                                    placeholder={"Enter Teaching Assistant's Email ID"}
-                                />
-                                <TimePicker
-                                    showSecond={false}
-                                    defaultValue={moment()}
-                                    onChange={(value) => setClassEndTime(value.format('HH:mm'))}
-                                />  
-                            </FormGroup>
+                            {/* 
+                                TODO: times are not relevant without the days selection as an option, 
+                                {<FormGroup
+                                    style={{ alignItems:"center" }}
+                                >
+                                    <FormField
+                                        label={"Class Start Time"}
+                                        placeholder={"Enter Teaching Assistant's Email ID"}
+                                    />
+                                    <TimePicker
+                                        showSecond={false}
+                                        defaultValue={moment()}
+                                        onChange={(value) => setClassStartTime(value.format('HH:mm'))}
+                                    />
+                                    <FormField
+                                        label={"Class End Time"}
+                                        placeholder={"Enter Teaching Assistant's Email ID"}
+                                    />
+                                    <TimePicker
+                                        showSecond={false}
+                                        defaultValue={moment()}
+                                        onChange={(value) => setClassEndTime(value.format('HH:mm'))}
+                                    />  
+                                </FormGroup>
+                            */}
                             <FormGroup
                                 style={{ alignItems:"center" }}
                             >   
                                 <Label>Select Course Start Date</Label>
-                                <DatePickerComponent onChange={setStartDate}/>
+                                <DatePickerComponent onChange={setStartDate} defaultDate={startDate}/>
                                 <Label>Select Course End Date</Label>
-                                <DatePickerComponent onChange={setEndDate}/>
+                                <DatePickerComponent onChange={setEndDate} defaultDate={endDate}/>
                             </FormGroup>
+                            <Form.Field style={{minHeight:"200px"}}/>
                     </Form>
                 </Modal.Content>
                 <Modal.Actions>

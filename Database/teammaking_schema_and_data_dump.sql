@@ -461,14 +461,14 @@ DROP TABLE IF EXISTS `Survey`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Survey` (
   `survey_id` int(11) NOT NULL AUTO_INCREMENT,
-  `professor_id` int(11) DEFAULT NULL,
-  `course_id` int(11) DEFAULT NULL,
+  `professor_id` int(11) NOT NULL,
+  `course_id` int(11) NOT NULL,
   `deadline` datetime DEFAULT NULL,
   PRIMARY KEY (`survey_id`),
   KEY `professor_id` (`professor_id`),
   KEY `course_id` (`course_id`),
-  CONSTRAINT `survey_ibfk_1` FOREIGN KEY (`professor_id`) REFERENCES `Professor` (`professor_id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT `survey_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `Course` (`course_id`)
+  CONSTRAINT `survey_ibfk_1` FOREIGN KEY (`professor_id`) REFERENCES `Professor` (`professor_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `survey_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `Course` (`course_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

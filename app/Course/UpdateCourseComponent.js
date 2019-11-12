@@ -9,12 +9,14 @@ import moment from 'moment';
 import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
 
-const DatePickerComponent = (props) => {
-    const [ date, setDate ] = useState(props.date);
-    return (
-      <DatePicker selected={date} onChange={date => {console.log(date);let d = moment(date).utc().format("YYYY-MM-DD HH:mm:ss");setDate(date); props.onChange(d)}} />
-    );
-};
+import { DatePickerComponent } from '../Utils/UtilComponents'
+
+// const DatePickerComponent = (props) => {
+//     const [ date, setDate ] = useState(props.date);
+//     return (
+//       <DatePicker dateFormat="yyyy/MM/dd" selected={date} onChange={date => {console.log(date);let d = moment(date).utc().format("YYYY-MM-DD HH:mm:ss");setDate(date); props.onChange(d)}} />
+//     );
+// };
 
 export default function UpdateCourseComponent(props){
     const [ open, setOpen ] = useState(false);
@@ -37,39 +39,28 @@ export default function UpdateCourseComponent(props){
         let clsEndTimeMin = parseInt(props.classEndTime.split(":")[1])
         clsEndTime = new Date(2020, 12, 12, clsEndTimeHour, clsEndTimeMin , 0)
     }
-    let startDateJsFormat = null;
-    let endDateJsFormat = null;
-    // if (props.courseCode != 'CC1234'){
-        // console.log(`props.startDay for`, moment(props.startDate))
-        // console.log("props.endDay", moment(props.endDate))
-        let startDateMoment = moment(props.startDate);
-        let endDateMoment = moment(props.endDate);
-        startDateJsFormat = new Date(startDateMoment.year(),startDateMoment.month(), startDateMoment.day())
-        endDateJsFormat = new Date(endDateMoment.year(),endDateMoment.month(), endDateMoment.day())
-        // console.log(startDateJsFormat)
-        // console.log()
-    //     console.log("clsEndTime",clsEndTime)
-    //     console.log("clsStartTime",clsStartTime)
-    //     console.log(parseInt(props.classStartTime.split(":")[0]))
-    //     console.log(props.classStartTime.split(":")[1])
-    //     console.log(moment().seconds(parseInt(props.classStartTime.split(":")[1])).hours(parseInt(props.classStartTime.split(":")[0])))
-
-    //     console.log(moment())
-    // }
     
     const [ courseName, setCourseName ] = useState(props.courseName);
     const [ courseCode, setCourseCode ] = useState(props.courseCode);
     const [ courseDesc, setCourseDesc ] = useState(props.courseDescription);
     const [ tAEmail, setTaEmail ] = useState(props.tAEmail);
     const [ tAName, setTaName ] = useState(props.tAName);
-    const [ startDate, setStartDate ] = useState(startDateJsFormat || undefined)
-    // const [ startDate, setStartDate ] = useState(new Date())
-    // const [ endDate, setEndDate ] = useState(Date(moment(props.endDate)))
-    // const [ endDate, setEndDate ] = useState(new Date())
-    const [ endDate, setEndDate ] = useState(endDateJsFormat || undefined)
+    
+    // received dates are in utc, convert to local
+    let localStartDate = null;
+    if (props.startDate){
+        localStartDate = moment.utc(props.startDate);
+    }
+    const [ startDate, setStartDate ] = useState(localStartDate || moment());
+    
+    let localEndDate = null;
+    if (props.endDate){
+        localEndDate = moment.utc(props.endDate);
+    }
+    const [ endDate, setEndDate ] = useState(localEndDate || moment());
+
     const [ classStartTime, setClassStartTime ] = useState(clsStartTime)
     const [ classEndTime, setClassEndTime ] = useState(clsEndTime)
-    
     const [ courseCreated, setCourseCreated ] = useState(false);
     const [ okayHandled, setOkHandled ] = useState(false);
     const [ okayType, setOkType ] = useState("action");
@@ -78,23 +69,8 @@ export default function UpdateCourseComponent(props){
 
     const [ ignoreWarnings, setIgnoreWarnings ] = useState(false);
 
-    // console.log("startDate", startDate)
-    // console.log("endDate", endDate)
-    // console.log("classStartTime", classStartTime)
-    // console.log("classEndTime", classEndTime) // DEBUG
-
     useEffect(() => {
         if (formSubmittedId == 0) return;
-        console.log("Handle Submit called"); 
-        // console.log(startDate);
-        // console.log(endDate);
-        // console.log(classStartTime);
-        // console.log(classEndTime);
-        // console.log(courseName);
-        // console.log(courseCode);
-        // console.log(courseDesc);
-        // console.log(tAEmail);
-        // console.log(tAName); // DEBUG
         let warningMessages = ""
         if (!courseCode){
             setFeedbackModalMessage("Course Code cannot be empty.")
@@ -141,8 +117,8 @@ export default function UpdateCourseComponent(props){
             "ta_name": tAName,
             "ta_email": tAEmail,
             "professor_id": pid,
-            "start_date": moment(startDate).utc().format("YYYY-MM-DD HH:mm:ss"),
-            "end_date": moment(endDate).utc().format("YYYY-MM-DD HH:mm:ss"),
+            "start_date": startDate.format("YYYY-MM-DD HH:mm:ss"),
+            "end_date": endDate.format("YYYY-MM-DD HH:mm:ss"),
             // "class_start_time": (classStartTime instanceof Date) ?  moment(classStartTime).format("HH:mm:ss") : classStartTime + ":00",
             // "class_end_time": (classEndTime instanceof Date) ? classEndTime.format("HH:mm:ss") : classEndTime + ":00",
             "class_start_time": (classStartTime instanceof Date) ? props.classStartTime : (classStartTime ? classStartTime + ":00" : null),
@@ -157,14 +133,13 @@ export default function UpdateCourseComponent(props){
                 cache: 'no-cache',
                 body: JSON.stringify(postBody)
             })
-            // console.log(JSON.stringify(postBody))
+            console.log(JSON.stringify(postBody))
             if (response.status != 200){
-                
                 throw Error(`Request did not succeed at ${response.url}\nResponse Status: ${response.status}\n`)
             }
-            
+            let responseJson = null;
             try{
-                let responseJson = await response.json()
+                responseJson = await response.json()
             }catch{
                 throw Error(`Response could not be converted to json.\nResponse status: ${response.status}\n`)
             }
@@ -200,9 +175,12 @@ export default function UpdateCourseComponent(props){
         setFeedbackModalOpen(false);
     },[okayHandled])
 
+    if (courseCreated == true){
+        return <Redirect to={`/professor/${pid}/course`}/>
+    }
+    
     return (
         <div>
-        {courseCreated && (<Redirect to={`professor/${pid}/course`}/>)}
         {
             (<Modal 
                 trigger={<Image 
@@ -236,7 +214,7 @@ export default function UpdateCourseComponent(props){
                             />
                             <FormField
                                 label={"Course Description"}
-                                placeholder={"Enter Course Description"}
+                                placeholder={"Enter a brief summary for what the students can expect to learn from this course"}
                                 control="textarea"
                                 style={{height:"100px"}}
                                 value={courseDesc}
@@ -256,36 +234,44 @@ export default function UpdateCourseComponent(props){
                                 value={tAEmail}
                                 onChange={(e) => setTaEmail(e.target.value)}
                             />
-                            <FormGroup
-                                style={{ alignItems:"center" }}
-                            >
-                                <FormField
-                                    label={"Class Start Time"}
-                                    placeholder={"Enter Teaching Assistant's Email ID"}
-                                />
-                                <TimePicker
-                                    showSecond={false}
-                                    defaultValue={moment(classStartTime)}
-                                    onChange={(value) => setClassStartTime(value.format('HH:mm'))}
-                                />
-                                <FormField
-                                    label={"Class End Time"}
-                                    placeholder={"Enter Teaching Assistant's Email ID"}
-                                />
-                                <TimePicker
-                                    showSecond={false}
-                                    defaultValue={classEndTime ? moment(classEndTime) : undefined}
-                                    onChange={(value) => setClassEndTime(value.format('HH:mm'))}
-                                />  
-                            </FormGroup>
+                            {
+                                /*
+                                TODO: times are not relevant without the days selection as an option, 
+                                <FormGroup
+                                    style={{ alignItems:"center" }}
+                                >
+                                    <FormField
+                                        label={"Class Start Time"}
+                                        placeholder={"Enter Teaching Assistant's Email ID"}
+                                    />
+                                    <TimePicker
+                                        showSecond={false}
+                                        defaultValue={moment(classStartTime)}
+                                        onChange={(value) => setClassStartTime(value.format('HH:mm'))}
+                                    />
+                                    <FormField
+                                        label={"Class End Time"}
+                                        placeholder={"Enter Teaching Assistant's Email ID"}
+                                    />
+                                    <TimePicker
+                                        showSecond={false}
+                                        defaultValue={classEndTime ? moment(classEndTime) : undefined}
+                                        onChange={(value) => setClassEndTime(value.format('HH:mm'))}
+                                    />  
+                                </FormGroup>
+                                */
+                           }
                             <FormGroup
                                 style={{ alignItems:"center" }}
                             >
                                 <Label>Select Course Start Date</Label>
-                                <DatePickerComponent onChange={setStartDate} date={startDate}/>
+                                {/*<DatePickerComponent onChange={setStartDate} date={startDate}/>*/}
+                                <DatePickerComponent onChange={setStartDate} defaultDate={startDate}/>
                                 <Label>Select Course End Date</Label>
-                                <DatePickerComponent onChange={setEndDate} date={endDate}/>
+                                {/*<DatePickerComponent onChange={setEndDate} date={endDate}/>*/}
+                                <DatePickerComponent onChange={setEndDate} defaultDate={endDate}/>
                             </FormGroup>
+                            <Form.Field style={{minHeight:"200px"}}/>
                     </Form>
                 </Modal.Content>
                 <Modal.Actions>
@@ -304,10 +290,22 @@ export default function UpdateCourseComponent(props){
         {<Modal open={feedbackModalOpen}>
                 <Modal.Content>
                         <Message>
-                            <Icon name="warning circle" size={"big"}></Icon>
+                            {
+                                okayType != "success" &&
+                                <Icon name="warning circle" size={"big"}></Icon>
+                            }
                             <Divider/>
                             <Message.Content>
-                                <Message.Header>{okayType == "warn" ? "Attention: Warning" : "Oops! Sorry, Error Occurred!"}</Message.Header>
+                                {
+                                    okayType == "warn" && "Attention: Warning"
+                                }
+                                {
+                                    (okayType != "warn" && okayType != "success") && "Oops! Sorry, Error Occurred!"
+                                }
+                                {
+                                    okayType == "success" && "Yay!"
+                                }
+                                {/*<Message.Header>{okayType == "warn" ?  "Attention: Warning" : (okayType == "success" ? "Yay!" : "Oops! Sorry, Error Occurred!")}</Message.Header>*/}
                                 {
                                     feedbackModalMessage.split("\n").map(
                                         (v) => <p key={v}>{v}</p>
