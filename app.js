@@ -13,7 +13,7 @@ const deleteCourseByIdController = require('./API/deleteCourseController');
 const deleteCourseByCodeController = require('./API/deleteCourseByCodeController');
 const saveSurveyController = require('./API/saveSurveyController');
 const getSurveyController = require('./API/getSurveyController');
-
+const getTeamsController = require('./API/getTeamsController');
 
 app.use(cors({
     origin: ['http://localhost:8080', 'http://127.0.0.1:80']
@@ -30,6 +30,7 @@ app.use("/professor/:pid/course/:cid/update", updateCourseByIdController);
 app.use("/professor/:pid/course/:cid/delete", deleteCourseByIdController);
 app.use("/professor/:pid/course/:cid/survey/save", saveSurveyController);
 app.use("/professor/:pid/course/:cid/survey/:sid", getSurveyController);
+app.use("/professor/:pid/course/:cid/survey/:sid/teams", getTeamsController);
 
 // routes primarily created for testing
 app.use("/professor/:pid/course/deletebycode", deleteCourseByCodeController);

@@ -31,7 +31,7 @@ const NoCoursesCardComponent = (props) => {
 
 const CourseCardComponent = (props) => {
 	return(
-		<Card style={{height:'250px'}} key={`${props.courseCode}-card`}>
+		<Card style={{height:'300px'}} key={`${props.courseCode}-card`}>
 			<Card.Content>
 				<UpdateCourseComponent
 					{...props}
@@ -93,11 +93,31 @@ const CourseCardComponent = (props) => {
 							() => props.setViewSurveyClick("editSavedSurvey", props.courseId, props.surveyId)
 						}
 					>
-						View Survey
+						{`View Survey`}
 					</Button>
 					{/*<PickRosterFileComponent passSelectedFile={(fileObj) => props.getRosterFile(fileObj, props.courseId)} />*/}
 				</div>
-				
+				<div className='ui two buttons'>
+					<Button style={{ margin:"2px"}}
+						basic 
+						color='green'
+						onClick={
+							() => props.setCreateTeamsClick("createTeams", props.courseId, props.surveyId)
+						}
+					>
+						{`Create Teams`}
+					</Button>
+					<Button style={{ margin:"2px"}}
+						basic 
+						color='red' 
+						onClick={
+							() => props.setViewTeamsClick("viewTeams", props.courseId, props.surveyId)
+						}
+					>
+						{`View Teams`}
+					</Button>
+					{}
+				</div>
 				<div style={{ textAlign:"center"}}><Button style={{ background:"none"}} onClick={(courseId) => props.deleteCourse(props.courseId)}>Delete</Button></div>
 			</Card.Content>
 		</Card>
@@ -114,6 +134,7 @@ class DisplayCourseComponent extends React.Component {
 		this.getRosterFile = this.getRosterFile.bind(this);
 		this.setViewRosterRedirect = this.setViewRosterRedirect.bind(this);
 		this.setViewSurveyRedirect = this.setViewSurveyRedirect.bind(this);
+		this.setViewTeamsRedirect = this.setViewTeamsRedirect.bind(this);
 		this.getCourses = this.getCourses.bind(this);
 		this.deleteCourse = this.deleteCourse.bind(this);
 		this.updatePage = this.updatePage.bind(this);
@@ -272,6 +293,16 @@ class DisplayCourseComponent extends React.Component {
 			})
 		);
 	}
+	setViewTeamsRedirect(str, courseId, surveyId){
+		console.log("Setting redirect to ", str)
+		this.setState({
+			selectedCourseId:courseId,
+			surveyId:surveyId
+		},()=> this.setState({
+				redirectTo:str
+			})
+		);
+	}
 	
 	async getCourses(){
 		console.log("getCourses called")
@@ -355,6 +386,8 @@ class DisplayCourseComponent extends React.Component {
 							rosterId={courseObj.roster_id}
 							setViewRosterClick={this.setViewRosterRedirect}
 							setViewSurveyClick={this.setViewSurveyRedirect}
+							setCreateTeamsClick={this.setCreateTeamsRedirect}
+							setViewTeamsClick={this.setViewTeamsRedirect}
 							getRosterFile={this.getRosterFile}
 							deleteCourse={this.deleteCourse}
 						/>
@@ -404,6 +437,10 @@ class DisplayCourseComponent extends React.Component {
 			return <Redirect push={true} to={{ pathname:`/professor/${this.professor_id}/course/${this.state.selectedCourseId}/survey/create`, state : { header:this.state.fileHeaderFieldsArray, data:this.state.fileValueObjects}  }} />
 		}else if (this.state.redirectTo == "editSavedSurvey"){
 			return <Redirect push={true} to={{ pathname:`/professor/${this.professor_id}/course/${this.state.selectedCourseId}/survey/${this.state.surveyId}`, state : { header:this.state.fileHeaderFieldsArray, data:this.state.fileValueObjects}  }} />
+		}else if (this.state.redirectTo == "createTeams"){
+			return <Redirect push={true} to={{ pathname:`/professor/${this.professor_id}/course/${this.state.selectedCourseId}/survey/${this.state.surveyId}/teams/create`, state : { header:this.state.fileHeaderFieldsArray, data:this.state.fileValueObjects}  }} />
+		}else if (this.state.redirectTo == "viewTeams"){
+			return <Redirect push={true} to={{ pathname:`/professor/${this.professor_id}/course/${this.state.selectedCourseId}/survey/${this.state.surveyId}/teams`, state : { header:this.state.fileHeaderFieldsArray, data:this.state.fileValueObjects}  }} />
 		}else{
 			return <Button fluid>Oops! Looks like you have lost your way!</Button>
 		}

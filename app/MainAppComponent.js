@@ -11,6 +11,7 @@ import {
 
   // navit
 import {default as DisplayCourseComponent} from "./Course/DisplayCourseComponent";
+import {default as DisplayTeamsComponent} from "./Teams/DisplayTeamsComponent";
 import {default as RosterDetails} from "./Roster/DisplaySavedRosterComponent";
 import {default as DisplayPickedFile} from "./Roster/DisplayPickedFile";
 import { Table, Header, Cell, Icon, Button, Grid, GridColumn, Container } from 'semantic-ui-react';
@@ -53,7 +54,9 @@ export default function MainAppComponent() {
                             <GridColumn width={1}/>
                             <GridColumn width={14}>
                                 <Switch>
-                                    <Route exact={true} path={`/professor/:pid/course/:cid/roster/:rid`}>
+                                    <Route 
+                                        exact={true} 
+                                        path={`/professor/:pid/course/:cid/roster/:rid`}>
                                         <RosterDetails>{headers}</RosterDetails>
                                     </Route>
                                     <Route 
@@ -74,6 +77,14 @@ export default function MainAppComponent() {
                                     <Route exact={true} 
                                             path="/professor/:pid/course"
                                             children = {({ match }) => <DisplayCourseComponent match={match}/>}
+                                    />
+                                    <Route exact={true} 
+                                            path="/professor/:pid/course/:cid/survey/:sid/teams/create"
+                                            children = {({ match }) => <CreateTeamsComponent match={match}/>}
+                                    />
+                                    <Route exact={true} 
+                                            path="/professor/:pid/course/:cid/survey/:sid/teams"
+                                            children = {({ match }) => <DisplayTeamsComponent match={match}/>}
                                     />
                                     <Route
                                             path ="/"
