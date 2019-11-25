@@ -8,10 +8,11 @@ export default function RadioComponent(props) {
         return props.options.map((v,i) => 
                 <Form.Field
                     key={i}
-                    label= { v }
+                    label={ v }
+                    value={ v } 
                     control='input'
                     type='radio'
-                    name='htmlRadios'
+                    name= {props.question}
               />
         );
         
