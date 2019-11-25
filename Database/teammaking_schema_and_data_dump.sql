@@ -535,6 +535,30 @@ LOCK TABLES `SurveyQuestions` WRITE;
 /*!40000 ALTER TABLE `SurveyQuestions` DISABLE KEYS */;
 /*!40000 ALTER TABLE `SurveyQuestions` ENABLE KEYS */;
 UNLOCK TABLES;
+
+DROP TABLE IF EXISTS `StudentTeams`;
+create table `StudentTeams` (
+    `team_id` integer auto_increment not null primary key,
+    `survey_id` int not null,
+    `roster_row_id` int not null 
+    -- constraint foreign key (`survey_id`) references `Survey` (`survey_id`),
+    -- constraint foreign key (`roster_row_id`) references `RosterRow` (`roster_row_id`)
+  );
+LOCK TABLES `StudentTeams` WRITE;
+insert into `StudentTeams` (survey_id, roster_row_id)
+values
+  (1, 1);
+insert into `StudentTeams` (survey_id, roster_row_id)
+values
+  (1, 2);
+insert into `StudentTeams` (survey_id, roster_row_id)
+values
+  (2, 3);
+insert into `StudentTeams` (survey_id, roster_row_id)
+values
+  (2, 4);
+UNLOCK TABLES;
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
