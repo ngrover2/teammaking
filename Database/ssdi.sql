@@ -1,158 +1,4 @@
-create database teammaking;
-use teammaking;
 
-
-CREATE TABLE Survey ( survey_id integer auto_increment not null primary key , 
-prof_id int ,
- course_id int ,
- deadline datetime,
- foreign key (prof_id) references Professor (professor_id)  ,
- foreign key (course_id) references Course (course_id) );
- 
- SELECT *
- FROM Survey;
- 
- 
- 
- INSERT INTO Survey (prof_id , course_id, deadline)
- VALUES ('1','1','2019-10-12 10:21:17');
- 
-
-
-INSERT INTO Questions
-VALUES ('2', '{"type":"mcq",
-        "question":"3.What languages do you know",
-        "options":["python","c++", "java"]
-    }');
-
-select *
-from Questions;
-
-INSERT INTO Questions
-VALUES ('2', '{"type":"radio",
-        "question":"2.How comfortable are you on web developement projects",
-        "options":["very comfortable","comfortable","not at all comfortable"]
-    }');
-
-
-INSERT INTO Questions
-VALUES ('2', '{"type":"radio",
-        "question":" 1.Do you like working on the weekends",
-        "options":["yes","no", "hell no"]
-    }');
-
-
-CREATE TABLE Answers (survey_id int not null , answer_object JSON , roster_row_id int not null , constraint foreign key (survey_id) references Survey (survey_id), constraint foreign key (roster_row_id) references RosterRow (roster_row_id) );
-
-
-
-select *
-from Answers;
-
-
-INSERT INTO Answers (survey_id , answer_object, roster_row_id)
-VALUES ('2','{"type":"freeform",
-        "answer":"1. yes"}','2');
-        
-INSERT INTO Answers (survey_id , answer_object, roster_row_id)
-VALUES ('2','{"type":"freeform",
-        "answer":"1. hell no"}','1');
-        
-INSERT INTO Answers (survey_id , answer_object, roster_row_id)
-VALUES ('2','{"type":"freeform",
-        "answer":"2. not at all comfortable"}','1');
-        
-INSERT INTO Answers (survey_id , answer_object, roster_row_id)
-VALUES ('2','{"type":"freeform",
-        "answer":"2. very comfortable"}','2');
-        
-INSERT INTO Answers (survey_id , answer_object, roster_row_id)
-VALUES ('2','{"type":"freeform",
-        "answer":"3. python"}','1');
-
-INSERT INTO Answers (survey_id , answer_object, roster_row_id)
-VALUES ('2','{"type":"freeform",
-        "answer":"3. java"}','2');
-        
-        
-INSERT INTO Answers (survey_id , answer_object, roster_row_id)
-VALUES ('2','{"type":"freeform",
-        "answer":"1. yes"}','4');
-        
-INSERT INTO Answers (survey_id , answer_object, roster_row_id)
-VALUES ('2','{"type":"freeform",
-        "answer":"1. hell no"}','3');
-        
-INSERT INTO Answers (survey_id , answer_object, roster_row_id)
-VALUES ('2','{"type":"freeform",
-        "answer":"2. not at all comfortable"}','3');
-        
-INSERT INTO Answers (survey_id , answer_object, roster_row_id)
-VALUES ('2','{"type":"freeform",
-        "answer":"2. very comfortable"}','4');
-        
-INSERT INTO Answers (survey_id , answer_object, roster_row_id)
-VALUES ('2','{"type":"freeform",
-        "answer":"3. python"}','3');
-
-INSERT INTO Answers (survey_id , answer_object, roster_row_id)
-VALUES ('2','{"type":"freeform",
-        "answer":"3. java"}','4');
-	
-    
-    
-INSERT INTO Answers (survey_id , answer_object, roster_row_id)
-VALUES ('2','{"type":"freeform",
-        "answer":"1. yes"}','6');
-        
-INSERT INTO Answers (survey_id , answer_object, roster_row_id)
-VALUES ('2','{"type":"freeform",
-        "answer":"1. hell no"}','5');
-        
-INSERT INTO Answers (survey_id , answer_object, roster_row_id)
-VALUES ('2','{"type":"freeform",
-        "answer":"2. not at all comfortable"}','5');
-        
-INSERT INTO Answers (survey_id , answer_object, roster_row_id)
-VALUES ('2','{"type":"freeform",
-        "answer":"2. comfortable"}','6');
-        
-INSERT INTO Answers (survey_id , answer_object, roster_row_id)
-VALUES ('2','{"type":"freeform",
-        "answer":"3. python"}','5');
-
-INSERT INTO Answers (survey_id , answer_object, roster_row_id)
-VALUES ('2','{"type":"freeform",
-        "answer":"3. python"}','6');    
-    
-create table student_teams (team_id integer auto_increment not null primary key, survey_id int not null , roster_row_id int not null, constraint foreign key (survey_id) references Survey (survey_id) ,constraint foreign key (roster_row_id) references RosterRow (roster_row_id)  );
-
-select *
-from Survey;
-
-insert into student_teams (survey_id , roster_row_id) 
-values (1 , 1);
-
-insert into student_teams (survey_id , roster_row_id) 
-values (1 , 2);
-
-insert into student_teams (survey_id , roster_row_id) 
-values (2 , 3);
-
-insert into student_teams (survey_id , roster_row_id) 
-values (2 , 4);
-
-select *
-from student_teams;
-
-
-select roster_row_id
-from RosterRow;
-
-CREATE TABLE Questions (survey_id int not null , question_object JSON , constraint foreign key (survey_id) references Survey (survey_id) );
-
-SELECT *
-FROM Answers;
 
 CREATE TABLE songs
 	(song_id integer auto_increment primary key,
@@ -432,5 +278,159 @@ INSERT INTO songs(artist, title, rank) values("Coldplay", "Hymn For The Weekend"
 INSERT INTO songs(artist, title, rank) values("James Blunt", "1973", 13);
 
 
+
+
+CREATE TABLE Survey ( survey_id integer auto_increment not null primary key , 
+prof_id int ,
+ course_id int ,
+ deadline datetime,
+ foreign key (prof_id) references Professor (professor_id)  ,
+ foreign key (course_id) references Course (course_id) );
+ 
+ SELECT *
+ FROM Survey;
+ 
+ 
+ 
+ INSERT INTO Survey (prof_id , course_id, deadline)
+ VALUES ('1','1','2019-10-12 10:21:17');
+ 
+ CREATE TABLE Questions (survey_id int not null , question_object JSON , constraint foreign key (survey_id) references Survey (survey_id) );
+
+
+
+INSERT INTO Questions
+VALUES ('2', '{"type":"mcq",
+        "question":"3.What languages do you know",
+        "options":["python","c++", "java"]
+    }');
+
+select *
+from Questions;
+
+INSERT INTO Questions
+VALUES ('2', '{"type":"radio",
+        "question":"2.How comfortable are you on web developement projects",
+        "options":["very comfortable","comfortable","not at all comfortable"]
+    }');
+
+
+INSERT INTO Questions
+VALUES ('2', '{"type":"radio",
+        "question":" 1.Do you like working on the weekends",
+        "options":["yes","no", "hell no"]
+    }');
+
+
+CREATE TABLE Answers (survey_id int not null , answer_object JSON , roster_row_id int not null , constraint foreign key (survey_id) references Survey (survey_id), constraint foreign key (roster_row_id) references RosterRow (roster_row_id) );
+
+
+
+select *
+from Answers;
+
+
+INSERT INTO Answers (survey_id , answer_object, roster_row_id)
+VALUES ('2','{"type":"freeform",
+        "answer":"1. yes"}','2');
+        
+INSERT INTO Answers (survey_id , answer_object, roster_row_id)
+VALUES ('2','{"type":"freeform",
+        "answer":"1. hell no"}','1');
+        
+INSERT INTO Answers (survey_id , answer_object, roster_row_id)
+VALUES ('2','{"type":"freeform",
+        "answer":"2. not at all comfortable"}','1');
+        
+INSERT INTO Answers (survey_id , answer_object, roster_row_id)
+VALUES ('2','{"type":"freeform",
+        "answer":"2. very comfortable"}','2');
+        
+INSERT INTO Answers (survey_id , answer_object, roster_row_id)
+VALUES ('2','{"type":"freeform",
+        "answer":"3. python"}','1');
+
+INSERT INTO Answers (survey_id , answer_object, roster_row_id)
+VALUES ('2','{"type":"freeform",
+        "answer":"3. java"}','2');
+        
+        
+INSERT INTO Answers (survey_id , answer_object, roster_row_id)
+VALUES ('2','{"type":"freeform",
+        "answer":"1. yes"}','4');
+        
+INSERT INTO Answers (survey_id , answer_object, roster_row_id)
+VALUES ('2','{"type":"freeform",
+        "answer":"1. hell no"}','3');
+        
+INSERT INTO Answers (survey_id , answer_object, roster_row_id)
+VALUES ('2','{"type":"freeform",
+        "answer":"2. not at all comfortable"}','3');
+        
+INSERT INTO Answers (survey_id , answer_object, roster_row_id)
+VALUES ('2','{"type":"freeform",
+        "answer":"2. very comfortable"}','4');
+        
+INSERT INTO Answers (survey_id , answer_object, roster_row_id)
+VALUES ('2','{"type":"freeform",
+        "answer":"3. python"}','3');
+
+INSERT INTO Answers (survey_id , answer_object, roster_row_id)
+VALUES ('2','{"type":"freeform",
+        "answer":"3. java"}','4');
+	
+    
+    
+INSERT INTO Answers (survey_id , answer_object, roster_row_id)
+VALUES ('2','{"type":"freeform",
+        "answer":"1. yes"}','6');
+        
+INSERT INTO Answers (survey_id , answer_object, roster_row_id)
+VALUES ('2','{"type":"freeform",
+        "answer":"1. hell no"}','5');
+        
+INSERT INTO Answers (survey_id , answer_object, roster_row_id)
+VALUES ('2','{"type":"freeform",
+        "answer":"2. not at all comfortable"}','5');
+        
+INSERT INTO Answers (survey_id , answer_object, roster_row_id)
+VALUES ('2','{"type":"freeform",
+        "answer":"2. comfortable"}','6');
+        
+INSERT INTO Answers (survey_id , answer_object, roster_row_id)
+VALUES ('2','{"type":"freeform",
+        "answer":"3. python"}','5');
+
+INSERT INTO Answers (survey_id , answer_object, roster_row_id)
+VALUES ('2','{"type":"freeform",
+        "answer":"3. python"}','6');    
+    
+create table student_teams (team_id integer auto_increment not null primary key, survey_id int not null , roster_row_id int not null, constraint foreign key (survey_id) references Survey (survey_id) ,constraint foreign key (roster_row_id) references RosterRow (roster_row_id)  );
+
+select *
+from Survey;
+
+insert into student_teams (survey_id , roster_row_id) 
+values (1 , 1);
+
+insert into student_teams (survey_id , roster_row_id) 
+values (1 , 2);
+
+insert into student_teams (survey_id , roster_row_id) 
+values (2 , 3);
+
+insert into student_teams (survey_id , roster_row_id) 
+values (2 , 4);
+
+select *
+from student_teams;
+
+
+select roster_row_id
+from RosterRow;
+
+
+SELECT *
+FROM Answers;
 
 
