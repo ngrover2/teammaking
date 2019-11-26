@@ -5,12 +5,13 @@ import {
   Menu,
   Form,
   Grid,
-  Button
+  Button,
+  Input,
+  GridRow
 } from 'semantic-ui-react';
 import { default as FreeformComponent } from "./CreateFreeformComponent.jsx";
 import { default as CheckboxComponent } from "./CreateCheckboxComponent.jsx";
 import { default as RadioComponent } from "./CreateRadioComponent";
-import { element } from 'prop-types';
 
 function deadlinePassedComponent() {
     return(
@@ -24,14 +25,18 @@ function deadlinePassedComponent() {
 
 
 function handleSubmit() {
-    
+
+    var surveyID = window.location.pathname.split("/").pop();
+    const studentID = document.getElementById('studentID').value
     var formData = new FormData(document.getElementById('surveyForm'));
     var ConvertedJSON= {};
+    ConvertedJSON['surveyID'] = surveyID;
+    ConvertedJSON['studentID'] = studentID;
     for (const [key, value]  of formData.entries())
     {
         ConvertedJSON[key] = value;
     }
-    console.log(ConvertedJSON)    
+    
 }
 function createRequiredComponents(questions){
 /* function to go through the json questions and convert them into components*/
@@ -65,9 +70,7 @@ export default function CreateSurveyResponseComponent(props){
     if (+currentTime <= +deadline) 
         var bodyComponents = createRequiredComponents(props.questions);
     else
-        var bodyComponents = deadlinePassedComponent();
-
-    
+        var bodyComponents = deadlinePassedComponent();    
 
     return [
         <Container>
@@ -86,8 +89,11 @@ export default function CreateSurveyResponseComponent(props){
                         </Menu.Item>
                 </Menu>
             </Grid.Row>
+            <GridRow>
+                <Input placeholder='Student ID' id = {'studentID'} required={true}/>
+            </GridRow>
             <Grid.Row>
-                <Form onSubmit = {handleSubmit} id={'surveyForm'} >
+                <Form onSubmit = { handleSubmit } id={'surveyForm'} >
                     { bodyComponents }
                 </Form>
             </Grid.Row>
