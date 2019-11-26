@@ -12,7 +12,7 @@ export default function CheckboxComponent(props) {
                     control='input'
                     type='checkbox'
                     name= {props.question}
-              />
+                />
         );
         
     };
