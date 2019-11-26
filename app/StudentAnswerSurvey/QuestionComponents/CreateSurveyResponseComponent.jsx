@@ -26,16 +26,48 @@ function deadlinePassedComponent() {
 
 function handleSubmit() {
 
-    var surveyID = window.location.pathname.split("/").pop();
     const studentID = document.getElementById('studentID').value
     var formData = new FormData(document.getElementById('surveyForm'));
     var ConvertedJSON= {};
-    ConvertedJSON['surveyID'] = surveyID;
+    var studentResponse = {};
     ConvertedJSON['studentID'] = studentID;
     for (const [key, value]  of formData.entries())
     {
-        ConvertedJSON[key] = value;
+        studentResponse[key] = value;
     }
+    ConvertedJSON['givenResponse']=studentResponse;
+
+        // console.log("Trying to send Response")
+        // let postBody = ConvertedJSON
+        // try{
+        //     let response = fetch(`/respond/${surveyID}`, {
+        //         method: 'POST',
+        //         headers:{
+        //             'Content-Type': 'application/json'
+        //         },
+        //         cache: 'no-cache',
+        //         body: JSON.stringify(postBody)
+        //     })
+        //     console.log(JSON.stringify(postBody))
+    
+        //     let responseJson = await response.json()
+        //     if (responseJson){
+        //         if (responseJson.status == "created"){
+        //             console.log(responseJson)
+        //             setOkType("success")
+        //             setFeedbackModalMessage("Sent response successfully");
+        //             setFeedbackModalOpen(true);
+        //         }
+        //     }else{
+        //         setFeedbackModalMessage("Problem submitting response. Please try again");
+        //         setFeedbackModalOpen(true);
+        //     }
+        // }catch(error){
+        //     console.log(error)
+        //     // setFeedbackModalMessage(error.message);
+        //     setFeedbackModalMessage(error.message + " " + JSON.stringify(error));
+        //     setFeedbackModalOpen(true);
+        // }
     
 }
 function createRequiredComponents(questions){
