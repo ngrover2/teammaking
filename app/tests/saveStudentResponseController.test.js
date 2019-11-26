@@ -2,7 +2,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import renderer from 'react-test-renderer';
-import StudentResponseComponent from '.\API\saveStudentResponseController.js'
+import StudentResponseComponent from '../../API/saveStudentResponseController';
 
 var StudentResponseSurveyComponentDetails = {
     "survey_answers":{
