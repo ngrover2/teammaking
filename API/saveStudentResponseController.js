@@ -4,17 +4,16 @@ var [ getDbConnection, executeOnDBWithPromise ] = require('./getDBConnection');
 var router = express.Router({mergeParams: true});
 
 const saveStudentResponse = async function (req, res, next){
-   
-    const surveyID = req.body.surveyID;
+    const surveyID = req.params.surveyID;
     const studentID = req.body.studentID;
-    const studentResponse = req.body;
+    const studentResponse = req.body.givenResponse;
     console.log(surveyID);
     console.log(studentID);
     console.log(studentResponse);
     return res.status(201).json({
-        status:"created",
+        status:"created"
     });
-}
+};
 
 router.post("/", saveStudentResponse);
 
