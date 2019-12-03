@@ -37,7 +37,6 @@ function handleSubmit() {
         studentResponse[key] = value;
     }
     ConvertedJSON['givenResponse']=studentResponse;
-    console.log(JSON.stringify(ConvertedJSON))
     async function postSurveyResponseAsync(surveyID, ConvertedJSON) 
     {
         let response = await fetch(`http://localhost:3000/respond/${surveyID}`,{
