@@ -8,7 +8,7 @@ const request = supertest(app);
 
 describe('GET /professor/1/course/12/survey/2/teams', function () {
     it('respond with teams available for the survey or an empty array otherwise', async (done) => {
-        const response = await request.post('/professor/1/course/12/survey/2/teams').set('Accept', 'application/json');
+        const response = await request.get('/professor/1/course/12/survey/2/teams').set('Accept', 'application/json');
         // console.log(response);
         expect(response.status).toBe(200)
         expect(response.headers['content-type']).toMatch(/json/);
