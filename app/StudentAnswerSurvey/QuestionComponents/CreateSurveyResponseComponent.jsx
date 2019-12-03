@@ -52,7 +52,6 @@ function handleSubmit() {
     }
     postSurveyResponseAsync(surveyID,ConvertedJSON)
         .then(data => console.log(data));
-    
 }
 function createRequiredComponents(questions){
 /* function to go through the json questions and convert them into components*/

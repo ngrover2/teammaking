@@ -14,7 +14,7 @@ const getTeamsController = async function(req, res, next){
 
     let connection = getDbConnection();
     try{
-        let getTeamsQuery = "SELECT ST.roster_row_id FROM StudentTeams ST WHERE ?? = ?"
+        let getTeamsQuery = "SELECT * FROM StudentTeams ST WHERE ?? = ?"
         let getTeamsQueryIdentifiers = ['ST.survey_id']
         let getTeamsQueryValues = [ surveyId ]
         let getTeamsQueryQuerySql = mysql.format(getTeamsQuery, [getTeamsQueryIdentifiers, getTeamsQueryValues])

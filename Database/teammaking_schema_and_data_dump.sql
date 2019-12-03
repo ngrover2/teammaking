@@ -452,7 +452,7 @@ CREATE TABLE `StudentTeams` (
     CONSTRAINT FOREIGN KEY (`survey_id`) REFERENCES `Survey` (`survey_id`),
     CONSTRAINT FOREIGN KEY (`roster_row_id`) REFERENCES `RosterRow` (`roster_row_id`)
   );
-
+ 
 --
 -- Dumping data for table `StudentTeams`
 --
