@@ -36,7 +36,7 @@ function handleSubmit() {
         studentResponse[key] = value;
     }
     ConvertedJSON['givenResponse']=studentResponse;
-
+    console.log(ConvertedJSON)
         // console.log("Trying to send Response")
         // let postBody = ConvertedJSON
         // try{
