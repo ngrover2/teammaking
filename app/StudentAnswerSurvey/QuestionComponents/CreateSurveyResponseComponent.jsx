@@ -28,6 +28,7 @@ function handleSubmit() {
 
     const studentID = document.getElementById('studentID').value
     var formData = new FormData(document.getElementById('surveyForm'));
+    var surveyID = window.location.pathname.split("/").pop() // get survey ID from URL
     var ConvertedJSON= {};
     var studentResponse = {};
     ConvertedJSON['studentID'] = studentID;
@@ -36,38 +37,22 @@ function handleSubmit() {
         studentResponse[key] = value;
     }
     ConvertedJSON['givenResponse']=studentResponse;
-
-        // console.log("Trying to send Response")
-        // let postBody = ConvertedJSON
-        // try{
-        //     let response = fetch(`/respond/${surveyID}`, {
-        //         method: 'POST',
-        //         headers:{
-        //             'Content-Type': 'application/json'
-        //         },
-        //         cache: 'no-cache',
-        //         body: JSON.stringify(postBody)
-        //     })
-        //     console.log(JSON.stringify(postBody))
-    
-        //     let responseJson = await response.json()
-        //     if (responseJson){
-        //         if (responseJson.status == "created"){
-        //             console.log(responseJson)
-        //             setOkType("success")
-        //             setFeedbackModalMessage("Sent response successfully");
-        //             setFeedbackModalOpen(true);
-        //         }
-        //     }else{
-        //         setFeedbackModalMessage("Problem submitting response. Please try again");
-        //         setFeedbackModalOpen(true);
-        //     }
-        // }catch(error){
-        //     console.log(error)
-        //     // setFeedbackModalMessage(error.message);
-        //     setFeedbackModalMessage(error.message + " " + JSON.stringify(error));
-        //     setFeedbackModalOpen(true);
-        // }
+    console.log(JSON.stringify(ConvertedJSON))
+    async function postSurveyResponseAsync(surveyID, ConvertedJSON) 
+    {
+        let response = await fetch(`http://localhost:3000/respond/${surveyID}`,{
+                    method: 'POST',
+                    headers:{
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(ConvertedJSON)
+                }
+        )
+        let data = await response.json()
+        return data;
+    }
+    postSurveyResponseAsync(surveyID,ConvertedJSON)
+        .then(data => console.log(data));
     
 }
 function createRequiredComponents(questions){
