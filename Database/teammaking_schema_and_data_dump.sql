@@ -33,7 +33,12 @@ CREATE TABLE `Course` (
 --
 
 LOCK TABLES `Course` WRITE;
-INSERT INTO `Course` VALUES (12,1,'saa;','SSDI','smnd;cnw;','2019-10-01 13:00:00','2019-10-03 13:00:00','03:34:00','03:34:00','sd;n;v','sc;lnd'),(13,1,'ITCS 312','test','Test Course','2019-11-18 13:00:00','2019-11-17 13:00:00','04:44:00','04:44:00','ta@email.com','ta'),(14,1,'ITCS 3122','test','Test Course','2019-11-18 13:00:00','2019-11-17 13:00:00','04:44:00','04:44:00','ta@email.com','ta'),(17,1,'ITCS TEST2','test','This is a test course','2019-11-09 13:00:00','2019-11-29 13:00:00','04:02:00','04:02:00','testta@email.com','test ta'),(87,1,'ITCS TEST','Test Course','This Course teaches you avout the facts about life (and people and illnesses and death!, but not by Loopus)','2019-07-09 13:00:00','2019-12-12 13:00:00','02:30:00','05:15:00','SeekerOfVicodine@EverybodyLies.com','Gregory House');
+INSERT INTO `Course` VALUES 
+(12,1,'saa;','SSDI','smnd;cnw;','2019-10-01 13:00:00','2019-10-03 13:00:00','03:34:00','03:34:00','sd;n;v','sc;lnd'),
+(13,1,'ITCS 312','test','Test Course','2019-11-18 13:00:00','2019-11-17 13:00:00','04:44:00','04:44:00','ta@email.com','ta'),
+(14,1,'ITCS 3122','test','Test Course','2019-11-18 13:00:00','2019-11-17 13:00:00','04:44:00','04:44:00','ta@email.com','ta'),
+(17,1,'ITCS TEST2','test','This is a test course','2019-11-09 13:00:00','2019-11-29 13:00:00','04:02:00','04:02:00','testta@email.com','test ta'),
+(87,1,'ITCS TEST','Test Course','This Course teaches you about the facts about life (and people and illnesses and death!, but not by Loopus)','2019-07-09 13:00:00','2019-12-12 13:00:00','02:30:00','05:15:00','SeekerOfVicodine@EverybodyLies.com','Gregory House');
 UNLOCK TABLES;
 
 --
