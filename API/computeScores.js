@@ -22,7 +22,7 @@ var groupBy = function(elements, key) {
 };
 
 
-const computeTeams = async (req, res, next) => {
+const computeScores = async (req, res, next) => {
 	let surveyQuestions = mockSurvey.surveyObject.questions;
 	let questionGroups = groupBy(surveyQuestions, 'qtype');
 	let studentsPerQuestionScores = {};
@@ -343,7 +343,7 @@ const computeTeams = async (req, res, next) => {
 	});
 }
 
-router.post("/", computeTeams);
+router.post("/", computeScores);
 
 module.exports = router;
 
