@@ -25,7 +25,7 @@ var groupBy = function(elements, key) {
 const computeTeams = async (req, res, next) => {
 	let surveyQuestions = mockSurvey.surveyObject.questions;
 	let questionGroups = groupBy(surveyQuestions, 'qtype');
-	let allStudentsOtherStudentsStats = {};
+	let studentsPerQuestionScores = {};
 
 	let allAnswerObjectsArray = Object.keys(mockSurveyAllAnswers).map((studentKey) => mockSurveyAllAnswers[studentKey]);
 	
@@ -119,22 +119,17 @@ const computeTeams = async (req, res, next) => {
 
 		// collect stats for the student
 		let studentIdx = i
-		if (allStudentsOtherStudentsStats[studentIdx]){
-			allStudentsOtherStudentsStats[studentIdx][scheduleTypeQuestionsIndices[0]] = scoresVector.map((v) => Math.round(v * 100));
+		if (studentsPerQuestionScores[studentIdx]){
+			studentsPerQuestionScores[studentIdx][scheduleTypeQuestionsIndices[0]] = scoresVector.map((v) => Math.round(v * 100));
 		}else{
-			allStudentsOtherStudentsStats[studentIdx] = {}
-			allStudentsOtherStudentsStats[studentIdx][scheduleTypeQuestionsIndices[0]] = scoresVector.map((v) => Math.round(v * 100));
+			studentsPerQuestionScores[studentIdx] = {}
+			studentsPerQuestionScores[studentIdx][scheduleTypeQuestionsIndices[0]] = scoresVector.map((v) => Math.round(v * 100));
 		}
 	})
 
-	let studentsScheduleMatrixScoresNormalised = new Matrix(scoresNormalised).trans();
-	studentsScheduleMatrixScoresNormalised = studentsScheduleMatrixScoresNormalised.mulEach(getQuestionMultiplierFromQuestionIndex(scheduleTypeQuestionsIndices[0]));
-	
-	// console.log("Matrix AFTER SCHEDULE COMPUTATIONS")
-	// console.log(studentsScheduleMatrixScoresNormalised.rows)
-	// console.log(studentsScheduleMatrixScoresNormalised.cols)
-	// console.log(studentsScheduleMatrixScoresNormalised.data)
-	
+	let studentsScoresMatrixNormalised = new Matrix(scoresNormalised).trans();
+	studentsScoresMatrixNormalised = studentsScoresMatrixNormalised.mulEach(getQuestionMultiplierFromQuestionIndex(scheduleTypeQuestionsIndices[0]));
+
 	// ********* END Process Schedule Type Questions ******************
 	
 	// ---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -182,26 +177,26 @@ const computeTeams = async (req, res, next) => {
 
 			// collect stats for the student
 			let studentIdx = i
-			if (allStudentsOtherStudentsStats[studentIdx]){
-				// console.log(`allStudentsOtherStudentsStats[studentIdx] for multipleChoiceTypeQuestionIndices #${multipleChoiceTypeQuestionIndices[index]} is true`)
-				allStudentsOtherStudentsStats[studentIdx][multipleChoiceTypeQuestionIndices[index]] = scoresVector.map((v) => Math.round(v * 100));
+			if (studentsPerQuestionScores[studentIdx]){
+				// console.log(`studentsPerQuestionScores[studentIdx] for multipleChoiceTypeQuestionIndices #${multipleChoiceTypeQuestionIndices[index]} is true`)
+				studentsPerQuestionScores[studentIdx][multipleChoiceTypeQuestionIndices[index]] = scoresVector.map((v) => Math.round(v * 100));
 			}else{
-				// console.log(`allStudentsOtherStudentsStats[studentIdx] for multipleChoiceTypeQuestionIndices #${multipleChoiceTypeQuestionIndices[index]} is true`)
-				allStudentsOtherStudentsStats[studentIdx] = {}
-				allStudentsOtherStudentsStats[studentIdx][multipleChoiceTypeQuestionIndices[index]] = scoresVector.map((v) => Math.round(v * 100));
+				// console.log(`studentsPerQuestionScores[studentIdx] for multipleChoiceTypeQuestionIndices #${multipleChoiceTypeQuestionIndices[index]} is true`)
+				studentsPerQuestionScores[studentIdx] = {}
+				studentsPerQuestionScores[studentIdx][multipleChoiceTypeQuestionIndices[index]] = scoresVector.map((v) => Math.round(v * 100));
 			}
 			
 		})
 		let ScoresMatrix = new Matrix(scoresNormalised).trans(); // 24 by 24
 		ScoresMatrix = ScoresMatrix.mulEach(getQuestionMultiplierFromQuestionIndex(multipleChoiceTypeQuestionIndices[index]));
-		studentsScheduleMatrixScoresNormalised = studentsScheduleMatrixScoresNormalised.plus(ScoresMatrix);
+		studentsScoresMatrixNormalised = studentsScoresMatrixNormalised.plus(ScoresMatrix);
 
 	})
 
 	
 	// console.log("Matrix AFTER MCQs COMPUTATIONS")
-	// console.log(studentsScheduleMatrixScoresNormalised.rows)
-	// console.log(studentsScheduleMatrixScoresNormalised.cols)
+	// console.log(studentsScoresMatrixNormalised.rows)
+	// console.log(studentsScoresMatrixNormalised.cols)
 	// ********* END MCQ Type Questions ******************
 	
 	// ---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -253,26 +248,26 @@ const computeTeams = async (req, res, next) => {
 
 			// collect stats for the student
 			let studentIdx = i
-			if (allStudentsOtherStudentsStats[studentIdx]){
-				// console.log(`allStudentsOtherStudentsStats[studentIdx] for multipleValueTypeQuestionIndices #${multipleValueTypeQuestionIndices[index]} is true`)
-				allStudentsOtherStudentsStats[studentIdx][multipleValueTypeQuestionIndices[index]] = scoresVector.map((v) => Math.round(v * 100));
+			if (studentsPerQuestionScores[studentIdx]){
+				// console.log(`studentsPerQuestionScores[studentIdx] for multipleValueTypeQuestionIndices #${multipleValueTypeQuestionIndices[index]} is true`)
+				studentsPerQuestionScores[studentIdx][multipleValueTypeQuestionIndices[index]] = scoresVector.map((v) => Math.round(v * 100));
 			}else{
-				// console.log(`allStudentsOtherStudentsStats[studentIdx] for multipleValueTypeQuestionIndices #${multipleValueTypeQuestionIndices[index]} is false`)
-				allStudentsOtherStudentsStats[studentIdx] = {}
-				allStudentsOtherStudentsStats[studentIdx][multipleValueTypeQuestionIndices[index]] = scoresVector.map((v) => Math.round(v * 100));
+				// console.log(`studentsPerQuestionScores[studentIdx] for multipleValueTypeQuestionIndices #${multipleValueTypeQuestionIndices[index]} is false`)
+				studentsPerQuestionScores[studentIdx] = {}
+				studentsPerQuestionScores[studentIdx][multipleValueTypeQuestionIndices[index]] = scoresVector.map((v) => Math.round(v * 100));
 			}
 			
 		})
 
 		let ScoresMatrix = new Matrix(scoresNormalised).trans();
 		ScoresMatrix = ScoresMatrix.mulEach(getQuestionMultiplierFromQuestionIndex(multipleValueTypeQuestionIndices[index]));
-		studentsScheduleMatrixScoresNormalised = studentsScheduleMatrixScoresNormalised.plus(ScoresMatrix);
+		studentsScoresMatrixNormalised = studentsScoresMatrixNormalised.plus(ScoresMatrix);
 	})
 	
 	// console.log("Matrix AFTER MVs COMPUTATIONS")
-	// console.log(studentsScheduleMatrixScoresNormalised.rows)
-	// console.log(studentsScheduleMatrixScoresNormalised.cols)
-	// console.log(studentsScheduleMatrixScoresNormalised.data)
+	// console.log(studentsScoresMatrixNormalised.rows)
+	// console.log(studentsScoresMatrixNormalised.cols)
+	// console.log(studentsScoresMatrixNormalised.data)
 
 	// ********* END Multiple values Type Questions ******************
 
@@ -320,29 +315,30 @@ const computeTeams = async (req, res, next) => {
 
 			// collect stats for the student
 			let studentIdx = i
-			if (allStudentsOtherStudentsStats[studentIdx]){
-				// console.log(`allStudentsOtherStudentsStats[studentIdx] for singleChoiceTypeQuestionIndices #${singleChoiceTypeQuestionIndices[index]} is true`)
-				allStudentsOtherStudentsStats[studentIdx][singleChoiceTypeQuestionIndices[index]] = scoresVector.map((v) => Math.round(v * 100));
+			if (studentsPerQuestionScores[studentIdx]){
+				// console.log(`studentsPerQuestionScores[studentIdx] for singleChoiceTypeQuestionIndices #${singleChoiceTypeQuestionIndices[index]} is true`)
+				studentsPerQuestionScores[studentIdx][singleChoiceTypeQuestionIndices[index]] = scoresVector.map((v) => Math.round(v * 100));
 			}else{
-				// console.log(`allStudentsOtherStudentsStats[studentIdx] for singleChoiceTypeQuestionIndices #${singleChoiceTypeQuestionIndices[index]} is false`)
-				allStudentsOtherStudentsStats[studentIdx] = {}
-				allStudentsOtherStudentsStats[studentIdx][singleChoiceTypeQuestionIndices[index]] = scoresVector.map((v) => Math.round(v * 100));
+				// console.log(`studentsPerQuestionScores[studentIdx] for singleChoiceTypeQuestionIndices #${singleChoiceTypeQuestionIndices[index]} is false`)
+				studentsPerQuestionScores[studentIdx] = {}
+				studentsPerQuestionScores[studentIdx][singleChoiceTypeQuestionIndices[index]] = scoresVector.map((v) => Math.round(v * 100));
 			}
 		});
 
 		let ScoresMatrix = new Matrix(scoresNormalised).trans(); // 24 by 24
 		ScoresMatrix = ScoresMatrix.mulEach(getQuestionMultiplierFromQuestionIndex(singleChoiceTypeQuestionIndices[index]));
-		studentsScheduleMatrixScoresNormalised = studentsScheduleMatrixScoresNormalised.plus(ScoresMatrix);
+		studentsScoresMatrixNormalised = studentsScoresMatrixNormalised.plus(ScoresMatrix);
 	})
 	// ********* END Single Choice Type Questions ******************
 
 	return res.json({
 		status: "ok",
 		result: {
-			studentsScheduleMatrixScoresNormalised: studentsScheduleMatrixScoresNormalised.data.map((vector) => vector.sort((x,y) => x > y ? -1 : 1)).map((vector) => vector.map((v) => Math.round(v * 100))),
-			allStudentsOtherStudentsStats: allStudentsOtherStudentsStats,
+			studentsScoresMatrixNormalised: studentsScoresMatrixNormalised.data.map((vector) => vector.map((v,i) => [v,i]).sort((x,y) => x[0] > y[0] ? -1 : 1)).map((vector,index) => vector.map((v) => [Math.round(v[0] * 100),v[1]])),
+			// studentsScoresMatrixNormalised: studentsScoresMatrixNormalised.data.map((vector) => vector.map((v,i) => [v,i])).map((vector,index) => vector.map((v) => [ Math.round(v[0] * 100),v[1] ])),
+			studentsPerQuestionScores: studentsPerQuestionScores,
 			studentAnswers:allAnswerObjectsArray,
-			numStudents:studentsScheduleMatrixScoresNormalised.rows
+			numStudents:studentsScoresMatrixNormalised.rows
 		}
 	});
 }
