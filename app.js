@@ -14,7 +14,7 @@ const deleteCourseByCodeController = require('./API/deleteCourseByCodeController
 const saveSurveyController = require('./API/saveSurveyController');
 const getSurveyController = require('./API/getSurveyController');
 const updateSurveyController = require('./API/updateSurveyController');
-const computeTeamsController = require('./API/computeTeams');
+const computeScoresController = require('./API/computeScores');
 
 const getTeamsController = require('./API/getTeamsController');
 const saveStudentResponseController = require('./API/saveStudentResponseController');
