@@ -5,3 +5,4 @@ scripts/
 package-lock.json
 .DS_STORE
 app/tests/__snapshots__
+.env

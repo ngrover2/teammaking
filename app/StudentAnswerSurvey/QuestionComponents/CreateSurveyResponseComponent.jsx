@@ -4,7 +4,8 @@ import {
   Container,
   Menu,
   Form,
-  Grid
+  Grid,
+  Button
 } from 'semantic-ui-react';
 import { default as FreeformComponent } from "./CreateFreeformComponent.jsx";
 import { default as CheckboxComponent } from "./CreateCheckboxComponent.jsx";
@@ -82,6 +83,9 @@ export default function CreateSurveyResponseComponent(props){
                 <Form>
                     { bodyComponents }
                 </Form>
+            </Grid.Row>
+            <Grid.Row>
+                <Button>Submit Survey Response</Button>
             </Grid.Row>
         </Grid>
         </Container>

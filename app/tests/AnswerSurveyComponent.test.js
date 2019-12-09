@@ -1,15 +1,14 @@
-// Component for Student to answer the survey. Responsible for making network calls and calling the main component that renders the survey
+{/**/}
 import React from 'react';
-import { useParams } from 'react-router-dom';
-import { default as CreateSurveyResponse } from './QuestionComponents/CreateSurveyResponseComponent.jsx';
+import ReactDOM from 'react-dom';
+import renderer from 'react-test-renderer';
+import AnswerSurveyComponent from '../StudentAnswerSurvey/AnswerSurveyComponent.jsx'
 
-export default function AnswerSurveyComponent(props){
-  /* mock of object that the component should receive from the server*/
-  const response = {
-      "survey_details":{
+var AnswerSurveyComponentDetails = {
+    "survey_details":{
         "course_name":"SSDI",
         "course_instructor":"Harini",
-        "deadline":1993139865
+        "deadline":1893139865
     },
     "questions":
     {
@@ -33,12 +32,10 @@ export default function AnswerSurveyComponent(props){
                 "question":"what times are you free?"
             }  
     }
-  };
-  const  { surveyId } = useParams();
-  return (
-    <div>
-      <CreateSurveyResponse  {...response} />
-    </div>
-  )
-  ;
-}
+}; 
+it('renders correctly', () => {
+  const tree = renderer.create(
+    <AnswerSurveyComponent {...AnswerSurveyComponentDetails}/>
+  ).toJSON();
+  expect(tree).toMatchSnapshot();
+});
