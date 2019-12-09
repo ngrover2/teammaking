@@ -42,7 +42,8 @@ const saveSurveyController = async function (req, res, next){
         return res.status(400).json({
             status:"error",
             error:"Invalid surveyObject in the request body. surveyObject should be a valid object with three properties - questions(array holding at least one question object), deadline(date) and a survey title",
-            "error_code":"SS1IVPID"
+			error_code:"SS1IVPID",
+			"received": JSON.stringify(req.body)
         })
 	}
 

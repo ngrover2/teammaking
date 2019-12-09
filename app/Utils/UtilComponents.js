@@ -3,16 +3,33 @@ import { useState, useEffect } from 'react';
 import { Form, Divider, Grid, Message, Header, Label, Segment } from 'semantic-ui-react';
 import DatePicker from "react-datepicker";
 import moment from 'moment';
+moment.locale("en-gb");
 export const FullWidthDivider = (props) => <Divider id="visiblefullwidthdivider"/>
 
 export const questionWeights = [ "Extremely Important", "Very Important", "Somewhat Important", "Little Important", "Not Important" ];
 export const qtypeToReadableMapping = {
 	text: "Text", 
-	multiplechoice: "Multiple Choice", 
+	multiplechoice: "Multiple Choice",
 	multiplevalues: "Multiple Values", 
 	singlevalue: "Single Choice", 
 	schedule: "Schedule"
 }
+
+export const DatePickerComponent = (props) => {
+	const [ date, setDate ] = useState((props.defaultDate && moment.isMoment(props.defaultDate)) ? moment(props.defaultDate).toDate() : moment().toDate());
+	useEffect(()=> {
+		let isMoment = moment.isMoment(props.defaultDate)
+		console.log("Recived new props.defaultDate", props.defaultDate, "which isMoment ? - ", isMoment);
+		if (isMoment) {
+			setDate(moment(props.defaultDate).toDate());
+		}else{
+			setDate(props.defaultDate);
+		}
+	},[props.defaultDate]);
+    return (
+      <DatePicker dateFormat="yyyy/MM/dd" selected={date} style={props.style ? props.style : {}} onChange={date => {let d = moment(date).utc() /*.format("YYYY-MM-DD HH:mm:ss")*/; setDate(date);console.log("will change date to", d); props.onChange(d)}} />
+    );
+};
 
 export const GridRowMessageComponent = (props) => {
 	return(
@@ -115,7 +132,6 @@ export const QuestionWeightFormFieldComponent = (props) => {
 }
 
 export const DatePickerGridRowComponent = (props) => {
-    const [ date, setDate ] = useState();
     return (
 		<Grid.Row columns={16} >
 			<Grid.Column width={16}>
@@ -125,7 +141,7 @@ export const DatePickerGridRowComponent = (props) => {
 							label={<Label size="large">Choose a deadline for this survey</Label>}
 						/>
 						<Form.Field>
-						<DatePicker style={{width:"inherit"}} selected={date} onChange={date => {let d = moment(date).utc().format("YYYY-MM-DD HH:mm:ss");setDate(date); props.onChange(d)}} />	
+						<DatePickerComponent {...props} style={{width:"inherit"}} />
 						</Form.Field>
 					</Form.Group>
 				</Form>

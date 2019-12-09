@@ -13,6 +13,9 @@ const deleteCourseByIdController = require('./API/deleteCourseController');
 const deleteCourseByCodeController = require('./API/deleteCourseByCodeController');
 const saveSurveyController = require('./API/saveSurveyController');
 const getSurveyController = require('./API/getSurveyController');
+const updateSurveyController = require('./API/updateSurveyController');
+const computeScoresController = require('./API/computeScores');
+
 const getTeamsController = require('./API/getTeamsController');
 const saveStudentResponseController = require('./API/saveStudentResponseController');
 
@@ -31,6 +34,8 @@ app.use("/professor/:pid/course/:cid/update", updateCourseByIdController);
 app.use("/professor/:pid/course/:cid/delete", deleteCourseByIdController);
 app.use("/professor/:pid/course/:cid/survey/save", saveSurveyController);
 app.use("/professor/:pid/course/:cid/survey/:sid", getSurveyController);
+app.use("/professor/:pid/course/:cid/survey/:sid/update", updateSurveyController);
+app.use("/professor/:pid/course/:cid/survey/:sid/scores", computeScoresController);
 app.use("/professor/:pid/course/:cid/survey/:sid/teams", getTeamsController);
 app.use("/respond/:surveyID", saveStudentResponseController);
 
@@ -40,3 +45,5 @@ app.use("/professor/:pid/course/roster/deletebycode", deleteRosterController);
 
 
 module.exports = app;
+
+

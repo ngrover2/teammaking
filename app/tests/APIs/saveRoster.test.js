@@ -3,7 +3,7 @@ const supertest = require('supertest');
 const request = supertest(app);
 var mysql = require('mysql');
 var [ getDbConnection, executeOnDBWithPromise ] = require('../../../API/getDBConnection');
-var [ mockRoster, mockCourse ] = require('./mockObjects');
+var { mockRoster, mockCourse, mockUpdateCourse, mockSurvey, mockUpdateSurvey } = require('./mockObjects');
 
 /**
  * Testing a save roster (with a valid mockRoster body) for a professor with professor_id: 1 in the URL path

@@ -112,6 +112,9 @@ export default function CreateSurveyResponseComponent(props){
                     { bodyComponents }
                 </Form>
             </Grid.Row>
+            <Grid.Row>
+                <Button>Submit Survey Response</Button>
+            </Grid.Row>
         </Grid>
         </Container>
     ];

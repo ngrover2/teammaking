@@ -32,7 +32,8 @@ const deleteCourseByCode = async function(req, res, next){
     }catch(error){
         return res.status(500).json({
             status:"error",
-            "error":error.message
+            "error":error.message,
+            "errorFull": JSON.stringify(error)
         })
     }finally{
         if (connection && connection.end) connection.end();
