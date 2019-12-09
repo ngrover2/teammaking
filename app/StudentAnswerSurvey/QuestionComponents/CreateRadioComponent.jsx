@@ -4,14 +4,14 @@ import React from 'react';
 
 export default function RadioComponent(props) {
     const getfields = () => {
-        console.log(props.options);
         return props.options.map((v,i) => 
                 <Form.Field
                     key={i}
-                    label= { v }
+                    label={ v }
+                    value={ v } 
                     control='input'
                     type='radio'
-                    name='htmlRadios'
+                    name= {props.question}
               />
         );
         

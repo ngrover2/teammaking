@@ -5,12 +5,13 @@ import {
   Menu,
   Form,
   Grid,
-  Button
+  Button,
+  Input,
+  GridRow
 } from 'semantic-ui-react';
 import { default as FreeformComponent } from "./CreateFreeformComponent.jsx";
 import { default as CheckboxComponent } from "./CreateCheckboxComponent.jsx";
 import { default as RadioComponent } from "./CreateRadioComponent";
-import { element } from 'prop-types';
 
 function deadlinePassedComponent() {
     return(
@@ -22,6 +23,36 @@ function deadlinePassedComponent() {
 }
 
 
+
+function handleSubmit() {
+
+    const studentID = document.getElementById('studentID').value
+    var formData = new FormData(document.getElementById('surveyForm'));
+    var surveyID = window.location.pathname.split("/").pop() // get survey ID from URL
+    var ConvertedJSON= {};
+    var studentResponse = {};
+    ConvertedJSON['studentID'] = studentID;
+    for (const [key, value]  of formData.entries())
+    {
+        studentResponse[key] = value;
+    }
+    ConvertedJSON['givenResponse']=studentResponse;
+    async function postSurveyResponseAsync(surveyID, ConvertedJSON) 
+    {
+        let response = await fetch(`http://localhost:3000/respond/${surveyID}`,{
+                    method: 'POST',
+                    headers:{
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(ConvertedJSON)
+                }
+        )
+        let data = await response.json()
+        return data;
+    }
+    postSurveyResponseAsync(surveyID,ConvertedJSON)
+        .then(data => console.log(data));
+}
 function createRequiredComponents(questions){
 /* function to go through the json questions and convert them into components*/
     var generatedForm = [];
@@ -30,24 +61,20 @@ function createRequiredComponents(questions){
             const element = questions[question_number];
             switch (element.type) {
                 case "freeform":
-                    generatedForm.push(<FreeformComponent key={question_number} {...element} />);
+                    generatedForm.push(<FreeformComponent key={question_number} name = {question_number} {...element} />);
                     break;
                 case "mcq":
-                        generatedForm.push(<CheckboxComponent questionType = {element.type} key = {question_number} {...element} />);
+                        generatedForm.push(<CheckboxComponent questionType = {element.type} name = {question_number} key = {question_number} {...element} />);
                         break;
                 case "radio":
-                        generatedForm.push(<RadioComponent questionType = {element.type} key = {question_number} {...element} />);
+                        generatedForm.push(<RadioComponent questionType = {element.type} name = {question_number} key = {question_number} {...element} />);
                         break;
-                        
-    
                 default:
                     break;
             }  
         }
-
-        
     }
-       
+    generatedForm.push(<Button type='submit'>Submit Survey Response</Button>);
     return generatedForm;
 }
 
@@ -58,9 +85,7 @@ export default function CreateSurveyResponseComponent(props){
     if (+currentTime <= +deadline) 
         var bodyComponents = createRequiredComponents(props.questions);
     else
-        var bodyComponents = deadlinePassedComponent();
-
-    
+        var bodyComponents = deadlinePassedComponent();    
 
     return [
         <Container>
@@ -79,8 +104,11 @@ export default function CreateSurveyResponseComponent(props){
                         </Menu.Item>
                 </Menu>
             </Grid.Row>
+            <GridRow>
+                <Input placeholder='Student ID' id = {'studentID'} required={true}/>
+            </GridRow>
             <Grid.Row>
-                <Form>
+                <Form onSubmit = { handleSubmit } id={'surveyForm'} >
                     { bodyComponents }
                 </Form>
             </Grid.Row>

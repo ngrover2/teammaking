@@ -1,6 +1,5 @@
 // Component for Student to answer the survey. Responsible for making network calls and calling the main component that renders the survey
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import { default as CreateSurveyResponse } from './QuestionComponents/CreateSurveyResponseComponent.jsx';
 
 export default function AnswerSurveyComponent(props){
@@ -9,7 +8,7 @@ export default function AnswerSurveyComponent(props){
       "survey_details":{
         "course_name":"SSDI",
         "course_instructor":"Harini",
-        "deadline":1993139865
+        "deadline":1903139865
     },
     "questions":
     {
@@ -34,10 +33,10 @@ export default function AnswerSurveyComponent(props){
             }  
     }
   };
-  const  { surveyId } = useParams();
+
   return (
     <div>
-      <CreateSurveyResponse  {...response} />
+      <CreateSurveyResponse {...response} />
     </div>
   )
   ;

@@ -2,6 +2,6 @@
 import React from 'react';
 import { Form } from 'semantic-ui-react';
 export default function FreeformComponent(props) {
-    return <Form.TextArea label={props.question} />
+    return <Form.TextArea label={props.question} name={props.question} />
 
 }
