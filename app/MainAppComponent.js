@@ -17,6 +17,7 @@ import { Table, Header, Cell, Icon, Button, Grid, GridColumn, Container } from '
 import {default as SidebarComponent } from "./SidebarComponent";
 import { default as HeaderComponent } from "./AppHeaderComponent";
 import { default as SurveyFormQuestionComponent } from "./Survey/SurveyFormQuestionComponent";
+import { default as ShowStudentCompatibilityScoresComponent } from "./Teams/ShowStudentsComponent";
 
 import {default as AnswerSurveyComponent } from "./StudentAnswerSurvey/AnswerSurveyComponent.jsx"; // rahul
 import { default as RenderSavedSurveyComponent } from "./Survey/RenderSavedSurveyComponent"
@@ -74,6 +75,10 @@ export default function MainAppComponent() {
                                     <Route exact={true} 
                                             path="/professor/:pid/course"
                                             children = {({ match }) => <DisplayCourseComponent match={match}/>}
+                                    />
+                                    <Route exact={true} 
+                                            path="/professor/:pid/course/:cid/survey/:sid/teams"
+                                            children = {({ match }) => <ShowStudentCompatibilityScoresComponent match={match}/>}
                                     />
                                     <Route
                                             path ="/"
