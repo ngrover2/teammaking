@@ -47,15 +47,6 @@ const CourseCardComponent = (props) => {
 					<Button style={{ margin:"2px"}}
 						basic 
 						color='green'
-						onClick={
-							() => props.setViewRosterClick("viewDownloadedRoster", props.courseId, props.rosterId)
-						}
-					>
-						View Roster
-					</Button>
-					<Button style={{ margin:"2px"}}
-						basic 
-						color='red'
 						onClick={() => {
 							if (document.getElementById(`hiddenFilePickerButtonId-course${props.courseId}`) != "undefined"){
 								var fp = document.getElementById(`hiddenFilePickerButtonId-course${props.courseId}`);
@@ -66,6 +57,15 @@ const CourseCardComponent = (props) => {
 						}
 					}>
 						{`Import Roster`}
+					</Button>
+					<Button style={{ margin:"2px"}}
+						basic 
+						color='red'
+						onClick={
+							() => props.setViewRosterClick("viewDownloadedRoster", props.courseId, props.rosterId)
+						}
+					>
+						{`View Roster`}
 					</Button>
 					<PickRosterFileComponent
 						course_id={props.courseId}
@@ -304,6 +304,17 @@ class DisplayCourseComponent extends React.Component {
 			})
 		);
 	}
+
+	handleActionButtonsClick(redirectToStr, courseId, surveyId){
+		console.log("Setting redirect to ", redirectToStr)
+		this.setState({
+			selectedCourseId:courseId,
+			surveyId:surveyId
+		},()=> this.setState({
+				redirectTo:redirectToStr
+			})
+		);
+	}
 	
 	async getCourses(){
 		console.log("getCourses called")
@@ -364,7 +375,7 @@ class DisplayCourseComponent extends React.Component {
 			})
 		}
 	}
-	showScores
+	
 	constructCards(){
 		console.log("constructCards called")
 		let cards = []
