@@ -49,7 +49,7 @@ const ShowStudentCompatibilityScoresComponent = (props) => {
 				// nothing to send for now
 			}
 
-			let fetchedScores = await fetch(`http://localhost:3000/professor/1/course/1/survey/1/teams`,{
+			let fetchedScores = await fetch(`http://localhost:3000/professor/1/course/1/survey/1/scores`,{
                 method: 'POST',
                 headers:{
                     'Content-Type': 'application/json'
