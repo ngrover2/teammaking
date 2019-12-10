@@ -30,7 +30,7 @@ export default function SurveyFormQuestionComponent(props) {
 
     const [ newQuestionType, setNewQuestionType ] = useState("text"); // Track new question's answer type
 
-    const[ currentQuestionId, setCurrentQuestionId ] = useState(); // Track if a new question is being created
+    const[ currentQuestionId, setCurrentQuestionId ] = useState(0); // Track if a new question is being created
 
     const[ clearInputsId, setClearInputsId ] = useState(0); // Track if a new question is being created
     
@@ -209,7 +209,7 @@ export default function SurveyFormQuestionComponent(props) {
     }
 
     const getQuestionCreatorComponent = () => {
-        // console.log("newquestion id passed to createquestion is",currentQuestionId);
+        console.log("newquestion id passed to createquestion is",currentQuestionId);
         switch(newQuestionType){
             case "text": {
                 return (
