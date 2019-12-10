@@ -19,7 +19,7 @@ export const DatePickerComponent = (props) => {
 	const [ date, setDate ] = useState((props.defaultDate && moment.isMoment(props.defaultDate)) ? moment(props.defaultDate).toDate() : moment().toDate());
 	useEffect(()=> {
 		let isMoment = moment.isMoment(props.defaultDate)
-		console.log("Recived new props.defaultDate", props.defaultDate, "which isMoment ? - ", isMoment);
+		// console.log("Recived new props.defaultDate", props.defaultDate, "which isMoment ? - ", isMoment);
 		if (isMoment) {
 			setDate(moment(props.defaultDate).toDate());
 		}else{
