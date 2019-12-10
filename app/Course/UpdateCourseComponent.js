@@ -151,7 +151,7 @@ export default function UpdateCourseComponent(props){
                     setFeedbackModalMessage("Course updated successfully\n");
                     setFeedbackModalOpen(true);
                 }else{
-                    setFeedbackModalMessage((responseJson.reason && `${responseJson.reason}`) || (responseJson.errorFull && `${responseJson.errorFull}`) || "Problem creating the new course");
+                    setFeedbackModalMessage((responseJson.reason && `${responseJson.reason}`) || (responseJson.errorFull && `${responseJson.errorFull}`) || "Sorry! Could not update the course at this time.");
                     setFeedbackModalOpen(true);
                 }
             }else{
@@ -183,7 +183,7 @@ export default function UpdateCourseComponent(props){
         <div>
         {
             (<Modal 
-                trigger={<Image 
+                trigger={<Image
                             onClick={() => setOpen(true)}
                             floated='right'
                             size='mini'
@@ -206,11 +206,10 @@ export default function UpdateCourseComponent(props){
                             />
                             <Divider />
                             <FormField
-                                label={"Course Code"}
-                                placeholder={"Enter Course Code e.g. ITCS XXXX"}
+                                label={"Course Code (can not be modified)"}
                                 value={courseCode}
                                 control="input"
-                                onChange={(e) => setCourseCode(e.target.value)}
+                                onChange={(e) => 1}
                             />
                             <FormField
                                 label={"Course Description"}
@@ -275,7 +274,7 @@ export default function UpdateCourseComponent(props){
                     </Form>
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button positive onClick={() => console.log(formRef.current.handleSubmit())}>Update Course</Button>
+                    <Button positive onClick={() => formRef.current.handleSubmit()}>Update Course</Button>
                     <Button negative onClick={ () => {
                                                 setOpen(false);
                                                 setCourseName("");
