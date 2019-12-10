@@ -8,14 +8,16 @@ export default function AnswerSurveyComponent(props){
       "survey_details":{
         "course_name":"SSDI",
         "course_instructor":"Harini",
-        "deadline":1903139865
+        "deadline":1903139865 //deadline is in the future
+        // "deadline":1003139865 //deadline has passed
+
     },
     "questions":
     {
         "1":
             {
                 "type":"freeform",
-                "question":"Do you like this assignment?"
+                "question":"How much experience do you have with software creation?"
             },
         "2":{    
                 "type":"mcq",
