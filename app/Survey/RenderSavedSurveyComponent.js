@@ -133,7 +133,7 @@ export default function RenderSavedSurveyComponent(props) {
         let postBody = {
             surveyObject: {
                 questions: displayedQuestionObjects,
-                deadline: surveyDeadline ? surveyDeadline.format("YYYY-MM-DD HH:mm:ss") : null,
+                deadline: surveyDeadline ? moment(surveyDeadline).format("YYYY-MM-DD HH:mm:ss") : null,
                 title: "Help me help you"
             },
         }
@@ -164,7 +164,7 @@ export default function RenderSavedSurveyComponent(props) {
             }
             if (responseJson){
                 if (responseJson.status == "ok"){
-                    console.log("responseJson", responseJson);
+                    // console.log("responseJson", responseJson);
                     setMessage("Survey updated successfully");
                     setMessageModalOpen(true);
                     setUploadSucceeded(true);
