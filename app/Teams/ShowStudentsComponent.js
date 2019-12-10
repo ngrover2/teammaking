@@ -115,7 +115,7 @@ const ShowStudentCompatibilityScoresComponent = (props) => {
 		val = parseInt(val)
 		switch(true){
 			case (val > 0 && val <= 40) : return {color:"wheat", backgroundColor: "red", fontWeight:"bold"}
-			case (val > 40 && val <= 60) : return {color:"white", backgroundColor: "#d9d15d", fontWeight:"bold"}
+			case (val > 40 && val <= 60) : return {color:"black", backgroundColor: "#d9d15d", fontWeight:"bold"}
 			case (val > 60 && val <= 80) : return {color:"white", backgroundColor: "rgb(156, 191, 92)", fontWeight:"bold"}
 			case (val > 80 && val <= 100) : return {color:"white", backgroundColor: "green", fontWeight:"bold"}
 			default : return {color:"white", backgroundColor: "grey"}
