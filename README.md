@@ -1,7 +1,7 @@
 
 # A React application that helps asses compatibility for potential team members.
 
-![Teammaking - member compatibility scores image](assets/TeammakingIndividualScores.png)
+![Teammaking - member compatibility scores image](assets/images/TeammakingIndividualScores.png)
 
 A good team can not be just put together by assigning people randomly to a group. Compatibility amongst the members is very important for the team as a whole to deliver the best performance. Therefore, any effort made towards asessing the compatibility between potential members can only help.
 
@@ -13,7 +13,7 @@ The professor can create cards for all the courses that he/she teaches.
 
 A csv formatted roster containing students' details can be uploaded for each course. 
 
-![Teammaking - upload csv roster image](assets/TeammakingUploadRoster.png)
+![Teammaking - upload csv roster image](assets/images/TeammakingUploadRoster.png)
 
 The roster can be edited before uploading to the back-end.
 
@@ -23,29 +23,29 @@ The app provides a dynamic survey creation feature where the professor can creat
 
 * Free form text answer type
 
-![Teammaking - Add free-form question image](assets/TeammakingTextQuestion.png)
+![Teammaking - Add free-form question image](assets/images/TeammakingTextQuestion.png)
 
 * Single answer type
 
 The professor can create any number of choices and see a preview of how it looks. After creating the question, the professor can still edit it from the preview section so that redundant work does not have to be repeated. Also, a default choice can be added from among the added choices. 
 
-![Teammaking - Add single choice question image](assets/TeammakingSingleChoiceQuestion.png)
+![Teammaking - Add single choice question image](assets/images/TeammakingSingleChoiceQuestion.png)
 
 * Multiple choice answer type
   
 Any number of choices can be created for the question. Choices can be added or removed at any time before submitting the survey to the back-end.
 
-![Teammaking - Add multiple choice question image](assets/TeammakingMultipleChoiceQuestion.png)
+![Teammaking - Add multiple choice question image](assets/images/TeammakingMultipleChoiceQuestion.png)
 
 * Multiple values answer type 
 
 With this question type, the professor can choose to limit how many answers a student can provide for the question. This question is helpful when a student may have multiple answers which can not be pre-determined. For example a question like “What tools/frameworks are you most familiar with” could have many different answers.
 
-![Teammaking - Add multiple values question image](assets/TeammakingMultipleValuesQuestion.png)
+![Teammaking - Add multiple values question image](assets/images/TeammakingMultipleValuesQuestion.png)
 
 ### Survey Preview
 
-![Teammaking - Survey preview image](assets/TeammakingSurveyPreview.png)
+![Teammaking - Survey preview image](assets/images/TeammakingSurveyPreview.png)
 
 A deadline has to be provided for the survey so that the professor can plan it into his/her schedule.
 
